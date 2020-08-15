@@ -1,0 +1,26 @@
+# wmake  
+
+all: msApp
+
+
+# Makefile.in order is important
+USE_VXIMG=1
+USE_OMP=1
+#include  ../Makefile.in
+
+
+msCFLAGS := ${msCFLAGS} -I../optim  -I. -I../primitives/  -O3   -DGCC_COMPILER 
+
+
+
+msSrc ?= $(abspath ../..)
+
+srcs=$(shell find | grep -F .cpp | sed s:./::)
+
+USE_CPP17=1
+USE_ZLIB=1
+USE_TIFF=1
+USE_SVG=1
+USE_msMAKE=1
+include  ${msSrc}/script/Makefile.in
+

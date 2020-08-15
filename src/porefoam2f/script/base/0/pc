@@ -1,0 +1,49 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+	version 	2.0;
+	format  	ascii;
+	class   	volScalarField;
+	location	"0";
+	object  	pc;
+}
+//----------------------------------------------------------------------
+
+dimensions   		[1 -1 -2 0 0 0 0];
+
+internalField		uniform 0;
+
+boundaryField
+{
+	Back
+	{
+		type		zeroGradient;
+	}
+	Front
+	{
+		type		zeroGradient;
+	}
+	Left
+	{
+		type		zeroGradient;
+	}
+	Right
+	{
+		type		zeroGradient;
+	}
+	Bottom
+	{
+		type		zeroGradient;
+	}
+	Top
+	{
+		type		zeroGradient;
+	}
+	Grainwalls
+	{
+		type		zeroGradient;
+	}
+}
+
+
+//---------------------------------------------------------------------'

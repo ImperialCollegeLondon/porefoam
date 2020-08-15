@@ -1,0 +1,49 @@
+#!/bin/bash
+
+
+
+if [ -n "$1" ]; then 
+	dataFiles=$@
+else
+	dataFiles="$(ls -d Berea*[0-9])"
+fi
+	
+: ${ImgSufix:=".tif"}
+
+#mkdir BereaSmallForCX1
+for case in $dataFiles ; do
+if [ -d ${case}_res ]; then
+ processorDirs="$(cd ${case}_res && ls -d processo*[0-9])"
+ latestTime="$(cd ${case}_res/processor0 && ls -1 -d [0-9]* | sed '/[a-z]/d' | sort -n -r | head -n 1 | sort -n | head -n 1)"
+ rm -f ${case}_res/mpd2.console*
+ rm -f ${case}_res/mpd2.logfile*
+
+ if [ -d $case ]; then
+	cp ${case}_res/data_out_for_plot*  $case/
+
+	for processorDir in $processorDirs
+	do
+		echo "$(ls ${case}_res/$processorDir/$latestTime)  $case/$processorDir/$latestTime"
+		cp -rf ${case}_res/$processorDir/$latestTime  $case/$processorDir/$latestTime
+	done
+ else
+	mkdir $case/
+ 	cp ${case}_res/data_out_for_plot*  $case/
+ 	cp -r ${case}_res/system  $case/
+ 	cp -r ${case}_res/constant  $case/
+ 	cp ${case}_res/*.$ImgSufix  $case/
+ 	cp ${case}_res/*.mhd  $case/
+
+	for processorDir in $processorDirs
+	do
+		mkdir $case/$processorDir
+		echo "$(ls ${case}_res/$processorDir/$latestTime)  $case/$processorDir/$latestTime"
+		cp -rf ${case}_res/$processorDir/$latestTime  $case/$processorDir/$latestTime
+		cp -rf ${case}_res/$processorDir/constant  $case/$processorDir/constant
+	done
+ fi
+else 
+	echo "${case}_res does not exists"
+fi
+done
+

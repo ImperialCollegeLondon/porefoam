@@ -1,0 +1,129 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      faceSetDict;
+}
+
+//----------------------------------------------------------------------
+
+// Name of set to operate on
+name f0;
+
+// One of clear/new/invert/add/delete|subset/list
+action new;
+
+// Actions to apply to pointSet. These are all the topoSetSource's ending
+// in ..ToFace (see the meshTools library).
+topoSetSources
+(
+    // Copy elements from faceSet
+    faceToFace
+    {
+        set Left;
+    }
+    faceToFace
+    {
+        set Right;
+    }
+    faceToFace
+    {
+        set Front;
+    }
+    faceToFace
+    {
+        set Back;
+    }
+    faceToFace
+    {
+        set Bottom;
+    }
+    faceToFace
+    {
+        set Top;
+    }
+
+    // Select based on cellSet
+    //cellToFace
+    //{
+        //set c0;
+        //option all;         // All faces of cells
+        ////option both;      // Only faces whose owner&neighbour are in cellSet
+    //}
+
+    // Select based on pointSet
+    //pointToFace
+    //{
+        //set p0;
+        //option any;         // Faces using any point in pointSet
+        ////option all        // Faces with all points in pointSet
+    //}
+
+    ////  Select by explicitly providing face labels
+    //labelToFace
+    //{
+        //value (12 13 56);   // labels of faces
+    //}
+
+    //// All faces of patch
+    patchToFace
+    {
+        name "Grainwalls";      // Name of patch, regular expressions allowed
+    }
+    //patchToFace
+    //{
+        //name "Left";      // Name of patch, regular expressions allowed
+    //}
+    //patchToFace
+    //{
+        //name "Right";      // Name of patch, regular expressions allowed
+    //}
+    //patchToFace
+    //{
+        //name "Bottom";      // Name of patch, regular expressions allowed
+    //}
+    //patchToFace
+    //{
+        //name "Front";      // Name of patch, regular expressions allowed
+    //}
+    //patchToFace
+    //{
+        //name "Back";      // Name of patch, regular expressions allowed
+    //}
+    //patchToFace
+    //{
+        //name "Top";      // Name of patch, regular expressions allowed
+    //}
+    patchToFace
+    {
+        name "solidwalls_patch0";      // Name of patch, regular expressions allowed
+    }
+    patchToFace
+    {
+        name "innerPart_patch0";      // Name of patch, regular expressions allowed
+    }
+
+    //// All faces of faceZone
+    //zoneToFace
+    //{
+        //name ".*Zone1";     // Name of faceZone, regular expressions allowed
+    //}
+
+    // Faces with face centre within box
+    //boxToFace
+    //{
+        //box   (0.000214 0.0002145 0.0002137) (0.0012834 0.0012835 0.0016025);
+        //
+    //} 
+
+    // Faces with normal to within certain angle aligned with vector.
+    //normalToFace
+    //{
+        //normal (0 0 1);     // Vector
+        //cos     0.01;       // Tolerance (max cos of angle)
+    //}
+);
+
+//---------------------------------------------------------------------'

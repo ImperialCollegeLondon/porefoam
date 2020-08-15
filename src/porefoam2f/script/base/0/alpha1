@@ -1,0 +1,61 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+
+FoamFile
+{
+	version 	2.0;
+	format  	ascii;
+	class   	volScalarField;
+	location	"0";
+	object  	alpha1;
+}
+//----------------------------------------------------------------------
+
+dimensions   		[0 0 0 0 0 0 0];
+
+internalField		uniform 0;
+
+boundaryField
+{
+
+
+    Left
+    {
+        type            constantAlphaContactAngle;
+        limit           gradient;
+        theta0          90;
+        value           uniform 0;
+        transitionFactor 0.6;
+    }
+    Right
+    {
+		type		zeroGradient;
+    }
+
+	Bottom
+	{
+		type		zeroGradient;
+	}
+	Top
+	{
+		type		zeroGradient;
+	}
+	Back
+	{
+		type		zeroGradient;
+	}
+	Front
+	{
+		type		zeroGradient;
+	}
+	Grainwalls
+	{
+        type            hysteresisContactAngle;
+        limit           gradient;
+        thetaA          180;
+        thetaR          180;
+        value           uniform 0;
+	}
+}
+
+
+//----------------------------------------------------------------------

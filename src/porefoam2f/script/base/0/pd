@@ -1,0 +1,60 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+	version 	2.0;
+	format  	ascii;
+	class   	volScalarField;
+	location	"0";
+	object  	pd;
+}
+//----------------------------------------------------------------------
+
+dimensions   		[1 -1 -2 0 0 0 0];
+
+internalField		uniform 0;
+
+boundaryField
+{
+	Left
+	{
+		type   		fixedFluxPressure;
+		adjoint		no;
+	}
+	Right
+	{
+		type     	fixedRelaxedMeanValue;
+		meanValue1	0;
+		meanValue2	0;
+		thicknessFactor	0.1;
+		relax     	0.95;
+		value    	uniform 0;
+	}
+	Back
+	{
+		type   		fixedFluxPressure;
+		adjoint		no;
+	}
+	Front
+	{
+		type   		fixedFluxPressure;
+		adjoint		no;
+	}
+	Bottom
+	{
+		type   		fixedFluxPressure;
+		adjoint		no;
+	}
+	Top
+	{
+		type   		fixedFluxPressure;
+		adjoint		no;
+	}
+	Grainwalls
+	{
+		type   		fixedFluxPressure;
+		adjoint		no;
+	}
+}
+
+
+//---------------------------------------------------------------------'

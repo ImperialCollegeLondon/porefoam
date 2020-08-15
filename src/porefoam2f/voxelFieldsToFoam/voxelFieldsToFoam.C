@@ -1,0 +1,155 @@
+/*-------------------------------------------------------------------------*\
+This code is part of poreFOAM, a suite of codes written using OpenFOAM
+for direct simulation of flow at the pore scale. 	
+You can redistribute this code and/or modify this code under the 
+terms of the GNU General Public License (GPL) as published by the  
+Free Software Foundation, either version 3 of the License, or (at 
+your option) any later version. see <http://www.gnu.org/licenses/>.
+
+
+
+The code has been developed by Ali Qaseminejad Raeini as a part his PhD 
+at Imperial College London, under the supervision of Branko Bijeljic 
+and Martin Blunt. 
+* 
+Please see our website for relavant literature:
+http://www3.imperial.ac.uk/earthscienceandengineering/research/perm/porescalemodelling
+
+For further information please contact us by email:
+Ali Q Raeini:    a.q.raeini@imperial.ac.uk
+
+\*-------------------------------------------------------------------------*/
+
+#include <fstream>
+#include <iostream>
+#include <vector>
+
+#include <assert.h>
+#include "voxelImage.h"
+//#include "globals.cpp"
+
+#include "fvCFD.H"
+
+#include "argList.H"
+#include "timeSelector.H"
+#include "graph.H"
+#include "mathematicalConstants.H"
+
+#include "OFstream.H"
+#include "foamTime.H"
+ 
+#include <sys/stat.h> //mkdir
+
+using namespace Foam;
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Main program:
+
+template<typename T1,typename T2> void setEq(T1& v1,const T2& v2) { v1 = v2; }
+template<typename T1> void setEq(T1& v1,const float3& v2) { v1[0]=v2[0];   v1[1]=v2[1]; v1[2]=v2[2]; }
+
+template<typename ImgT, typename Type> 
+void convertToFoamWrite
+(
+	const word& alpha1Header ,
+	const word& name ,
+	Time& runTime,
+	const fvMesh& mesh
+)
+{
+	voxelImageT<ImgT> vximage(alpha1Header); //dummy
+
+	int3 n=vximage.size3();
+	dbl3 xmin=vximage.X0();
+	dbl3 dx=vximage.dx();   //dx*=1.0e-6;
+
+	if (!n[0]) Info<<"\nError: no image read\n"<<endl;
+
+
+
+	const fvBoundaryMesh& boundary = mesh.boundary();
+
+
+
+	GeometricField<Type, fvPatchField, volMesh> Vfield(
+		IOobject ( name, "0", mesh, IOobject::MUST_READ, IOobject::AUTO_WRITE ),  mesh);
+
+
+	const vectorField & C =	mesh.C().internalField();
+	Type sumAlpha = Type();
+	double sumWalpha=1.0e-64;
+	if (vximage.nx())
+	{
+	  forAll(C,c)
+	  {
+		int i=(C[c][0]-xmin[0])/dx[0]*0.999999999999;
+		int j=(C[c][1]-xmin[1])/dx[1]*0.999999999999;
+		int k=(C[c][2]-xmin[2])/dx[2]*0.999999999999;
+		setEq(Vfield[c],vximage(i,j,k));
+		sumAlpha += Vfield[c];
+		sumWalpha += 1.0;
+	  }
+	}
+	Info<<" AvgAlpha: "<<sumAlpha/sumWalpha<<endl;
+
+	forAll(boundary, patchi)
+		Vfield.boundaryFieldRef()[patchi]==Vfield.boundaryField()[patchi].patchInternalField();
+
+	
+	OFstream AOF(Vfield.time().timeName()+"/"+name);
+	Vfield.writeHeader(AOF);
+	Vfield.writeData(AOF);
+}
+
+
+
+int main(int argc, char *argv[])
+{
+
+	argList::validArgs.append("fileList");
+	//argList::validOptions.insert("fileList", "label");
+
+
+
+	#include "setRootCase.H"
+	#include "createTime.H"
+
+
+	wordList fileList(args.argRead<wordList>(1));
+	Info<<endl<<"fileList:    "<<fileList<<endl;
+
+	#include "createMesh.H"
+
+	std::string dummy; double tim=0.0;
+	scalar timO=tim;
+	forAll(fileList,ii)
+	{
+		std::string basNam=fileList[ii];
+		Info<<endl<<"basNam:    "<<basNam<<endl;
+		std::stringstream ss;  ss.str(replaceFromTo(basNam,"_", " "));  ss>>dummy>>tim;  tim *= 4.267e-7; //time conversion s/fileSecondNumber
+		scalar dt = tim-timO;   timO = tim;
+
+		runTime.setDeltaT(dt,false);
+		runTime++;
+		Info<<endl<<"time: "<<runTime.timeName()<<"   timO: "<<timO<<"   dt: "<<dt<<endl;
+		
+		::mkdir(runTime.timeName().c_str(), 0733);
+
+		convertToFoamWrite<float,Foam::scalar>(basNam+"_alpha.mhd", "alpha1", runTime,mesh);
+		convertToFoamWrite<float,Foam::scalar>(basNam+"_pc.mhd", "pc", runTime,mesh);
+		#ifdef VMMLIB__VECTOR__HPP
+		convertToFoamWrite<float3,Foam::vector>(basNam+"_U.mhd", "U", runTime,mesh);
+		#else
+		Info<<basNam+"_U.mhd (float3) conversion to openfoam not supported"<<endl;
+		#endif
+		//basNam=""; ss>>basNam;
+	}
+
+
+	Info<< "end" << endl;
+
+	return 0;
+}
+
+
+// ************************************************************************* //

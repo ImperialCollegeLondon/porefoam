@@ -1,0 +1,58 @@
+#!/bin/bash
+
+
+names[0]="Left"; Normal[0]="(-1 0 0)"
+names[1]="Right"; Normal[1]="(1 0 0)"
+names[2]="Front"; Normal[2]="(0 0 1)" 
+names[3]="Back"; Normal[3]="(0 0 -1)"
+names[4]="Bottom"; Normal[4]="(0 -1 0)"
+names[5]="Top"; Normal[5]="(0 1 0)"
+caseName=.
+
+(cd $caseName && mkdir constant/polyMesh/sets )
+
+(cd $caseName && rm log.faceSe* )
+
+(cd $caseName/system && cp faceSetDict1 faceSetDict )
+setKeywordValues action new ./$caseName/system/faceSetDict
+
+for index in ${!names[*]}
+do
+
+echo $index ${names[$index]}
+setKeywordValues name "${names[$index]}" ./$caseName/system/faceSetDict
+(cd $caseName && runApp  faceSet )
+	(cd $caseName && mv log.faceSet log.faceSet.${names[$index]}1 )
+
+done
+
+(cd $caseName/system && cp faceSetDict2 faceSetDict )
+setKeywordValues action delete ./$caseName/system/faceSetDict
+
+for index in ${!names[*]}
+do
+    echo $index ${names[$index]}
+	setKeywordValues name ${names[$index]} ./$caseName/system/faceSetDict
+	setKeywordValues normal "${Normal[$index]}" ./$caseName/system/faceSetDict
+	(cd $caseName && runApp  faceSet )
+	(cd $caseName && mv log.faceSet log.faceSet.${names[$index]}2 )
+	
+done
+
+
+(cd $caseName/system && cp faceSetDict3 faceSetDict )
+setKeywordValues action new ./$caseName/system/faceSetDict
+
+	setKeywordValues name "Grainwalls" ./$caseName/system/faceSetDict
+	(cd $caseName && runApp  faceSet )
+	(cd $caseName && mv log.faceSet log.faceSet.Grainwalls )
+	
+	# remove for debugging:
+	(cd $caseName && rm log.faceSet.*)
+
+(cd $caseName/system && cp createPatchDict2 createPatchDict )
+setKeywordValues constructFrom set ./$caseName/system/createPatchDict
+setKeywordValues set Grainwalls ./$caseName/system/createPatchDict
+(cd $caseName && rm log.createPatch )
+(cd $caseName && runApp createPatch -overwrite)
+

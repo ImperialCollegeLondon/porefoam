@@ -1,0 +1,32 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      postProcessDict;
+}
+//----------------------------------------------------------------------
+
+
+
+CVxBounds1 (-100000 0.46);
+CVxBounds2 (100000 0.54);
+ 
+CVyBounds1 (0.4 0);
+CVyBounds2 (0.6 1);
+
+CVzBounds1 (0.4 0);
+CVzBounds2 (0.6 1);
+
+//***************************************
+relativeBounds true ; //default is true
+//***************************************
+
+
+
+//nGrowCVs 1;
+//CVoxelValues ( 0);
+//labelImage "BASENAME.tif";
+ 

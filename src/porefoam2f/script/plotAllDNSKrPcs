@@ -1,0 +1,16 @@
+#!/bin/bash
+
+casBases="`ls -d *_SP | sed 's/_SP//g'`"
+echo $casBases
+for  casbas in $casBases; do 
+
+ cases=`ls -d ${casbas}_UD*`
+	echo ${casbas},   cases: $cases 
+ for  cas in "$cases"; do 
+	mkdir -p resultsDNS/$cas
+	cp  ${casbas}_SP/grads.csv  resultsDNS/$cas/grads_SP.csv
+	cp  $cas/grads.csv  resultsDNS/$cas/
+	cp  $cas/grads_hdr.csv  resultsDNS/$cas/
+ 	echo 
+ done 
+done 

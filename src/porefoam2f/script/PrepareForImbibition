@@ -1,0 +1,227 @@
+#!/bin/bash
+
+
+myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
+: ${msSrc:=$myCurrentDIR} ; export msSrc
+
+. $msSrc/script/initbash
+
+
+
+usage()
+{
+	scriptName=`basename "${BASH_SOURCE[0]}"`
+	echo " - Usage/example:"
+	echo "$scriptName  CA   inU0 inU1  outP0 outP1  fillFrac inputCase  tDrain  outName "
+	echo "$scriptName  95    2.   1.   20.  0.0      0.1     Berea_.07  0.1   BereaImb "
+	echo "  this script will then create ./BereaImb145_0.1/BereaImb135_0.1  for you,  hint: "
+	echo " - Other settings:"
+	echo "export thetaIn=90"
+	echo "export thetaOut=90"
+	echo "export direction=+"
+}
+[[ -z "$11" ]] || { usage ; exit ; }
+
+
+if [ "$1" == "-h" ]; then usage; exit; fi
+if [ "$1" == "--help" ]; then usage; exit; fi
+
+
+contactAngl=$1
+UD0=$2
+UD1=$3
+pdMeanValue1=$4
+pdMeanValue2=$5
+xInitAlpha=$6
+drainCas=$7
+tDrainEnd=$8
+imbibBaseName=$9
+
+: ${thetaIn:=90}
+: ${thetaOut:=90}
+: ${direction:=+}
+
+echo "  1  contactAngl  :  $contactAngl  "
+echo "  2  UD0          :  $UD0          "
+echo "  3  UD1          :  $UD1          "
+echo "  4  pdMeanValue1 :  $pdMeanValue1 "
+echo "  5  pdMeanValue2 :  $pdMeanValue2 "
+echo "  6  thetaIn      :  $thetaIn      "
+echo "  7  thetaOut     :  $thetaOut     "
+echo "  8  xInitAlpha   :  $xInitAlpha   "
+echo "  9  drainCas     :  $drainCas     "
+echo " 10  tDrainEnd    :  $tDrainEnd    "
+echo " 11  imbibBaseName:  $imbibBaseName"
+echo " 12  direction    :  $direction    "
+
+
+
+
+
+scriptName=`basename "${BASH_SOURCE[0]}"`
+echo $scriptName $@  
+echo "$(date +%F):"  >>log.runCommands
+echo $scriptName $@  >>log.runCommands
+echo "" >>log.runCommands
+shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;shift;
+
+
+
+
+##############TO CHANGE tDrainEnds
+pathToOrigCase=$drainCas #~ for pathToOrigCase in $drainCass
+#for tDrainEnd in $tDrainEnds
+#do
+echo "/^^^^^^^^^^^^^^^^^^^^^^^^ $pathToOrigCase ^^^^^^^^^^^^^^^^^^^^^^^\ "
+
+caseDrain="${pathToOrigCase%/}"
+caseDrain="${pathToOrigCase%/results}"
+caseDrain="${caseDrain##*/}"
+caseDrain="${caseDrain#*_}"
+imbCase="${imbibBaseName}${contactAngl}_$tDrainEnd"
+if ! [ -d $imbCase ]; then
+	if [ -d $pathToOrigCase/processor0 ]; then
+
+		mkdir -p $imbCase
+		touch $imbCase/aa.foam
+		#~ cp -r $pathToOrigCase/../run.pbs $imbCase/
+		#~ setValues "CASENAME" "$case" $imbCase/run.pbs
+
+		processorDirs="$(cd $pathToOrigCase/ && ls -d processo*[0-9])"	
+		arr=($processorDirs)
+		IFS=$'\n'
+        nProc=$(( $(echo "${arr[*]}" | sed 's/processor//g' | sort -nr | head -n1)+1 ))
+		echo "nProc $nProc"
+
+		(cd $pathToOrigCase && runMPI checkMesh $nProc )
+		cp  $pathToOrigCase/log.checkMesh $imbCase
+
+	#~ if [ -d $pathToOrigCase/processor0 ]; then
+
+		echo  "setting case" $imbCase from original case 	$pathToOrigCase
+		cp -r $pathToOrigCase/system $imbCase/
+		cp -r $pathToOrigCase/constant $imbCase/
+		cp -r $pathToOrigCase/0 $imbCase/
+		cp  $pathToOrigCase/*.ImgSufix   $pathToOrigCase/*.mhd $imbCase/
+		latestTime="$(cd ${pathToOrigCase}/processor0 && ls -d -1 $tDrainEnd* | sed '/[a-z]/d'| sort -n -r | tail -n 1 | sort -n | head -n 1)"
+		echo "latestTime $latestTime"
+
+		for processorDir in $processorDirs; do
+			mkdir $imbCase/$processorDir
+			cp -r $pathToOrigCase/$processorDir/0 $imbCase/$processorDir
+			cp -r $pathToOrigCase/$processorDir/constant $imbCase/$processorDir
+			cp $pathToOrigCase/$processorDir/$latestTime/alpha1  $imbCase/$processorDir/0/alpha1
+			rm -rf $imbCase/$processorDir/[0-9]*.*/
+			rm -rf $imbCase/$processorDir/[1-9]*/
+		done
+
+
+		deleteKeyword "defaultFieldValues"  $imbCase/system/setFieldsDict
+		setValues "volScalarFieldValue alpha1 1" "volScalarFieldValue alpha1 0" $imbCase/system/setFieldsDict
+
+
+
+
+
+		bBox=$(cat ./$imbCase/log.checkMesh | grep ound | grep box | sed 's/[a-Z][a-Z][a-Z]*//g'| sed 's/[\(\)]//g' |  sed 's/[eE]/\*10\^/g' | sed -e 's/[\t ][\t ]*/\n/g')
+		bBox=($bBox)
+		echo "boundingBox:  ${bBox[0]} - ${bBox[3]}"
+
+		if [ "$direction" == "-" ]; then
+			xInitAlpha=$(echo "scale=8; ${bBox[3]}-(${bBox[3]}-${bBox[0]})*($xInitAlpha)" | bc )
+			echo "xEndAlpha: $xInitAlpha "
+			setKeywordValues box  "    ($xInitAlpha -1000 -1000)  (1000 1000 1000);" $imbCase/system/setFieldsDict
+		else
+			xInitAlpha=$(echo "scale=8; ${bBox[0]}+(${bBox[3]}-${bBox[0]})*($xInitAlpha)" | bc )
+			echo "xBeginAlpha: $xInitAlpha "
+			setKeywordValues box  "    (-1000 -1000 -1000)  ($xInitAlpha 1000 1000);" $imbCase/system/setFieldsDict
+		fi
+
+
+		setKeywordValues   writeFormat ascii $imbCase/system/controlDict
+		(cd $imbCase &&    rm -f log.setFields)
+		(cd $imbCase &&    runMPI setFields $nProc )
+		(cd $imbCase &&    reconstructPar -time '(0)' -zeroTime -fields '( alpha1 )' > log.reconstructParAlpha0)
+		setKeywordValues   writeFormat binary $imbCase/system/controlDict
+
+		#~ echo "run.pbs"
+		#~ (cd $imbCase && sed -i 's/'"$caseDrain"'/'"$imbCase"'/g' run.pbs)
+
+
+		echo "Converting to slowGrowingUBC  ++++++++++ $imbCase needs to be checked : visualize in paraview ++++++++++++++"
+
+		echo "UD: $UD,   boundingBox:  ${bBox[*]}"
+		QWat=$(echo "scale=18; (${bBox[4]}-(${bBox[1]}))*(${bBox[5]}-(${bBox[2]}))*$UD0*0.000001" | bc )
+		echo "QOil: $QOil "
+		QOil=$(echo "scale=18; (${bBox[4]}-(${bBox[1]}))*(${bBox[5]}-(${bBox[2]}))*$UD1*0.000001" | bc )
+		echo "QOil: $QOil "
+
+
+
+		processorDirs="$(cd $imbCase && ls -d processo*[0-9])"
+		for processorDir in $processorDirs
+		do
+
+			setKeywordValues value  "uniform 0"  ${imbCase}/$processorDir/0/pd
+			setKeywordValues value  "uniform   ( 0 0 0 )"  ${imbCase}/$processorDir/0/U
+
+			setBoundaryCondition Left  flowRate0 "$QWat"            ${imbCase}/$processorDir/0/U
+			setBoundaryCondition Left  flowRate1 "$QOil" ${imbCase}/$processorDir/0/U
+			setBoundaryCondition Left  value "uniform  ( 0 0 0 )" ${imbCase}/$processorDir/0/U
+
+
+			setBoundaryCondition Right  meanValue1   "$pdMeanValue1"  ${imbCase}/$processorDir/0/pd
+			setBoundaryCondition Right  meanValue2   "$pdMeanValue2"  ${imbCase}/$processorDir/0/pd
+
+			setBoundaryCondition Left  theta0   "$thetaIn"  ${imbCase}/$processorDir/0/alpha1
+			setBoundaryCondition Right  theta0   "$thetaOut"  ${imbCase}/$processorDir/0/alpha1
+			setBoundaryCondition Grainwalls  thetaA   "$contactAngl"  ${imbCase}/$processorDir/0/alpha1
+			setBoundaryCondition Grainwalls  thetaR   "$contactAngl"  ${imbCase}/$processorDir/0/alpha1
+
+			if [ "$direction" == "-" ]; then
+				# swap the inlet and outlet boundaries
+				sed -i 's/Left/Raight/g'  $imbCase/$processorDir/0/U
+				sed -i 's/Right/Left/g'   $imbCase/$processorDir/0/U
+				sed -i 's/Raight/Right/g' $imbCase/$processorDir/0/U
+				sed -i 's/Left/Raight/g'  $imbCase/$processorDir/0/pd
+				sed -i 's/Right/Left/g'   $imbCase/$processorDir/0/pd
+				sed -i 's/Raight/Right/g' $imbCase/$processorDir/0/pd
+				sed -i 's/Left/Raight/g'  $imbCase/$processorDir/0/alpha1
+				sed -i 's/Right/Left/g'   $imbCase/$processorDir/0/alpha1
+				sed -i 's/Raight/Right/g' $imbCase/$processorDir/0/alpha1
+			fi
+
+		done
+
+
+
+
+		#~ setKeywordValues "writeInterval" " 600" $imbCase/system/controlDict
+
+		echo
+		echo "case $PWD/$imbCase is ready, check it with paraview"
+		echo "to run the flow simulation, type:"
+		echo "launchApp interFoamCCFF $imbCase"
+		echo
+		#~ tar -czf $imbCase.tar.gz  $imbCase
+		#mkdir $pathToOrigCase/../../LV60AImb3/
+		#cp  $imbCase.tar.gz  $pathToOrigCase/../../LV60AImb3/
+		#echo "copied to   $pathToOrigCase/../../LV60AImb3/$imbCase.tar.gz"
+		#~ echo " cp $imbCase.tar.gz"
+
+
+
+	else
+		echo  "???????? No processor directory found in $pathToOrigCase directory   ????????"
+		echo  "???????? This script works only with parallel runs ! not doing anything    ????????"
+		echo  "contact Ali Raeini <a.q.raeini@imperial.ac.uk> for further information "
+	fi
+else
+		echo  "????????   $imbCase exists     ! not doing anything   ????????"
+		echo  "????????  delete  $imbCase  first to generate it again   ????????"
+fi
+
+	echo "\_________________________${pathToOrigCase}_________________________/ "
+#done
+
+
