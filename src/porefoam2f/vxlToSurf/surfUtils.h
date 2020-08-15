@@ -1,22 +1,25 @@
-// Light weight surface utility functions, alternatives to openfoam
-// Copyright (C) 2020  Ali Qaseminejad Raeini 
+/*-------------------------------------------------------------------------*\
+ Light weight surface utility functions, alternatives to openfoam
+ This is part of surfLib, a library for working with surface files and data
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+ Copyright (C) 2018-2020  Ali Qaseminejad Raeini 
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-// For any queries, contact Ali Q. Raeini: email aliqasemi@gmail.com
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+\*-------------------------------------------------------------------------*/
 
- 
+
+
 #include <vector>
 #include "typses.h"
 #include "InputFile.h"

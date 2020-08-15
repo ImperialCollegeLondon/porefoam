@@ -1,17 +1,21 @@
 /*-------------------------------------------------------------------------*\
-This code is part of poreFOAM, a suite of codes written using OpenFOAM
-for direct simulation of flow at the pore scale. 	
-You can redistribute this code and/or modify this code under the 
-terms of the GNU General Public License (GPL) as published by the  
-Free Software Foundation, either version 3 of the License, or (at 
-your option) any later version. see <http://www.gnu.org/licenses/>.
+ Upscaling flow field / Abs. permeability computation
+ Outdated, use calc_distributions instead
 
-
-Please see our website for relavant publications:
-https://www.imperial.ac.uk/engineering/departments/earth-science/research/research-groups/perm/research/pore-scale-modelling/
-
-For further information please contact me by email:
-Ali Qaseminejad Raeini:    a.q.raeini@imperial.ac.uk
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
 
     #include <fstream>

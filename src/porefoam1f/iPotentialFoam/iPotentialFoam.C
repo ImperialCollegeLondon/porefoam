@@ -1,22 +1,22 @@
 /*-------------------------------------------------------------------------*\
-This code is part of poreFOAM, a suite of codes written using OpenFOAM
-for direct simulation of flow at the pore scale. 	
-You can redistribute this code and/or modify this code under the 
-terms of the GNU General Public License (GPL) as published by the  
-Free Software Foundation, either version 3 of the License, or (at 
-your option) any later version. see <http://www.gnu.org/licenses/>.
+ Initialize flow field, speeds up convergence in some cases
 
+ Copyright (C) 2012-2020  Ali Qaseminejad Raeini 
 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-Developed by Ali Qaseminejad Raeini
-* 
-Please see our website for relavant literature:
-http://www3.imperial.ac.uk/earthscienceandengineering/research/perm/porescalemodelling
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-For further information please contact us by email:
-Ali Q Raeini:    a.q.raeini@imperial.ac.uk
-
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
+
 
 #define SINGLE_PHASE
 #define ifMonitor  if( runTime.timeIndex()%10== 0 ) 

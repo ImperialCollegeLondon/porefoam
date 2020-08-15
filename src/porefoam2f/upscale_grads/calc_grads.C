@@ -1,31 +1,26 @@
 /*-------------------------------------------------------------------------*\
-This code is part of poreFOAM, a suite of codes written using OpenFOAM
-for direct simulation of flow at the pore scale. 	
-You can redistribute this code and/or modify this code under the 
-terms of the GNU General Public License (GPL) as published by the  
-Free Software Foundation, either version 3 of the License, or (at 
-your option) any later version. see <http://www.gnu.org/licenses/>.
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-The code has been developed by Ali Qaseminejad Raeini as a part his PhD 
-at Imperial College London, under the supervision of Branko Bijeljic 
-and Martin Blunt. 
-Please see our website for relavant literature:
-http://www3.imperial.ac.uk/earthscienceandengineering/research/perm/porescalemodelling
-
-For further information please contact us by email:
-Ali Q Raeini:    a.q.raeini@imperial.ac.uk
-Branko Bijeljic: b.bijeljic@imperial.ac.uk
-Martin J Blunt:  m.blunt@imperial.ac.uk
- 
- Description:
-	post-processing code Calculates energy losses for control 
-	volumes given in postprossingDict file in $case/system directory. 
-	
-	Note: Parallel case post-processing is added to the code, no need to 
-	reconstract parallel cases anymore.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
+
+//! Description:
+//!   post-processing code Calculates energy losses for control 
+//!   volumes given in postprossingDict file in $case/system directory. 
+//!   
+//!   Note: Parallel case post-processing is added to the code, no need to 
+//!   reconstract parallel cases anymore.
 
 
 #include <fstream>

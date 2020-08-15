@@ -1,28 +1,29 @@
 /*-------------------------------------------------------------------------*\
-This code is part of poreFOAM, a suite of codes written using OpenFOAM
-for direct simulation of flow at the pore scale. 	
-You can redistribute this code and/or modify this code under the 
-terms of the GNU General Public License (GPL) as published by the  
-Free Software Foundation, either version 3 of the License, or (at 
-your option) any later version. see <http://www.gnu.org/licenses/>.
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
 
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-This app converts an unstructured mesh into a 3D image.
-
-
-Please see Imperial College's pore-scale website for further information:
-http://www3.imperial.ac.uk/earthscienceandengineering/research/perm/porescalemodelling
-
-Or contact me by email any queries:
-Ali Q Raeini:    a.q.raeini@imperial.ac.uk
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
 
-    #include <fstream>
-    #include <iostream>
-    #include <vector>
+//! Description:
+//!   This app converts an unstructured openfoam mesh into a 3D image.
 
-    #include <assert.h>
+
+#include <fstream>
+#include <iostream>
+#include <vector>
+
+#include <assert.h>
 
 #include "fvCFD.H"
 
@@ -36,11 +37,6 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 #include "voxelImage.h"
  
 using namespace Foam;
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-// Main program:
-
-
 
 
 
@@ -357,4 +353,3 @@ int main(int argc, char *argv[])
 }
 
 
-// ************************************************************************* //
