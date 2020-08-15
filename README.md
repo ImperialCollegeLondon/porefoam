@@ -2,7 +2,7 @@
 
  ----------------------------------------------------------------    
  
-This repository is under construction, it will be ready in few hours/days. It may be useful for experts in direct two-phase flow simulation and is not intended for everyday use.
+This repository is released in the hope that it may be useful for experts in direct two-phase flow simulation and is not intended for everyday use.
 
 ## Please see the [src/porefoam2f](src/porefoam2f) and [doc](doc) folders for more specific details
 
@@ -19,7 +19,7 @@ To compile, open a terminal in the upper most directory and run:
 
 To test the compilation, run:    
 
- `make tst`
+ `make test`
 
 Once everything compiled successfully, to clean the temporary files, type:
 
