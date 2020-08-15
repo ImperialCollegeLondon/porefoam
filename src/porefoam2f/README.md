@@ -42,7 +42,9 @@ https://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/
 
 ### Contacts
 
-For any queries, contact Ali Q. Raeini, email: a.q.raeini@imperial.ac.uk
+For any queries, contact:     
+ - Ali Q. Raeini, email: a.q.raeini@imperial.ac.uk
+ - Mosayeb Shams, email: m.shams14@imperial.ac.uk
 
 For more information and contacts details, see:  
 http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling  
