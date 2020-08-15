@@ -2,9 +2,7 @@
 
  ----------------------------------------------------------------    
  
-This repository is released in the hope that it may be useful for experts in direct two-phase flow simulation and is not intended for everyday use.
-
-## Please see the [src/porefoam2f](src/porefoam2f) and [doc](doc) folders for more specific details
+## This repository is released in the hope that it may be useful for experts in direct two-phase flow simulation and is not intended for everyday use.  See  [src/porefoam2f](src/porefoam2f) for more details.
 
 See also README files for other modules  which are located in their own directories. 
 
