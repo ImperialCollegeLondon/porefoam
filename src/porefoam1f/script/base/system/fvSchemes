@@ -1,0 +1,65 @@
+FoamFile // -*- C++ -*-
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSchemes;
+}
+
+ddtSchemes
+{
+    default        Euler;
+}
+
+gradSchemes
+{
+	default         Gauss linear;
+}
+
+divSchemes
+{
+    default Gauss   linear; 
+    div(rho*phi,U)    Gauss  SFCD; 
+}
+
+
+
+interpolationSchemes
+{
+    default         linear;
+
+}
+
+// linear          quadraticUpwindFit      limitedCubic            limitedLinear 
+// downwind        localMax                Gamma                   interfaceCompression
+// MC              quadraticFit            outletStabilised        reverseLinear 
+// blended         limitWith               linearPureUpwindFit     limitedLimitedLinear
+// vanLeer         limitedCubic01          linearUpwind            quadraticLinearUpwindFit
+// limitedGamma    Minmod                  limitedVanLeer          cubic
+// SuperBee        filteredLinear3         biLinearFit             quadraticLinearFit
+// QUICK           limitedMUSCL            UMIST                   limitedLimitedCubic
+// weighted        skewCorrected           armonic                 midPoint
+// localMin        vanLeer01               linearFit               limitedLinear01     
+// fixedBlended    vanAlbada               OSPRE                   MUSCL 
+// upwind          clippedLinear           filteredLinear2         localBlended
+// Gamma01         SFCD                    cubicUpwindFit          filteredLinear 
+// MUSCL01
+
+laplacianSchemes
+{
+   default         Gauss linear uncorrected;
+}
+snGradSchemes
+{
+   default          uncorrected;
+}
+
+fluxRequired
+{
+    default         no;
+    p;
+    pcorr;
+}
+
+

@@ -1,0 +1,50 @@
+FoamFile // -*- C++ -*-
+{
+	version  2.0;
+	format   ascii;
+	class    dictionary;
+	location "system";
+	object   controlDict;
+}
+
+
+application       interFoam;
+
+maxExecutionTime  151200; // CPU time, seconds
+
+startFrom         latestTime;
+
+startTime         0;
+
+stopAt            endTime;
+
+endTime           0.1;
+
+deltaT            5e-8;
+
+writeControl      timeStep;
+
+writeInterval     200;
+
+purgeWrite        1;
+
+writeFormat       binary;
+
+writePrecision    6;
+
+writeCompression  uncompressed;
+
+timeFormat        general;
+
+timePrecision     8;
+
+runTimeModifiable yes;
+
+adjustTimeStep    yes;
+
+maxCo             0.4;
+
+maxDeltaT         2.0e-4;
+
+
+

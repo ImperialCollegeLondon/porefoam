@@ -1,0 +1,4 @@
+
+testBndLayerSmoothing.C
+
+EXE = $(FOAM_APPBIN)/testBndLayerSmoothing

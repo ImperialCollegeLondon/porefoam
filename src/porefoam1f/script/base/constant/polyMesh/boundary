@@ -1,0 +1,52 @@
+FoamFile // -*- C++ -*-
+{
+    version     2.0;
+    format      ascii;
+    class       polyBoundaryMesh;
+    location    "constant/polyMesh";
+    object      boundary;
+}
+
+
+6
+(
+    Top
+    {
+        type            patch;
+        nFaces          3805;
+        startFace       1;
+    }
+    Bottom
+    {
+        type            patch;
+        nFaces          3805;
+        startFace       1;
+    }
+
+    Left
+    {
+        type            patch;
+        nFaces          837;
+        startFace       214105;
+    }
+    Right
+    {
+        type            patch;
+        nFaces          979;
+        startFace       214942;
+    }
+    Front
+    {
+        type            patch;
+        nFaces          3805;
+        startFace       1;
+    }
+    Back
+    {
+        type            patch;
+        nFaces          3805;
+        startFace       1;
+    }
+)
+
+

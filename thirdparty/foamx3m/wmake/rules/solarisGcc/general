@@ -1,0 +1,9 @@
+CPP        = /usr/lib/cpp -undef $(GFLAGS)
+
+PROJECT_LIBS = -l:lib$(WM_PROJECT).$(SO)  -lnsl -lsocket
+
+include $(GENERAL_RULES)/standard
+
+include $(RULES)/X
+include $(RULES)/c
+include $(RULES)/c++

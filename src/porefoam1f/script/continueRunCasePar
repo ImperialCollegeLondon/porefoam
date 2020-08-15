@@ -1,0 +1,69 @@
+#!/bin/bash
+
+export scriptName=`basename "${BASH_SOURCE[0]}"`
+usage()
+{
+	echo "usage:"
+	echo ;  echo "$scriptName PathToCaseFolder   .raw.gz NOTskipOutlet" ;  echo
+	echo "Arguments (all optional):"
+	echo "  arg1: name of openfoam case (folder) to continue its simulation, default is current directory"
+	echo "  arg2: image output format: \".dat\", \".raw\", \".raw.gz\", \".tif\" (default), "
+	echo "        or \"oldAscii\" (for compatibility with old codes)" 
+}
+if [ "$1" == "-h" ]; then usage; exit; fi
+if [ "$1" == "--help" ]; then usage; exit; fi
+
+
+application="icoNSFoam"
+
+
+if [ -n "$1" ]; then
+	caseName=$1
+else
+	caseName="."
+fi
+myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
+: ${msSrc:=$myCurrentDIR} ; export msSrc
+
+
+: ${outPutFormat:=$2}
+: ${outPutFormat:=tif}
+  echo "outPutFormat=\"$outPutFormat\""
+
+if  [ -f $caseName/system/controlDict ]; then 
+	echo ".................. ......................."
+	echo "running case: $(dirname $caseName) in parallel"
+
+
+. $msSrc/script/initbash
+
+
+	processorDirs="$(cd $caseName/ && ls -d processo*[0-9])"	
+	arr=($processorDirs)
+	IFS=$'\n'
+	nProc=$(( $(echo "${arr[*]}" | sed 's/processor//g' | sort -nr | head -1)+1 ))
+	echo "nProc $nProc"
+
+
+	LastLog=$(cd  $caseName && ls log.$application* | sed 's/log.$application-//g' | sed 's/log.$application//g' |  sort -n | tail -1)
+	destLogNomber=${application#*/}
+	destLogNomber=${destLogNomber%-*}
+	destLogNomber=$(($destLogNomber + 1))
+    (cd $caseName && mv log.$application log.$application-$destLogNomber)
+
+	#~ setSubKeywordValues relaxationFactors "U" "0.4" ./$caseName/system/fvSolution
+
+    setKeywordValues writeInterval 100 ./$caseName/system/controlDict 
+    (cd $caseName && runMPI $application $nProc)
+
+	#(cd $caseName && runMPI calc_perms $nProc)
+	(cd $caseName && runMPI calc_distributions $nProc)
+
+	(cd $caseName &&  mv log.FOAM2Voxel log.FOAM2Voxel-)
+	(cd $caseName && runApp  FOAM2Voxel vxlImage.mhd "$nProc" $outPutFormat)
+
+
+	echo "..................            END              ......................."
+else
+	echo "can not find $caseName/system/controlDict"
+fi

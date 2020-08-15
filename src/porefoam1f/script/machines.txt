@@ -1,0 +1,5 @@
+ese-tesla4  max_slots=16
+ese-tesla3  max_slots=16
+
+#ese-tesla3 slots=16 max_slots=16
+#ese-tesla4 slots=16 max_slots=16

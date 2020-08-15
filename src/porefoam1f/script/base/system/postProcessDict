@@ -1,0 +1,26 @@
+FoamFile // -*- C++ -*-
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      postProcessDict;
+}
+
+
+CVxBounds1 (0);
+CVxBounds2 (1);
+
+
+
+//CVyBounds1  (-1000000);
+//CVyBounds2  (1000000);
+//CVzBounds1  (-1000000);
+//CVzBounds2  (1000000);
+
+//relativeBounds false; // default is true
+//nGrowCVs 1;
+//CVoxelValues ( 0);
+//labelImage "BASENAME.mhd";
+
+

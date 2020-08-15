@@ -1,0 +1,59 @@
+#!/bin/bash
+
+
+myCurDIR=$(cd "$(dirname ${BASH_SOURCE[0]})/.." && pwd)
+if [  -n "$msBinDir" ]; then
+	echo "Info: msSrc(=$msSrc) is NOT reset from $myCurDIR"
+	if [ "$msSrc" != "$myCurDIR" ]; then 
+		echo "Hint, try reseting your (terminal) session and its settings"; 
+	fi
+elif ! [ -f $myCurDIR/Makefile ]; then
+	echo "Error: $myCurDIR does not seem to be a source directory."
+	echo "       Makefile does not exists."; 
+else
+
+	export msSrc="$myCurDIR"
+	export msRoot=$( cd "$msSrc/../" && pwd )
+	export msBinDir=$msRoot/bin
+	export msLibDir=$msRoot/lib
+	export msIncDir=$msRoot/include
+	export msBilDir=$msRoot/build
+	export msTstDir=$msRoot/test
+
+	# maybe safer to prepend PATHs?
+	export PATH=$PATH:$msSrc/script
+	export PATH=$PATH:$msSrc/script/pylib
+	export PATH=$PATH:$msSrc/gnm/script
+	export PATH=$PATH:$msSrc/gnm/script/PNM
+	export PATH=$PATH:$msSrc/porefoam1f/script
+	export PATH=$PATH:$msSrc/porefoam2f/script
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$msLibDir
+	export PATH=$PATH:$msBinDir
+
+
+	if ! [ -d $msBinDir ]; then  mkdir -p $msBinDir;   fi
+	if ! [ -d $msLibDir ]; then  mkdir -p $msLibDir;   fi
+	if ! [ -d $msIncDir ]; then  mkdir -p $msIncDir;   fi
+
+
+
+	if [ -z "$WM_PROJECT" ] ; then
+		# Openfoam settings:
+		# Change according to your openfoam installation directory
+		#export WM_NCOMPPROCS=28
+		#export FOAM_INST_DIR=$(cd $myUpperDIR/../thirdparty && pwd)
+		export FOAM_INST_DIR=$msRoot/thirdparty
+		source $FOAM_INST_DIR/foamx3m/etc/bashrc
+	else
+		printf "\n *** OpenFOAM:  $WM_PROJECT_DIR \n *** Suggestion: Deactivate this old OF installation and recompile, in a new terminal.\n\n"
+	fi
+	export myOFBinDir=$msBinDir/foamx3m
+	export PATH=$PATH:$myOFBinDir
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$myOFBinDir
+	export FOAM_ABORT=1
+
+	export PYTHONPATH=$msSrc/script:$msSrc/pylib:$PYTHONPATH
+
+fi
+
+

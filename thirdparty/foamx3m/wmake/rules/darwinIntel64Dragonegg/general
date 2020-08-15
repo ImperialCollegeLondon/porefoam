@@ -1,0 +1,10 @@
+CPP        = cpp $(GFLAGS)
+LD         = ld
+
+PROJECT_LIBS = -l:lib$(WM_PROJECT).$(SO)
+
+include $(GENERAL_RULES)/standard
+
+include $(RULES)/X
+include $(RULES)/c
+include $(RULES)/c++

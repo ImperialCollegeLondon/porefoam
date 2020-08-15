@@ -1,0 +1,117 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | foam-extend: Open Source CFD
+   \\    /   O peration     | Version:     4.0
+    \\  /    A nd           | Web:         http://www.foam-extend.org
+     \\/     M anipulation  | For copyright notice see file Copyright
+-------------------------------------------------------------------------------
+License
+	This file is part of foam-extend.
+
+	foam-extend is free software: you can redistribute it and/or modify it
+	under the terms of the GNU General Public License as published by the
+	Free Software Foundation, either version 3 of the License, or (at your
+	option) any later version.
+
+	foam-extend is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+
+Class
+	Foam::LISA
+
+Description
+	Primary Breakup Model for pressure swirl atomizers.
+
+	Accurate description in
+	@verbatim
+	P.K. Senecal, D.P. Shmidt, I. Nouar, C.J. Rutland, R.D. Reitz, M. Corradini
+	"Modeling high-speed viscous liquid sheet atomization"
+	International Journal of Multiphase Flow 25 (1999) pags. 1073-1097
+	@endverbatim
+
+	and
+
+	@verbatim
+	D.P. Schmidt, I. Nouar, P.K. Senecal, C.J. Rutland, J.K. Martin, R.D. Reitz
+	"Pressure-Swirl Atomization in the Near Field"
+	SAE Techical Paper Series 1999-01-0496
+	@endverbatim
+
+
+\*---------------------------------------------------------------------------*/
+
+#ifndef LISA_H
+#define LISA_H
+
+#include "atomizationModel.H"
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+
+
+class LISA
+:
+	public atomizationModel
+{
+private:
+
+	// Private data
+
+		dictionary coeffsDict_;
+		Random& rndGen_;
+		scalar Cl_;
+		scalar cTau_;
+		scalar Q_;
+		scalar J_;
+
+public:
+
+	//- Runtime type information
+	TypeName("LISA");
+
+
+	// Constructors
+
+		//- Construct from components
+		LISA
+		(
+			const dictionary& dict,
+			spray& sm
+		);
+
+
+	// Destructor
+
+		~LISA();
+
+
+	// Member Operators
+
+		void atomizeParcel
+		(
+			parcel& parcel,
+			const scalar deltaT,
+			const vector& vel,
+			const liquidMixture& fuels
+		) const;
+
+
+};
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
+
+// ************************************************************************* //

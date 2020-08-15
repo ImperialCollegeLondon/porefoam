@@ -1,0 +1,75 @@
+FoamFile // -*- C++ -*-
+{
+    version         2.0;
+    format          ascii;
+
+    root            "";
+    case            "";
+    instance        "";
+    local           "";
+
+    class           dictionary;
+    object          blockMeshDict;
+}
+
+
+
+
+convertToMeters 1.0;
+
+vertices
+(
+    (X1 Y1 Z1)
+    (X2 Y1 Z1)
+    (X2 Y2 Z1)
+    (X1 Y2 Z1)
+    (X1 Y1 Z2)
+    (X2 Y1 Z2)
+    (X2 Y2 Z2)
+    (X1 Y2 Z2)
+);
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (Nx Ny Nz) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+patches
+(
+
+    patch Back
+    (
+        (0 3 2 1)
+    )
+    patch Front
+    (
+        (4 5 6 7)
+    )
+    patch Left
+    (
+       (0 4 7 3)
+    )
+    patch Right
+    (
+        (2 6 5 1)
+    )
+    patch Bottom
+    (
+        (1 5 4 0)
+     )
+     patch Top
+     (
+         (3 7 6 2)
+    )
+
+);
+
+mergePatchPairs
+(
+);
+
+
+

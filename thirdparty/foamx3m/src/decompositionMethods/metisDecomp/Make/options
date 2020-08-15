@@ -1,0 +1,11 @@
+METIS_INCLUDE_DIR=/usr/include/metis
+
+EXE_INC = \
+    -I$(METIS_INCLUDE_DIR)/ \
+    -I../decompositionMethods/lnInclude \
+    -I../scotchDecomp/lnInclude
+
+LIB_LIBS = \
+    -l:libdecompositionMethods.$(SO) \
+    -L$(FOAM_LIBBIN)/dummy \
+    -L$(METIS_LIB_DIR) -lmetis

@@ -1,0 +1,175 @@
+FoamFile // -*- C++ -*-
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+
+
+solvers
+{
+
+    pcorr
+    {
+        solver          GAMG;
+        tolerance       1e-8;
+        relTol          0.0001;
+        smoother        GaussSeidel;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        nFinestSweeps   2;
+        cacheAgglomeration on;
+        nCellsInCoarsestLevel 8;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        maxIter         100;
+    }
+
+
+    p
+    {
+        solver          PCG;
+        preconditioner
+        {
+            preconditioner  GAMG;
+            tolerance       1e-6;
+            relTol          0.05;
+            nVcycles        2;
+            smoother        GaussSeidel;
+            nPreSweeps      0;
+            nPostSweeps     2;
+            nFinestSweeps   2;
+            cacheAgglomeration on;
+            nCellsInCoarsestLevel 8;
+            agglomerator    faceAreaPair;
+            mergeLevels     1;
+        }
+        tolerance       1e-6;
+        relTol          0.02;
+        minIter         1;
+        maxIter         10;
+    }
+
+
+
+    pFinal
+    {
+        solver          PCG;
+        preconditioner
+        {
+            preconditioner  GAMG;
+            tolerance       4e-7;
+            relTol          0.01;
+            nVcycles        2;
+            smoother        GaussSeidel;
+            nPreSweeps      0;
+            nPostSweeps     2;
+            nFinestSweeps   2;
+            cacheAgglomeration on;
+            nCellsInCoarsestLevel 8;
+            agglomerator    faceAreaPair;
+            mergeLevels     1;
+        }
+        tolerance       5e-7;
+        relTol          0.01;
+        minIter         1;
+        maxIter         10;
+    }
+
+
+    //pFinal
+    //{ //! use this for transient problems where convergence in each time step is needed
+        //solver          PCG;
+        //preconditioner
+        //{
+            //preconditioner  GAMG;
+            //tolerance       1e-7;
+            //relTol          0.01;
+            //nVcycles        2;
+            //smoother        DIC;
+            //nPreSweeps      1;
+            //nPostSweeps     2;
+            //nFinestSweeps   2;
+            //cacheAgglomeration on;
+            //nCellsInCoarsestLevel 512;
+            //agglomerator    faceAreaPair;
+            //mergeLevels     1;
+        //}
+        //tolerance       1e-7;
+        //relTol          0.01;
+        //minIter         1;
+        //maxIter         100;
+    //}
+
+
+    U
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-08;
+        relTol          .005;
+        maxIter         100;
+    }
+    UFinal
+    {
+        solver          PBiCG;
+        preconditioner  DILU;
+        tolerance       1e-08;
+        relTol          .005;
+        maxIter         100;
+    }
+
+
+}
+
+PIMPLE
+{
+    pRefCell 21;
+    pRefValue 0;
+    //pcRefCell 21;
+    //pcRefValue 0;
+     //cAlpha  1;
+     //cPc  .2;
+    cBC   250;//250;//500;
+     //cPcCorrection  .04;
+    //cPcCorrRelax 0.999;
+    //cPcCorrRelax2 0.995;
+     //smoothingKernel  12;
+     //wallSmoothingKernel  5;
+     //uFilter1  .02;
+
+    lambda   0;
+    //lambdaS  0;
+    //cSSlip   0.05;
+    //nSlip    1.0;
+
+    nUCorr    0;
+    beta              beta [ 1 -1 -1 0 0 0 0 ] 0.001;
+
+    momentumPredictor no;
+    nCorrectors     2;
+    //npcCorrectors     1;
+    nOuterCorrectors    1;
+    nNonOrthogonalCorrectors 0;
+    //nPcNonOrthCorr 0;
+    //nAlphaCorr      1;
+    //nAlphaSubCycles 1;
+    
+    thresholdDelUPer10Step  0.00025;
+}
+
+
+potentialFlow
+{
+    nNonOrthogonalCorrectors 3;
+}
+
+relaxationFactors
+{
+	U           0.5; 
+	p           0.7;
+}
+
+

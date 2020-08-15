@@ -1,0 +1,26 @@
+#!/bin/bash
+
+
+#cases="Bentheimer_1000c_3p0035um  Doddington_1000c_2p6929um  Estaillades_1000c_3p31136um  Ketton_1000c_3p00006um"
+
+
+#cases=` ls -d */*/ `
+#for cas in $cases ; do 
+	#ls ${cas}/${cas}-1-X/${cas}_input.mhd
+  #(cd ${cas}/${cas}-1-X && FOAM2Voxel ${cas}_input.mhd 32 all > log.FOAM2Voxel2 )
+#done
+
+
+
+mkdir summaries
+cases=` ls -d */*/ `
+for cas in $cases ; do 
+ sumtxt="${cas}summary_$(basename $cas).txt"
+ echo  "$sumtxt:" | sed 's/.*summary_//'  | sed 's/\.txt//' 
+ cp    "$sumtxt"   summaries/
+ more  "$sumtxt"  | grep effPoro  | sed 's/ef/  ef/' 
+ more  "$sumtxt"  | grep K_       | sed 's/K_/  K_/' 
+ more  "$sumtxt"  | grep FF       | sed 's/FF/  FF/' 
+ echo
+done
+

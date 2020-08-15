@@ -1,0 +1,212 @@
+#!/bin/bash
+
+export scriptName=`basename "${BASH_SOURCE[0]}"`
+usage()
+{
+	echo "usage:"
+	echo ;  echo "$scriptName \"*.mhd\"  \"X\" .raw.gz";  echo
+	echo "Arguments (all optional):"
+	echo "  arg1: name of images to run flow simulations on (defaults is *.mhd)"
+	echo "  arg2: flow direction(s):  any combination of X Y Z"
+	echo "  arg3: image output format: \".dat\", \".raw\", \".raw.gz\", \".tif\" (default), "
+	echo "        or \"oldAscii\" (for compatibility with old codes)" 
+	echo ""
+	echo "Examples:" 
+	echo "$scriptName \"\$(ls *.mhd)\"  X  .tif " 
+	echo "$scriptName \"\$(ls *.mhd)\"  Z  .raw.gz " 
+	echo "$scriptName \"\$(ls *.mhd)\"  X  .dat " 
+	echo "" 
+	echo "once the simulation is finished, you can run 'Ufraw2Uc ' to"
+	echo "generate the voxel-centred velocities, or velocity magnitude," 
+	echo "or convert to different file formats" 
+}
+if [ "$1" == "" ]; then usage; fi
+if [ "$1" == "-h" ]; then usage; exit; fi
+if [ "$1" == "--help" ]; then usage; exit; fi
+if [ -n "$2" ]; then 
+	for cas in $2 ; do 
+		if [[ "$cas" != [XYZ] ]]; then echo "Error: \$2 ($2) can be X Y or Z only ";  exit; fi
+	done
+fi
+echo $scriptName $@
+echo
+
+
+
+: ${nProcX:=4}
+: ${nProcY:=4}
+: ${nProcZ:=2}
+echo "nProcessors: $nProcX x $nProcY x $nProcZ "
+
+
+
+
+myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
+: ${msSrc:=$myCurrentDIR} ; export msSrc
+
+#dataFiles="Berea.mhd" 
+if [ -n "$1" ]; then  dataFiles=$1
+else                  dataFiles="$(ls *.mhd)"
+fi
+echo "Images: $dataFiles"
+
+: ${directions:=$2}
+: ${directions:=X}
+  echo "flow directions=\"$directions\" "
+
+: ${outPutFormat:=$3}
+: ${outPutFormat:=tif}
+  echo "outPutFormat=\"$outPutFormat\" "
+
+
+#~ maxDeltaT="2e-5"
+endTime=.1
+
+
+ps=" 1"
+
+
+. $msSrc/script/initbash
+
+
+
+for datFile in $dataFiles
+do
+dataFile=${datFile%.*}
+
+prefix="$dataFile/"
+mkdir $prefix
+
+
+for direction in $directions
+do
+echo "direction $direction"
+
+for p in $ps
+do
+echo "p @ $direction : $p  Pa"
+
+  caseName="$prefix""$dataFile-$p""-$direction"
+  if  ! [ -d $caseName ]; then 
+	#~ LAM_MPI_SESSION_SUFFIX="$(echo $caseName | sed 's/\///g')"
+	#~ echo $LAM_MPI_SESSION_SUFFIX
+	#~ lamboot -v machines.txt 
+
+
+	if [ -d ./base ]; then 
+		cp -r ./base $caseName
+	else
+		cp -r $SP_SCRIPTS/base $caseName
+	fi
+
+	(cd $caseName/0 && mv p.$direction p)
+	(cd $caseName/0 && rm p.*)
+	(cd $caseName/0 && mv U.$direction U)
+	(cd $caseName/0 && rm U.*)
+
+
+	cpymhd=$caseName/${dataFile}_input.mhd
+
+	if [ -f $dataFile.mhd ]; then 
+	  cp $dataFile.mhd  $cpymhd
+	  sed -i 's/^ElementDataFile[ \t]*=[ \t]*/ElementDataFile = ..\/..\//' $cpymhd
+	elif [ -f $dataFile.nhdr ]; then 
+	  echo "ObjectType =  Image" >   $cpymhd
+	  echo "NDims =       3"     >>   $cpymhd
+	  echo "ElementType = MET_UCHAR"  >>   $cpymhd
+	  echo ""  >>   $cpymhd
+	  tmpp=`more $dataFile.nhdr | grep sizes |  sed 's/sizes/ /'  |  sed 's/:/ /'`
+	  echo $tmpp
+	  echo "DimSize =  $tmpp" >>   $cpymhd
+	  tmpp=$(more $dataFile.nhdr | grep directions |  sed 's/directions/ /' |  sed 's/space//'  |  sed 's/:/ /') 
+	  echo $tmpp
+	  echo  >>   $cpymhd
+	  echo "ElementSize =  $tmpp" | sed 's/\,/ /g' | sed 's/)/ /g' | sed 's/(/ /g' | sed 's/ 0 / /g' | sed 's/ 0 / /g' >>   $cpymhd
+	  echo "Offset = 0 0 0" >>   $cpymhd
+	  echo ""  >>   $cpymhd
+	  echo "ElementDataFile = ../../$datFile"  >>   $cpymhd
+	  echo ""  >>   $cpymhd
+	elif [ -f $dataFile.tif ]; then 
+	  echo "ObjectType =  Image" >   $cpymhd
+	  echo "NDims =       3"     >>   $cpymhd
+	  echo "ElementType = MET_UCHAR"  >>   $cpymhd	   
+	  echo ""  >>   $cpymhd
+	  echo "ElementDataFile = ../../$datFile"  >>   $cpymhd
+	  echo ""  >>   $cpymhd
+	  echo "#ElementSize =  1  1  1 " >>   $cpymhd
+	  echo "#Offset = 0 0 0" >>   $cpymhd
+
+	  echo "Please check the content of $cpymhd if not correct, provide "
+	  echo "a similar but correct .mhd file in the current directory, i.e:"
+	  echo " cp $cpymhd $caseName.mhd     &&    rm $caseName"
+	  echo "and try again"
+	else
+	  echo "can not find the file  $dataFile.mhd nor  $dataFile.nhdr nor  $dataFile.tif"
+	  exit
+	fi
+
+
+
+	(cd $caseName && runApp voxelToFoamPar  ${dataFile}_input.mhd $nProcX $nProcY $nProcZ )
+	(cd $caseName &&  for processorDir in `ls -d processo*[0-9] 2>/dev/null` ; do  cp -r 0 "$processorDir" ;    done )
+	nlProc=`cd $caseName && ls -d -1 processo*[0-9] 2>/dev/null | sed 's/processor//g' | sort -n -r | head -n 1`
+	nProc=$[nlProc+1]
+	echo nProc $nProc
+	setKeywordValues numberOfSubdomains $nProc ./$caseName/system/decomposeParDict 
+	setKeywordValues n "($nProcX $nProcY $nProcZ)" ./$caseName/system/decomposeParDict # won't work always !
+
+
+
+	(cd $caseName && touch ${caseName//\//-}.foam)
+
+
+
+	setBoundaryCondition "$direction"  "value" "uniform  $p" ./$caseName/0/p 
+
+
+	(cd $caseName && runDistributed redistributePar $nProc -overwrite)
+	(cd $caseName && runDistributed renumberMesh $nProc -overwrite)
+
+
+	setKeywordValues endTime $endTime ./$caseName/system/controlDict 
+
+	#setKeywordValues writeFormat ascii ./$caseName/system/controlDict 
+
+
+	#setKeywordValues writeFormat binary ./$caseName/system/controlDict 
+
+	setSubKeywordValues relaxationFactors "U" "0.5" ./$caseName/system/fvSolution
+
+    setKeywordValues writeInterval 1000 ./$caseName/system/controlDict 
+	echo "..................Running single phase flow code......................."
+
+    (cd $caseName && runDistributed iPotentialFoam $nProc)
+
+	(cd $caseName && runDistributed icoNSFoam $nProc)
+	(cd $caseName && mv log.icoNSFoam log.icoNSFoam.1)
+
+	#setSubKeywordValues relaxationFactors "U" "0.4" ./$caseName/system/fvSolution
+	#setKeywordValues writeInterval 100 ./$caseName/system/controlDict 
+	#(cd $caseName && runDistributed icoNSFoam $nProc)
+	#(cd $caseName && mv log.icoNSFoam log.icoNSFoam.2)
+
+
+	#(cd $caseName && runDistributed calc_perms $nProc)
+	(cd $caseName && runDistributed calc_distributions $nProc)
+
+	(cd $caseName && runApp  FOAM2Voxel vxlImage.mhd "$nProc" "$outPutFormat" t)
+
+
+	echo "..................            END              ......................."
+
+	#~ lamhalt -d
+   else
+     echo "skipping $caseName"
+   fi
+done
+done
+done
+
+
+
+

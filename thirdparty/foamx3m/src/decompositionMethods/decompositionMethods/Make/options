@@ -1,0 +1,4 @@
+EXE_INC =  -DDOTSO=\".$(SO)\"
+
+LIB_LIBS = \
+    -L$(FOAM_LIBBIN)/dummy

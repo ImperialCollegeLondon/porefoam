@@ -1,0 +1,26 @@
+include $(RULES)/mplib$(WM_MPLIB)
+
+EXE_INC = $(PFLAGS) $(PINC)   -DWM_PROJECT_VERSION=\"$(WM_PROJECT_VERSION)\"\
+    -I$(WM_THIRD_PARTY_DIR)/zlib-1.2.3
+
+#if defined(mingw)
+
+LIB_LIBS = $(PLIBS)\
+    $(FOAM_LIBBIN)/libOSspecific.o \
+    -lz \
+    -L$(WM_THIRD_PARTY_DIR)/packages/system/lib \
+    -ldl \
+    -lpsapi \
+    -lpthread
+
+#else
+
+LIB_LIBS = $(PLIBS)\
+    $(FOAM_LIBBIN)/libOSspecific.o \
+    -lz
+
+#endif
+
+$(OBJECTS_DIR)/global.o: FORCE
+
+FORCE:

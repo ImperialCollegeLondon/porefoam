@@ -1,0 +1,34 @@
+ifeq (OpenFOAM,$(findstring OpenFOAM,$(WM_PROJECT)))
+    CFMESH_LIBS = -l:libmeshTools.$(SO) $(ltriSurfaceXXX) -l:libfiniteVolume.$(SO) -l:libedgeMesh.$(SO)
+    ifeq (Int,$(findstring Int,$(WM_LABEL_OPTION)))
+        CFMESH_MACROS = -DNoSizeType
+    else
+        CFMESH_MACROS =
+    endif
+endif
+
+ifeq ($(WM_PROJECT), foam)
+    VER := $(shell expr `echo $(WM_PROJECT_VERSION)` \>= 3.2)
+    ifeq ($(VER), 1)
+        CFMESH_LIBS = -l:libmeshTools.$(SO) -l:libfiniteVolume.$(SO) -l:libedgeMesh.$(SO)
+        CFMESH_MACROS = -DExtendSpecific
+    else
+        CFMESH_LIBS = -l:libmeshTools.$(SO) $(ltriSurfaceXXX) -l:libfiniteVolume.$(SO) -l:libedgeMesh.$(SO)
+        CFMESH_MACROS =
+    endif
+endif
+
+EXE_INC = \
+    $(CFMESH_MACROS) \
+    -I$(LIB_SRC)/triSurface/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/edgeMesh/lnInclude \
+    -I./cartesianMesh/cartesianMeshGenerator   -I./cartesianMesh/cartesianMeshExtractor  \
+    -I../../meshLibrary/lnInclude
+
+
+EXE_LIBS = \
+    $(CFMESH_LIBS) \
+    -L$(FOAM_USER_LIBBIN) \
+    -l:libmeshLibrary.$(SO)
