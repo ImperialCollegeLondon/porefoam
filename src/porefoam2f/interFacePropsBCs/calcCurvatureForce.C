@@ -2,22 +2,23 @@
 
  Interface force computation
 
-// Copyright (C) 2014-2017  Mosayeb Shams
-// Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2014-2020  Mosayeb Shams
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
 
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
+
 
 #include "interfaceProperties.H"
 #include "alphaContactAngleFvPatchScalarField.H"
@@ -56,21 +57,21 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 )
 {
 	const scalar CONTRAST_FACTOR = 1.0e-4*deltaN_.value();
-	const fvMesh& mesh = alpha1_.mesh();
-	const fvBoundaryMesh& boundary = mesh.boundary();
-	const fvBoundaryMesh& patches = mesh.boundary(); 
+	const fvMesh& msh = mesh();
+	const fvBoundaryMesh& boundary = msh.boundary();
+	const fvBoundaryMesh& patches = msh.boundary(); 
 
-	const faceList& faces = mesh.faces();
-	const pointField& points = mesh.points();
+	const faceList& faces = msh.faces();
+	const pointField& points = msh.points();
 
-	const surfaceVectorField& Sf = mesh.Sf();
-	//const surfaceVectorField& Cf = mesh.Cf();
-	const surfaceScalarField&  magSf = mesh.magSf();
+	const surfaceVectorField& Sf = msh.Sf();
+	//const surfaceVectorField& Cf = msh.Cf();
+	const surfaceScalarField&  magSf = msh.magSf();
 	const surfaceVectorField SfHat(Sf/magSf);
 
 
 	// normal surface-gradient of the sharpened alpha
-	surfaceScalarField DelSdX = (deltaS_)/mesh.deltaCoeffs();
+	surfaceScalarField DelSdX = (deltaS_)/msh.deltaCoeffs();
 	surfaceScalarField magDelS = mag(deltaS_);
 
 
@@ -116,10 +117,10 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 		}
 	}
 
-	syncTools::syncPointList(mesh, interfPoints, maxEqOp<label>(), 0, false);
+	syncTools::syncPointList(msh, interfPoints, maxEqOp<label>(), 0, false);
 
-	pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, mesh.points(),interfPoints);
-	//pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, mesh.points(),interfPoints);
+	pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, msh.points(),interfPoints);
+	//pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, msh.points(),interfPoints);
 	//pointVectorField gradAlphaP = pointInterpolate(gradAlpha,pMesh_); 
 	////////pointVectorField gradAlphaP = pointSnGrad(alpha1S_,U_, interfPoints, pMesh_);
 	//vectorField eGradAlpha = edgeGrad(gradAlphaP,nSHatfv,alpha1S_,alpha1P,magDelS, CONTRAST_FACTOR);
@@ -130,7 +131,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 
 	pointVectorField nHatSp = gradAlphaP/magGradAlphaP;
-	smoothNSOverInterfPoints(nHatSp, magDelS, mesh.magSf(), smoothingKernel_, smoothingRelaxFactor_,interfPoints);
+	smoothNSOverInterfPoints(nHatSp, magDelS, msh.magSf(), smoothingKernel_, smoothingRelaxFactor_,interfPoints);
 	nHatSp /= mag(nHatSp) + 1.0e-12;
 
 	#include "calcInterfaceLocation.H"
@@ -141,13 +142,13 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 	surfaceVectorField curvatureForcef
 	(
-		IOobject("curvatureForcef", alpha1_.time().timeName(), alpha1_.mesh()),
-		alpha1_.mesh(), dimensionedVector("curvatureForcef", dimLength, vector::zero)
+		IOobject("curvatureForcef", timeName(), msh),
+		msh, dimensionedVector("curvatureForcef", dimLength, vector::zero)
 	);
 	surfaceVectorField nSHatfv // normal to the interface
 	(
-		IOobject("nSHatfv", alpha1_.time().timeName(), alpha1_.mesh()),
-		alpha1_.mesh(), dimensionedVector("nSHatfv", dimless, vector::zero)
+		IOobject("nSHatfv", timeName(), msh),
+		msh, dimensionedVector("nSHatfv", dimless, vector::zero)
 	);
 
 
@@ -224,15 +225,15 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 	//interfPointsOld_=interfPoints;
 
-	return (curvatureForcef & nSHatfv)  /  (magInterfaceSf) *deltaS_*mesh.magSf() ;
+	return (curvatureForcef & nSHatfv)  /  (magInterfaceSf) *deltaS_*msh.magSf() ;
 
 
-///.  Kfbsf from balanced total curvature algorithm:(fSf&mesh.Sf())/ (mag(mesh.Sf()&nSf));
-	//return  ((curvatureForcef&mesh.Sf()) + (mesh.magSf() - mag(nSHatfv&mesh.Sf()))*(curvatureForcef&nSHatfv))*deltaS_/ mesh.magSf()  ;
+///.  Kfbsf from balanced total curvature algorithm:(fSf&msh.Sf())/ (mag(msh.Sf()&nSf));
+	//return  ((curvatureForcef&msh.Sf()) + (msh.magSf() - mag(nSHatfv&msh.Sf()))*(curvatureForcef&nSHatfv))*deltaS_/ msh.magSf()  ;
 
-	//surfaceVectorField faceCrvForce = ((curvatureForcef & nHatf)  /  (magInterfaceSf))*deltaS_*mesh.Sf();
+	//surfaceVectorField faceCrvForce = ((curvatureForcef & nHatf)  /  (magInterfaceSf))*deltaS_*msh.Sf();
 	//#include "preserveTotalForce.H"
 	//#include "preserveTotalForce.H"
-	//return (faceCrvForce & mesh.Sf())  /  (mesh.magSf());
+	//return (faceCrvForce & msh.Sf())  /  (msh.magSf());
 
 }

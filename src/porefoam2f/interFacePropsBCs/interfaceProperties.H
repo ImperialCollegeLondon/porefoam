@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2014-2017  Mosayeb Shams
+ Copyright (C) 2014-2020  Mosayeb Shams
  Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
 
  This program is free software: you can redistribute it and/or modify
@@ -46,28 +46,7 @@ class interfaceProperties
 {
     // Private data
 
-	//- Keep a reference to the transportProperties dictionary
-	const dictionary& transportPropertiesDict_;
-
-	//- Compression coefficient
-	scalar pcThicknessFactor_;
-	scalar fcCorrectTangent_;
-	scalar fcCorrectTangentRelax_;
-	scalar  fcdFilter_;
-	scalar nPcNonOrthCorr_;
-	label  pcRefCell, pcRefCellOrig_;
-	scalar pcRefValue, pcRefValueOrig_;
-
-	label  smoothingKernel_;
-	scalar  smoothingRelaxFactor_;
-	label  wallSmoothingKernel_;
-	//- Surface tension
-	dimensionedScalar sigma_;
-
-	//- Stabilisation for normalisation of the interface normal
-	const dimensionedScalar deltaN_;
-
-	const volScalarField& alpha1_;
+	const volScalarField& alpha1_;// order is important
 	volScalarField alpha1S_;
 	const volVectorField& U_;
 
@@ -101,9 +80,30 @@ class interfaceProperties
 	//pointScalarField alpha1P;
 	//surfaceVectorField deltaCC_;
 
-#ifdef _USE_ALPHAF_
 
-#endif
+
+	//- Keep a reference to the transportProperties dictionary
+	//const dictionary& transportPropertiesDict_;
+
+	//- Compression coefficient
+	scalar pcThicknessFactor_;
+	scalar fcCorrectTangent_;
+	scalar fcCorrectTangentRelax_;
+	scalar  fcdFilter_;
+	scalar nPcNonOrthCorr_;
+	label  pcRefCell, pcRefCellOrig_;
+	scalar pcRefValue, pcRefValueOrig_;
+
+	label  smoothingKernel_;
+	scalar  smoothingRelaxFactor_;
+	label  wallSmoothingKernel_;
+	//- Surface tension
+	dimensionedScalar sigma_;
+
+	//- Stabilisation for normalisation of the interface normal
+	const dimensionedScalar deltaN_;
+
+
 
 
 
@@ -181,6 +181,8 @@ public:
 
     // Member Functions
 
+	const fvMesh& mesh()    const { return alpha1_.mesh(); }
+	const word&  timeName() const { return timeName(); }
 
 	scalar pcThicknessFactor() const          {  return pcThicknessFactor_;  }
 

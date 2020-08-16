@@ -62,7 +62,7 @@
 	}
 	//ensure(std::isfinite(average(pc_)),"",2);
     
-	surfaceScalarField stfTypicalLow=mag((sigma_*0.1)*deltaS_*deltaS_*mesh.magSf()); // Note: this filtering is only applied to the interface region, but not away from interface
+	surfaceScalarField stfTypicalLow=mag((sigma_*0.1)*deltaS_*deltaS_*msh.magSf()); // Note: this filtering is only applied to the interface region, but not away from interface
 	surfaceScalarField stfThreshold=((0.5*fcdFilter_)*( mag(stf)+ stfTypicalLow)); // Note: this filtering is only applied to the interface region, but not away from interface
 	//sgPcErrn_ = (min (max(sgPc_, -stfThreshold),stfThreshold));
 	//sgPc_-=sgPcErrn_;  
@@ -77,8 +77,8 @@
 
 	surfaceVectorField gPcllInterface=fvc::interpolate(vgPcllInterface,"smoothSchemegPc");    //surfaceVectorField gPcf=fvc::interpolate(gPc_,"smoothSchemegPc");
 	gPcllInterface=(gPcllInterface)-((gPcllInterface)&(nHatfv))*(nHatfv);    //surfaceVectorField gPcf=fvc::interpolate(gPc_,"smoothSchemegPc");
-	gPcllInterface*=(1.0-mag(nHatf_)/mesh.magSf());
-	sgPcErr_=dInterf*(min(2.0*(1.4-mag(nHatf_)/mesh.magSf()), 1.0)*(sgPcErr_+fcCorrectTangent_*(gPcllInterface& mesh.Sf())) );//  *( 1.0-(mag(nHatf_)/mesh.magSf()) )   ); /*aSolid_cPcCorrRelax_* */ 
+	gPcllInterface*=(1.0-mag(nHatf_)/msh.magSf());
+	sgPcErr_=dInterf*(min(2.0*(1.4-mag(nHatf_)/msh.magSf()), 1.0)*(sgPcErr_+fcCorrectTangent_*(gPcllInterface& msh.Sf())) );//  *( 1.0-(mag(nHatf_)/msh.magSf()) )   ); /*aSolid_cPcCorrRelax_* */ 
 
 
 	long long sgPcErr_checkErrs=0;
@@ -87,16 +87,16 @@
 		if (sgPc_[i]*sgPcErr_[i] < -1.0e-6*stfTypicalLow[i])  sgPcErr_[i]  *= 0.99;
 		if( mag(sgPc_[i])<0.5*mag(sgPcErr_[i]) ) {   sgPcErr_[i] = 0.5*sgPc_[i]; } //++sgPcErr_checkErrs;    Info<<"bEC:"<<sgPcErr_[i]<<" "<<sgPc_[i]<<endl; 
 	}
-	forAll(boundary, patchI)
+	forAll(boundary, bI)
 	{
-		if (!boundary[patchI].coupled())
+		if (!boundary[bI].coupled())
 		{
-			sgPcErr_.boundaryField()[patchI] = 0.0;
+			sgPcErr_.boundaryField()[bI] = 0.0;
 		}
 		else
 		{
-			Field<scalar> & psgPcErr_ = sgPcErr_.boundaryField()[patchI];
-			Field<scalar> & psgPc_ = sgPc_.boundaryField()[patchI];
+			Field<scalar> & psgPcErr_ = sgPcErr_.boundaryField()[bI];
+			Field<scalar> & psgPc_ = sgPc_.boundaryField()[bI];
 			forAll(psgPcErr_,i)
 			{
 				if(psgPc_[i]*psgPcErr_[i] < -1.0e-6*stfTypicalLow[i])  psgPcErr_[i] *= 0.99;
@@ -109,7 +109,7 @@
 	if(sgPcErr_checkErrs)  Info<<"\n\n sgPcErr_checkErrs: "<<sgPcErr_checkErrs<<endl<<endl;
 
 	//stfThreshold=0.5*(stfThreshold+(1.*fcdFilter_)*mag(stf));
-	stfThreshold=((1.0*fcdFilter_)*( mag(stf)+ mag((sigma_*0.1)*deltaS_*deltaS_*mesh.magSf()) ));
+	stfThreshold=((1.0*fcdFilter_)*( mag(stf)+ mag((sigma_*0.1)*deltaS_*deltaS_*msh.magSf()) ));
 	sgPcErrn_ = (min (max(sgPc_, -stfThreshold),stfThreshold) );
 	sgPc_-=sgPcErrn_;  
 
@@ -118,7 +118,7 @@
 
 
 	volVectorField gPcS=fvc::average(fvc::interpolate(gPc_)*Internalfaces1_)/fvc::average(Internalfaces1_);
-	stfThreshold = 2.0*mag((fvc::interpolate(gPcS)) & mesh.Sf());
+	stfThreshold = 2.0*mag((fvc::interpolate(gPcS)) & msh.Sf());
 	sgPc_ = (min (max(sgPc_, -stfThreshold),stfThreshold));
 
 	gPc_= fvc::reconstruct((sgPc_));

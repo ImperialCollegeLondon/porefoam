@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------*\
  Compute surface force using CSF/SSF/FCF algorithms
 
- Copyright (C) 2009-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -43,44 +43,44 @@ void Foam::interfaceProperties::correctContactAngle
     volScalarField::Boundary& alphaSb
 ) const
 {
-	const fvMesh& mesh = alpha1_.mesh();
+	const fvMesh& msh = mesh();
 	const volScalarField::Boundary& abf = alpha1_.boundaryField();
 
-	const fvBoundaryMesh& boundary = mesh.boundary();
+	const fvBoundaryMesh& boundary = msh.boundary();
 
-	forAll(boundary, patchi)
+	forAll(boundary, bI)
 	{
-		if (isA<alphaContactAngleFvPatchScalarField>(abf[patchi]))
+		if (isA<alphaContactAngleFvPatchScalarField>(abf[bI]))
 		{
 			alphaContactAngleFvPatchScalarField& acap =
 				 const_cast<alphaContactAngleFvPatchScalarField&>
 				 (
 					  refCast<const alphaContactAngleFvPatchScalarField>
-					  (abf[patchi])
+					  (abf[bI])
 				 );
 
 			
 
-			gradAlphab[patchi] = gradAlphab[patchi].patchInternalField();
-			gradAlphab[patchi] == gradAlphab[patchi].patchInternalField();
+			gradAlphab[bI] = gradAlphab[bI].patchInternalField();
+			gradAlphab[bI] == gradAlphab[bI].patchInternalField();
 
-			vectorField gAlphaS = gradAlphab[patchi];
-			primitivePatchInterpolation pinterpolator(alpha1_.mesh().boundaryMesh()[patchi]);
+			vectorField gAlphaS = gradAlphab[bI];
+			primitivePatchInterpolation pinterpolator(msh.boundaryMesh()[bI]);
 			for (int i=0; i<1;i++)
 			{	
-				gAlphaS = 0.1*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(gAlphaS) )  //+0.5*alpha2sqrtp*gradAlphab[patchi];
-							 + 0.9*gradAlphab[patchi];
+				gAlphaS = 0.1*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(gAlphaS) )  //+0.5*alpha2sqrtp*gradAlphab[bI];
+							 + 0.9*gradAlphab[bI];
 			}
 			vectorField nsp = gAlphaS/(mag(gAlphaS) + deltaN_.value());
 
 
 			
-			//vectorField nsp0 = nsb[patchi];
-			vectorField nf = nw_.boundaryField()[patchi];
+			//vectorField nsp0 = nsb[bI];
+			vectorField nf = nw_.boundaryField()[bI];
 			scalarField theta =
-			convertToRad*acap.theta(U_.boundaryField()[patchi], nsp, nf);
+			convertToRad*acap.theta(U_.boundaryField()[bI], nsp, nf);
 
-			// vectorField nf = boundary[patchi].nf();
+			// vectorField nf = boundary[bI].nf();
 			// Reset nsp to correspond to the contact angle
 
 
@@ -91,17 +91,17 @@ void Foam::interfaceProperties::correctContactAngle
 			nsp=sin(theta)*ss+cos(theta)*nf;
 
 
-			nSb[patchi] == nsp;
-			nsb[patchi] == nsp;
+			nSb[bI] == nsp;
+			nsb[bI] == nsp;
 
-			acap.gradient() == 0.5*(1.0-acap*acap)*((boundary[patchi].nf() & nsp)*mag(gradAlphab[patchi]));
+			acap.gradient() == 0.5*(1.0-acap*acap)*((boundary[bI].nf() & nsp)*mag(gradAlphab[bI]));
 
 			alphaContactAngleFvPatchScalarField& alphaSbCap =
 				 const_cast<alphaContactAngleFvPatchScalarField&>
-				 ( refCast<const alphaContactAngleFvPatchScalarField>(alphaSb[patchi]) );            
-			alphaSbCap.gradient() = (boundary[patchi].nf() & nsp)*mag(gAlphaS);
-			alphaSbCap.gradient() == (boundary[patchi].nf() & nsp)*mag(gAlphaS);
-			gradAlphab[patchi] == nsp*mag(gradAlphab[patchi]);
+				 ( refCast<const alphaContactAngleFvPatchScalarField>(alphaSb[bI]) );            
+			alphaSbCap.gradient() = (boundary[bI].nf() & nsp)*mag(gAlphaS);
+			alphaSbCap.gradient() == (boundary[bI].nf() & nsp)*mag(gAlphaS);
+			gradAlphab[bI] == nsp*mag(gradAlphab[bI]);
 			alphaSbCap.evaluate();
 
 		}
@@ -119,16 +119,16 @@ void Foam::interfaceProperties::calcCurvatureFSF
 )
 {
 
-    const fvMesh& mesh = stf.mesh();
-    const surfaceVectorField& Sf = mesh.Sf();
+    const fvMesh& msh = stf.mesh();
+    const surfaceVectorField& Sf = msh.Sf();
     
-	const dictionary pimple = mesh.solutionDict().subDict("PIMPLE");
+	const dictionary pimple = msh.solutionDict().subDict("PIMPLE");
 
 	smoothingKernel_ = readLabel( pimple.lookup("smoothingKernel") )%10;
     smoothingRelaxFactor_ = readScalar( pimple.lookup("smoothingRelaxFactor") );
 
 
-	volVectorField gradAlpha = fvc::reconstruct(fvc::snGrad(alpha1S_)*mesh.magSf());//fvc::grad(alpha1S_,"smoothScheme");
+	volVectorField gradAlpha = fvc::reconstruct(fvc::snGrad(alpha1S_)*msh.magSf());//fvc::grad(alpha1S_,"smoothScheme");
 	//volVectorField gradAlpha = fvc::grad(alpha1S_);//fvc::grad(alpha1S_,"smoothScheme");
 	gradAlpha.correctBoundaryConditions();
 	volScalarField magGradAlpha = mag(gradAlpha) + deltaN_; 
@@ -196,12 +196,12 @@ void Foam::interfaceProperties::calcCurvatureFSF
 			 K_.correctBoundaryConditions();
 		}
 
-		stf=(sigma_)*((fvc::interpolate(K_*a1xa2,"smoothSchemeK"))/fvc::interpolate(a1xa2,"smoothSchemeK"))  *delS*mesh.magSf(); 
+		stf=(sigma_)*((fvc::interpolate(K_*a1xa2,"smoothSchemeK"))/fvc::interpolate(a1xa2,"smoothSchemeK"))  *delS*msh.magSf(); 
 
 	}
 	else
 	{	
-		stf=sigma_*(fvc::interpolate(K_))*delS*mesh.magSf(); 
+		stf=sigma_*(fvc::interpolate(K_))*delS*msh.magSf(); 
 		Info<<"SK:"<<0<<endl;	
 	}
 

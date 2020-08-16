@@ -1,18 +1,34 @@
+/*-------------------------------------------------------------------------*\
+
+ Curvature smoothing over interface faces
+
+ Copyright (C) 2014-2020  Mosayeb Shams
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+\*-------------------------------------------------------------------------*/
+
+
 {
 	volVectorField cellForce
 	(
-		 IOobject
-		 (
-			  "cellForce",
-			  alpha1_.time().timeName(),
-			  alpha1_.mesh()
-		 ),
-		 alpha1_.mesh(),
-		 dimensionedVector("cellForce", curvatureForcef.dimensions(), vector::zero)
+		 IOobject("cellForce", timeName(), msh ),
+		 msh, dimensionedVector("cellForce", curvatureForcef.dimensions(), vector::zero)
 	);
 
-	const labelList& owners = mesh.owner();
-	const labelList& nybors = mesh.neighbour();
+	const labelList& owners = msh.owner();
+	const labelList& nybors = msh.neighbour();
 
 	volScalarField cellWeight=0.0*alpha1_+1.0;
 	forAll(nybors,fI) if (magDelS[fI] > CONTRAST_FACTOR)
@@ -40,13 +56,13 @@
 			interfCellArea[nybr]+=cellWeight[nybr]*magDelS[fI]*magInterfaceSf[fI];
 
 		}
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			label pStart=patches[patchI].patch().start();
-			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[patchI];
-			const scalarField & pMagDelS = magDelS.boundaryField()[patchI];
-			const vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			label pStart=patches[bI].patch().start();
+			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[bI];
+			const scalarField & pMagDelS = magDelS.boundaryField()[bI];
+			const vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[bI];
+			if (patches[bI].coupled())
 			 {
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
@@ -78,17 +94,17 @@
 		//{
 				//curvatureForcef[fI] += 0.5*0.998*cellForce[owners[fI]]*magInterfaceSf[fI]/(interfCellArea[owners[fI]]);
 		//}
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[patchI];
-			const scalarField & pMagDelS = magDelS.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[bI];
+			const scalarField & pMagDelS = magDelS.boundaryField()[bI];
+			if (patches[bI].coupled())
 			{
-				vectorField pCellOwnrForce = cellForce.boundaryField()[patchI].patchInternalField();
-				vectorField pCellNybrForce = cellForce.boundaryField()[patchI].patchNeighbourField();
-				scalarField pCellOwnrArea = interfCellArea.boundaryField()[patchI].patchInternalField();
-				scalarField pCellNybrArea = interfCellArea.boundaryField()[patchI].patchNeighbourField();
-				vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[patchI];
+				vectorField pCellOwnrForce = cellForce.boundaryField()[bI].patchInternalField();
+				vectorField pCellNybrForce = cellForce.boundaryField()[bI].patchNeighbourField();
+				scalarField pCellOwnrArea = interfCellArea.boundaryField()[bI].patchInternalField();
+				scalarField pCellNybrArea = interfCellArea.boundaryField()[bI].patchNeighbourField();
+				vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[bI];
 
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
@@ -102,7 +118,7 @@
 		}
 
 
-		//syncTools::syncFaceList(mesh, curvatureForcef, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		//syncTools::syncFaceList(msh, curvatureForcef, plusEqOp<vector>(), pTraits<vector>::zero, false);
 
 	}
 

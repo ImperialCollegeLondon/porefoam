@@ -57,24 +57,11 @@ Foam::interfaceProperties::interfaceProperties
     const IOdictionary& dict
 )
 :
-#ifndef interfaceProperties_interfaceProperties
-    transportPropertiesDict_(dict),
-    pcThicknessFactor_( readScalar( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("pcThicknessFactor") ) ),
-    fcCorrectTangent_( readScalar( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("fcCorrectTangent") ) ),
-    fcCorrectTangentRelax_( readScalar( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("fcCorrectTangentRelax") ) ),
-    fcdFilter_( readScalar( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("fcdFilter") ) ),
-    nPcNonOrthCorr_( readScalar( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("nPcNonOrthCorr") ) ),
-    pcRefCellOrig_( readLabel( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("pcRefCell") ) ),
-    pcRefValueOrig_( readScalar( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("pcRefValue") ) ),
-    smoothingKernel_( readLabel( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("smoothingKernel") ) ),
-    smoothingRelaxFactor_( readScalar( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("smoothingRelaxFactor") ) ),
-    wallSmoothingKernel_( readLabel( alpha1.mesh().solutionDict().subDict("PIMPLE").lookup("wallSmoothingKernel") ) ),
-    sigma_(dict.lookup("sigma")),
-    deltaN_  ("deltaN", 1.0e-12/pow(average(alpha1.mesh().V()), 1.0/3.0) ),
-    alpha1_(alpha1),
+#ifndef interfaceProperties_interfaceProperties // folding hint
+    alpha1_(alpha1), // mesh() requires this t be initialized first
     alpha1S_
     (
-		IOobject( "alpha1S",  alpha1_.time().timeName(),  alpha1_.mesh(), IOobject::NO_READ, IOobject::NO_WRITE   ),
+		IOobject( "alpha1S",  timeName(),  mesh(), IOobject::NO_READ, IOobject::NO_WRITE   ),
 		alpha1
     ),
 
@@ -82,112 +69,125 @@ Foam::interfaceProperties::interfaceProperties
 
     pc_
     (
-        IOobject( "pc",  alpha1_.time().timeName(),  alpha1_.mesh(),  IOobject::MUST_READ,  IOobject::AUTO_WRITE   ),
-        alpha1_.mesh()
+        IOobject( "pc",  timeName(),  mesh(),  IOobject::MUST_READ,  IOobject::AUTO_WRITE   ),
+        mesh()
     ),
 
     deltaS_
     (
-        IOobject( "deltaS",  alpha1_.time().timeName(),  alpha1_.mesh()   ), 
+        IOobject( "deltaS",  timeName(),  mesh()   ), 
         fvc::snGrad(alpha1, "uncorrected")
     ),
     alphaSh_
     (
-        IOobject( "alphaSh",  alpha1_.time().timeName(),  alpha1_.mesh()   ),
-        alpha1_.mesh(),        dimensionedScalar("alphaSh", dimless, 0.0),
+        IOobject( "alphaSh",  timeName(),  mesh()   ),
+        mesh(),        dimensionedScalar("alphaSh", dimless, 0.0),
         pc_.boundaryField().types()
     ),    
 
     //K_
     //(
-        //IOobject( "K",  alpha1_.time().timeName(),  alpha1_.mesh()   ),
-        //alpha1_.mesh(),        dimensionedScalar("K", dimless/dimLength, 0.0),
+        //IOobject( "K",  timeName(),  mesh()   ),
+        //mesh(),        dimensionedScalar("K", dimless/dimLength, 0.0),
         //pc_.boundaryField().types()
     //),
 
     nHatf_
     (
-        IOobject(  "nHatf",  alpha1_.time().timeName(),  alpha1_.mesh()   ),
-        alpha1_.mesh(),        dimensionedScalar("nHatf", dimArea, 0.0)
+        IOobject(  "nHatf",  timeName(),  mesh()   ),
+        mesh(),        dimensionedScalar("nHatf", dimArea, 0.0)
     ),
     gPc_
     (
-        IOobject( "gPc",  alpha1_.time().timeName(),  alpha1_.mesh(),  IOobject::READ_IF_PRESENT   ),//,  IOobject::AUTO_WRITE
-        alpha1_.mesh(),   dimensionedVector("gPc", dimPressure/dimLength, vector(0.0,0.0,0.0)),
+        IOobject( "gPc",  timeName(),  mesh(),  IOobject::READ_IF_PRESENT   ),//,  IOobject::AUTO_WRITE
+        mesh(),   dimensionedVector("gPc", dimPressure/dimLength, vector(0.0,0.0,0.0)),
         pc_.boundaryField().types()
     ),
     sgPc_
     (
-        IOobject( "sgPc",  alpha1_.time().timeName(),  alpha1_.mesh(),  IOobject::READ_IF_PRESENT   ), //! NO_WRITE is not the most accurate when restarting
-        linearInterpolate(gPc_) & alpha1_.mesh().Sf()
+        IOobject( "sgPc",  timeName(),  mesh(),  IOobject::READ_IF_PRESENT   ), //! NO_WRITE is not the most accurate when restarting
+        linearInterpolate(gPc_) & mesh().Sf()
     ),
     alpha1f_
     (
-        IOobject( "alpha1f_",  alpha1_.time().timeName(),  alpha1_.mesh(),  IOobject::READ_IF_PRESENT   ), //! NO_WRITE is not the most accurate when restarting
+        IOobject( "alpha1f_",  timeName(),  mesh(),  IOobject::READ_IF_PRESENT   ), //! NO_WRITE is not the most accurate when restarting
         linearInterpolate(alpha1_)
     ),
 
 
     //nS_
     //(
-        //IOobject( "nS",  alpha1_.time().timeName(),  alpha1_.mesh() ),
-        //alpha1_.mesh(),       dimensionedVector("nS", dimless, vector(0.0,0.0,0.0))//,
+        //IOobject( "nS",  timeName(),  mesh() ),
+        //mesh(),       dimensionedVector("nS", dimless, vector(0.0,0.0,0.0))//,
     //),
     nw_
     (
-        IOobject( "nw",  alpha1_.time().timeName(),  alpha1_.mesh() ),
-        alpha1_.mesh(),     dimensionedVector("nw", dimless, vector(0.0,0.0,0.0))
+        IOobject( "nw",  timeName(),  mesh() ),
+        mesh(),     dimensionedVector("nw", dimless, vector(0.0,0.0,0.0))
     ),
     
-    edgemarks_(alpha1_.mesh().edges().size(),0),
+    edgemarks_(mesh().edges().size(),0),
     
     Internalfaces1_
     (
-        IOobject( "Internalfaces1",  alpha1_.time().timeName(), alpha1_.mesh() ),
-        alpha1_.mesh(),  dimensionedScalar("Internalfaces1", dimless, 1.0)
+        IOobject( "Internalfaces1",  timeName(), mesh() ),
+        mesh(),  dimensionedScalar("Internalfaces1", dimless, 1.0)
     ),
     BInternalfs_
     (
-        IOobject( "BInternalfs",  alpha1_.time().timeName(), alpha1_.mesh() ),
-        alpha1_.mesh(),  dimensionedScalar("BInternalfs", dimless, 0.0)
+        IOobject( "BInternalfs",  timeName(), mesh() ),
+        mesh(),  dimensionedScalar("BInternalfs", dimless, 0.0)
     ),
     AvgInternFaces1_
     (
-        IOobject( "AvgInternFaces1",  alpha1_.time().timeName(), alpha1_.mesh() ),
-        alpha1_.mesh(),  dimensionedScalar("AvgInternFaces1", dimless, 1.0)
+        IOobject( "AvgInternFaces1",  timeName(), mesh() ),
+        mesh(),  dimensionedScalar("AvgInternFaces1", dimless, 1.0)
     ),
 
     sgPcErr_
-    (  IOobject( "sgPce", alpha1_.time().timeName(), alpha1_.mesh(), IOobject::READ_IF_PRESENT ), //! NO_WRITE means restarting releases the filters
-       alpha1_.mesh(),    dimensionedScalar("sgPce", dimPressure/dimLength*dimArea, 0.0)
+    (  IOobject( "sgPce", timeName(), mesh(), IOobject::READ_IF_PRESENT ), //! NO_WRITE means restarting releases the filters
+       mesh(),    dimensionedScalar("sgPce", dimPressure/dimLength*dimArea, 0.0)
     )  ,
 
     sgPcErrn_
-    ( IOobject( "sgPcen", alpha1_.time().timeName(), alpha1_.mesh() ),
-      alpha1_.mesh(),
+    ( IOobject( "sgPcen", timeName(), mesh() ),
+      mesh(),
       dimensionedScalar("sgPcen", dimPressure/dimLength*dimArea, 0.0)
     ),
 
-  pMesh_(alpha1.mesh()),
-  vpi_(alpha1.mesh()),
-                   	 //pvi_(pMesh_,alpha1_.mesh())
-	//interfPointsOld_(alpha1.mesh().points().size(),0),
+  pMesh_(mesh()),
+  vpi_(mesh()),
+                   	 //pvi_(pMesh_,mesh())
+	//interfPointsOld_(mesh().points().size(),0),
   distPointInterface_
-  ( IOobject( "distPointInterface", alpha1_.time().timeName(), alpha1_.mesh()  ,  IOobject::NO_READ ),//!  WRITE for visualization
+  ( IOobject( "distPointInterface", timeName(), mesh()  ,  IOobject::NO_READ ),//!  WRITE for visualization
 	 pMesh_,	 dimensionedVector("distPointInterface",dimLength,vector::zero)
-  )
+  ),
 
 
+    //transportPropertiesDict_(dict),
+    pcThicknessFactor_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("pcThicknessFactor") ) ),
+    fcCorrectTangent_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("fcCorrectTangent") ) ),
+    fcCorrectTangentRelax_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("fcCorrectTangentRelax") ) ),
+    fcdFilter_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("fcdFilter") ) ),
+    nPcNonOrthCorr_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("nPcNonOrthCorr") ) ),
+    pcRefCellOrig_( readLabel( mesh().solutionDict().subDict("PIMPLE").lookup("pcRefCell") ) ),
+    pcRefValueOrig_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("pcRefValue") ) ),
+    smoothingKernel_( readLabel( mesh().solutionDict().subDict("PIMPLE").lookup("smoothingKernel") ) ),
+    smoothingRelaxFactor_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("smoothingRelaxFactor") ) ),
+    wallSmoothingKernel_( readLabel( mesh().solutionDict().subDict("PIMPLE").lookup("wallSmoothingKernel") ) ),
+    sigma_(dict.lookup("sigma")),
+    deltaN_  ("deltaN", 1.0e-12/pow(average(mesh().V()), 1.0/3.0) )
 #endif
 
 {
-    const fvMesh& mesh = alpha1_.mesh();
+    const fvMesh& msh = mesh();
 
 	Info <<"setting up filtered surface force model"<<endl;
 
 	//SET_REF_(pcRefCell,pcRefValue,Orig_,alpha1_);
 
-    //setRefCell(pc_, mesh.solutionDict().subDict("PIMPLE"), pcRefCell, pcRefValue);
+    //setRefCell(pc_, msh.solutionDict().subDict("PIMPLE"), pcRefCell, pcRefValue);
 
     //Info<< "cAlpha_" <<cAlpha_<<endl;
     Info<< "pcThicknessFactor_" <<pcThicknessFactor_<<endl;
@@ -204,7 +204,7 @@ Foam::interfaceProperties::interfaceProperties
     Info<< "alpha1S_.boundaryField().types():" <<alpha1S_.boundaryField().types()<<endl;
     Info<< "alpha1_.boundaryField().types():" <<alpha1_.boundaryField().types()<<endl;
 
-	const fvBoundaryMesh& boundary = alpha1_.mesh().boundary();
+	const fvBoundaryMesh& boundary = msh.boundary();
 
 	{ ///. nw
 
@@ -222,7 +222,7 @@ Foam::interfaceProperties::interfaceProperties
 		{
 			if (isA<alphaContactAngleFvPatchScalarField>(alpha1_.boundaryField()[patchi]))
 			{
-				primitivePatchInterpolation pinterpolator(alpha1_.mesh().boundaryMesh()[patchi]);
+				primitivePatchInterpolation pinterpolator(msh.boundaryMesh()[patchi]);
 				for (int i=0;i<wallSmoothingKernel_;i++)
 				{
 					nw_.boundaryField()[patchi]==
@@ -259,16 +259,16 @@ Foam::interfaceProperties::interfaceProperties
 
 
 {///. collect faces neibour to boundary patches boundaryInternalFaces_
-	const labelListList & faceEdges=mesh.faceEdges();
-	//const edgeList & edges=mesh.edges();
-	const fvBoundaryMesh& patches = mesh.boundary(); 
-	forAll(patches, patchI) if (!patches[patchI].coupled())
+	const labelListList & faceEdges=msh.faceEdges();
+	//const edgeList & edges=msh.edges();
+	const fvBoundaryMesh& patches = msh.boundary(); 
+	forAll(patches, bI) if (!patches[bI].coupled())
 	{
-		Internalfaces1_.boundaryField()[patchI] ==0.000000001;
-		const scalarField & CApfs = alpha1_.boundaryField()[patchI];
+		Internalfaces1_.boundaryField()[bI] ==0.000000001;
+		const scalarField & CApfs = alpha1_.boundaryField()[bI];
 		forAll(CApfs, pfI)
 		{
-			const labelList& fes = faceEdges[patches[patchI].patch().start()+pfI];
+			const labelList& fes = faceEdges[patches[bI].patch().start()+pfI];
 			forAll(fes, eI)
 			{
 				edgemarks_[fes[eI]] = 1.0;
@@ -303,31 +303,31 @@ Foam::interfaceProperties::interfaceProperties
 
 	volScalarField corrS1=fvc::average(fvc::interpolate(boundaryCorr_,"limitedScheme"));
 
-	forAll(boundary, patchI)
+	forAll(boundary, bI)
     {
-        if (!boundary[patchI].coupled())
+        if (!boundary[bI].coupled())
         {
-				boundaryCorr_.boundaryField()[patchI] = 0.0;
-				boundaryCorr_.boundaryField()[patchI] == 0.0;
+				boundaryCorr_.boundaryField()[bI] = 0.0;
+				boundaryCorr_.boundaryField()[bI] == 0.0;
         }
     }
 	volScalarField corrS2=fvc::average(fvc::interpolate(boundaryCorr_,"limitedScheme"));
-    forAll(boundary, patchI)
+    forAll(boundary, bI)
     {
-        if (!boundary[patchI].coupled())
+        if (!boundary[bI].coupled())
         {
 				
-				boundaryCorr_.boundaryField()[patchI] =
+				boundaryCorr_.boundaryField()[bI] =
 
-					( (corrS1.boundaryField()[patchI].patchInternalField())-
-					  (corrS2.boundaryField()[patchI].patchInternalField()) )
-					/(boundaryCorr_.boundaryField()[patchI].patchInternalField());
+					( (corrS1.boundaryField()[bI].patchInternalField())-
+					  (corrS2.boundaryField()[bI].patchInternalField()) )
+					/(boundaryCorr_.boundaryField()[bI].patchInternalField());
 				
 				
-				boundaryCorr_.boundaryField()[patchI] ==
-					( (corrS1.boundaryField()[patchI].patchInternalField())-
-					  (corrS2.boundaryField()[patchI].patchInternalField()) )
-					/(boundaryCorr_.boundaryField()[patchI].patchInternalField());
+				boundaryCorr_.boundaryField()[bI] ==
+					( (corrS1.boundaryField()[bI].patchInternalField())-
+					  (corrS2.boundaryField()[bI].patchInternalField()) )
+					/(boundaryCorr_.boundaryField()[bI].patchInternalField());
         }
     }
     boundaryCorr_.internalField()=0;
@@ -343,26 +343,26 @@ Foam::interfaceProperties::interfaceProperties
 
 
 { // not being used
-		//const fvMesh& mesh = alpha1_.mesh();
-		//const volVectorField& Cc = mesh.C();
-		//const surfaceVectorField& Cf = mesh.Cf();
-		//const labelList& owner = mesh.faceOwner();
-		//const labelList& neighbour = mesh.faceNeighbour();
-		//const fvBoundaryMesh& patches = mesh.boundary();
+		//const fvMesh& msh = mesh();
+		//const volVectorField& Cc = msh.C();
+		//const surfaceVectorField& Cf = msh.Cf();
+		//const labelList& owner = msh.faceOwner();
+		//const labelList& neighbour = msh.faceNeighbour();
+		//const fvBoundaryMesh& patches = msh.boundary();
 		//forAll(neighbour, facei)
 			//deltaCC_[facei] = Cc[neighbour[facei]] - Cc[owner[facei]];
-		//forAll(patches, patchI)
-		 //if(patches[patchI].size())
+		//forAll(patches, bI)
+		 //if(patches[bI].size())
 		 //{
-		    //const vectorField&  pCf = Cf.boundaryField()[patchI];;
-		    //vectorField&  pdeltaCC_ = deltaCC_.boundaryField()[patchI];
-		    //label pStart = patches[patchI].patch().start();
+		    //const vectorField&  pCf = Cf.boundaryField()[bI];;
+		    //vectorField&  pdeltaCC_ = deltaCC_.boundaryField()[bI];
+		    //label pStart = patches[bI].patch().start();
 	         //forAll(pCf, pfI)
 					//pdeltaCC_[pfI] += pCf[pfI] - Cc[owner[pStart+pfI]];
 
-		  //if (deltaCC_.boundaryField()[patchI].coupled())
+		  //if (deltaCC_.boundaryField()[bI].coupled())
           //{
-			 //const vectorField  pCcN = Cc.boundaryField()[patchI].patchNeighbourField();
+			 //const vectorField  pCcN = Cc.boundaryField()[bI].patchNeighbourField();
             //forAll(pCcN, pfI)
 				//pdeltaCC_[pfI] +=  pCcN[pfI] - pCf[pfI];
           //}
@@ -384,7 +384,7 @@ Foam::interfaceProperties::interfaceProperties
 void Foam::interfaceProperties::correct(scalar relaxDelS)
 {
 
-	const dictionary pimple =alpha1_.mesh().solutionDict().subDict("PIMPLE");
+	const dictionary pimple =mesh().solutionDict().subDict("PIMPLE");
     //cAlpha_=   readScalar( pimple.lookup("cAlpha") );
     pcThicknessFactor_=   readScalar( pimple.lookup("pcThicknessFactor") );
     word surfaceForceModel(pimple.lookup("surfaceForceModel"));
@@ -396,9 +396,9 @@ void Foam::interfaceProperties::correct(scalar relaxDelS)
 	scalar stime=alpha1_.time( ).elapsedCpuTime();
 
 
-    const fvMesh& mesh = alpha1_.mesh();
-    const surfaceVectorField& Sf = mesh.Sf();
-    const fvBoundaryMesh& boundary = mesh.boundary(); 
+    const fvMesh& msh = mesh();
+    const surfaceVectorField& Sf = msh.Sf();
+    const fvBoundaryMesh& boundary = msh.boundary(); 
 
 
 
@@ -436,8 +436,8 @@ void Foam::interfaceProperties::correct(scalar relaxDelS)
 
 
 	surfaceScalarField  stf
-	(	IOobject( "stf", alpha1_.time().timeName(), alpha1_.mesh() ),
-		alpha1_.mesh(),  dimensionedScalar("stf", dimPressure/dimLength*dimArea, 0.0)
+	(	IOobject( "stf", timeName(), msh ),
+		msh,  dimensionedScalar("stf", dimPressure/dimLength*dimArea, 0.0)
 	);
 
 

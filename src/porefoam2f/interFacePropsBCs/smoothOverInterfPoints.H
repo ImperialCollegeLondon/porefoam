@@ -1,3 +1,24 @@
+/*-------------------------------------------------------------------------*\
+
+ Smoothing normal vectors over interface points
+
+ Copyright (C) 2014-2020  Mosayeb Shams
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+\*-------------------------------------------------------------------------*/
+
 void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 (
 	surfaceVectorField& curvatureForcefDiff, 
@@ -8,12 +29,12 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 {
 	
 	const scalar CONTRAST_FACTOR = 1.0e-14*deltaN_.value();
-	const fvMesh& mesh = alpha1_.mesh();
-		const fvBoundaryMesh& patches = mesh.boundary(); 
+	const fvMesh& msh = alpha1_.mesh();
+		const fvBoundaryMesh& patches = msh.boundary(); 
 
-	const faceList& faces = mesh.faces();
+	const faceList& faces = msh.faces();
 
-	const surfaceScalarField&  magSf = mesh.magSf();
+	const surfaceScalarField&  magSf = msh.magSf();
 
 
 
@@ -21,14 +42,14 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 			//Info<<" * "<< sum( mag(curvatureForcefDiff) ).value()<<" * ";
 
 	
-	const dictionary pimple =alpha1_.mesh().solutionDict().subDict("PIMPLE");
+	const dictionary pimple = msh.solutionDict().subDict("PIMPLE");
 
 	pointVectorField pointForce
-	(	IOobject( "pointForce", alpha1_.time().timeName(), alpha1_.mesh() ),
+	(	IOobject( "pointForce", timeName(), msh ),
 		 pMesh_,  dimensionedVector("pointForce", curvatureForcefDiff.dimensions(), vector::zero)
 	);
 	pointScalarField interfPointArea
-	(	IOobject( "interfPointArea",  alpha1_.time().timeName(),  alpha1_.mesh() ),
+	(	IOobject( "interfPointArea",  timeName(),  msh ),
 		pMesh_,  dimensionedScalar("interfPointArea", magSf.dimensions(), 0.0)
 	);
 
@@ -51,13 +72,13 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 				interfPointArea[pI]+=magInterfaceSf[fI];
 			}
 		}
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			label pStart=patches[patchI].patch().start();
-			const scalarField & pInterfaceSf = magInterfaceSf.boundaryField()[patchI];
-			const scalarField & pMagDelS = magDelS.boundaryField()[patchI];
-			const vectorField & pCurvatureForcef = curvatureForcefDiff.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			label pStart=patches[bI].patch().start();
+			const scalarField & pInterfaceSf = magInterfaceSf.boundaryField()[bI];
+			const scalarField & pMagDelS = magDelS.boundaryField()[bI];
+			const vectorField & pCurvatureForcef = curvatureForcefDiff.boundaryField()[bI];
+			if (patches[bI].coupled())
 			 {
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
@@ -73,8 +94,8 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 			 else		 {			 }
 		}
 
-		syncTools::syncPointList(mesh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero, false);
-		syncTools::syncPointList(mesh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
+		syncTools::syncPointList(msh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		syncTools::syncPointList(msh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
 
 
 
@@ -93,14 +114,14 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 			}
 		}
 
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[patchI];
-			const scalarField & pMagDelS = magDelS.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[bI];
+			const scalarField & pMagDelS = magDelS.boundaryField()[bI];
+			if (patches[bI].coupled())
 			{
-				label pStart=patches[patchI].patch().start();
-				vectorField & pCurvatureForcef = curvatureForcefDiff.boundaryField()[patchI];
+				label pStart=patches[bI].patch().start();
+				vectorField & pCurvatureForcef = curvatureForcefDiff.boundaryField()[bI];
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
 					pCurvatureForcef[pfI] *= 1.0-smoothingRelaxFactor;
@@ -119,7 +140,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 
 			//Info<<" * "<< sum( mag(curvatureForcefDiff) ).value()<<" * ";
 
-		//syncTools::syncFaceList(mesh, curvatureForcefDiff, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		//syncTools::syncFaceList(msh, curvatureForcefDiff, plusEqOp<vector>(), pTraits<vector>::zero, false);
 
 	}
 
@@ -141,32 +162,32 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 {
 	
 	const scalar CONTRAST_FACTOR = 1.0e-4*deltaN_.value();
-	const fvMesh& mesh = alpha1_.mesh();
-	//const fvBoundaryMesh& patches = mesh.boundary(); 
-	const fvBoundaryMesh& boundary = mesh.boundary();
+	const fvMesh& msh = mesh();
+	//const fvBoundaryMesh& patches = msh.boundary(); 
+	const fvBoundaryMesh& boundary = msh.boundary();
 
-	const faceList& faces = mesh.faces();
-	const pointField& points = mesh.points();
+	const faceList& faces = msh.faces();
+	const pointField& points = msh.points();
 
-	//const surfaceScalarField&  magSf = mesh.magSf();
-	const surfaceVectorField& Cf = mesh.Cf();
+	//const surfaceScalarField&  magSf = msh.magSf();
+	const surfaceVectorField& Cf = msh.Cf();
 
 
-	const labelListList & faceEdges=mesh.faceEdges();
+	const labelListList & faceEdges=msh.faceEdges();
 
 
 			//Info<<" * "<< sum( mag(nHatSf) ).value()<<" * ";
 
 	
-	//const dictionary pimple =alpha1_.mesh().solutionDict().subDict("PIMPLE");
+	//const dictionary pimple =msh.solutionDict().subDict("PIMPLE");
 
 
 	pointVectorField interfFaceNSpS
-	(	IOobject( "interfFaceNSpS",  alpha1_.time().timeName(),  alpha1_.mesh() ),
+	(	IOobject( "interfFaceNSpS",  timeName(),  msh ),
 		pMesh_,  dimensionedVector("interfFaceArea", dimless, vector::zero),"calculated"
 	);
 	//pointScalarField interfFaceArea
-	//(	IOobject( "interfFaceArea",  alpha1_.time().timeName(),  alpha1_.mesh() ),
+	//(	IOobject( "interfFaceArea",  timeName(),  msh ),
 		//pMesh_,  dimensionedScalar("interfFaceArea", magSf.dimensions(), 0.0),"calculated"
 	//);
 
@@ -207,14 +228,14 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
             }
         }
     }
-    forAll(boundary, patchI)
+    forAll(boundary, bI)
     {
 
-		if (boundary[patchI].coupled())
+		if (boundary[bI].coupled())
 		{       
-			const scalarField& pMagDelS = magDelS.boundaryField()[patchI];
-        //vectorField& pCurvatureNSf = curvatureNSf.boundaryField()[patchI];
-        const vectorField& pCf = Cf.boundaryField()[patchI];
+			const scalarField& pMagDelS = magDelS.boundaryField()[bI];
+        //vectorField& pCurvatureNSf = curvatureNSf.boundaryField()[bI];
+        const vectorField& pCf = Cf.boundaryField()[bI];
 
 
         forAll(pMagDelS,pfI)
@@ -222,7 +243,7 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 			  double weightDelS = pMagDelS[pfI];
             if ( weightDelS  > CONTRAST_FACTOR)
             {
-					label fI = boundary[patchI].patch().start() + pfI;
+					label fI = boundary[bI].patch().start() + pfI;
 					const face& ff = faces[fI];
 					const labelList& fes = faceEdges[fI];
 					forAll(ff,pI)
@@ -253,8 +274,8 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 		}
     }
 
-		//syncTools::syncPointList(mesh, interfFaceArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
-		syncTools::syncPointList(mesh, interfFaceNSpS, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		//syncTools::syncPointList(msh, interfFaceArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
+		syncTools::syncPointList(msh, interfFaceNSpS, plusEqOp<vector>(), pTraits<vector>::zero, false);
 
 
 

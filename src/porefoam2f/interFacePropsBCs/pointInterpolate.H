@@ -2,25 +2,25 @@ namespace Foam
 {
 	Foam::pointScalarField pointInterpolate( const surfaceScalarField& alphaf, const pointMesh &  pMesh )
 	{
-        const fvMesh& mesh = alphaf.mesh();
-		//const labelListList& pointCells = mesh.pointCells();
-		const pointField& points = mesh.points();
+        const fvMesh& msh = alphaf.mesh();
+		//const labelListList& pointCells = msh.pointCells();
+		const pointField& points = msh.points();
 
 		pointScalarField alphaP
 		(
-		  IOobject   ( "alphaP",  mesh.time().timeName(),  mesh ),
+		  IOobject   ( "alphaP",  msh.time().timeName(),  msh ),
 		 pMesh,  dimensionedScalar("alphaP",dimless,0.0)
 		);
 		pointScalarField alphaPSumWeights
 		(
-		  IOobject  (  "alphaPSumWeights",  alphaf.time().timeName(),  alphaf.mesh()  ),
+		  IOobject  (  "alphaPSumWeights",  alphaf.time().timeName(),  msh  ),
 		 pMesh, dimensionedScalar("alphaPSumWeights",dimless,0.0)
 		);
 
 
         //surfaceScalarField alphaf = fvc::interpolate(alpha1);
-		const faceList &  faces=mesh.faces();
-		const surfaceVectorField & Cf=mesh.Cf();
+		const faceList &  faces=msh.faces();
+		const surfaceVectorField & Cf=msh.Cf();
 
 
 
@@ -40,12 +40,12 @@ namespace Foam
 		}
 
 
-		const fvBoundaryMesh& patches = mesh.boundary();
-		forAll(patches, patchI)
+		const fvBoundaryMesh& patches = msh.boundary();
+		forAll(patches, bI)
 		{
-          label pStart=patches[patchI].patch().start();
-          const vectorField & Cfp = Cf.boundaryField()[patchI];
-          if (!patches[patchI].coupled())
+          label pStart=patches[bI].patch().start();
+          const vectorField & Cfp = Cf.boundaryField()[bI];
+          if (!patches[bI].coupled())
           {
             forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
             {
@@ -60,12 +60,12 @@ namespace Foam
           }
 		}
 
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			label pStart=patches[patchI].patch().start();
-			const vectorField & Cfp = Cf.boundaryField()[patchI];
-			const scalarField & alphafp = alphaf.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			label pStart=patches[bI].patch().start();
+			const vectorField & Cfp = Cf.boundaryField()[bI];
+			const scalarField & alphafp = alphaf.boundaryField()[bI];
+			if (patches[bI].coupled())
 			{
 				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
 				{
@@ -99,8 +99,8 @@ namespace Foam
 			}
 		}
 
-		syncTools::syncPointList(mesh, alphaPSumWeights, plusEqOp<scalar>(), 0.0, false);
-		syncTools::syncPointList(mesh, alphaP, plusEqOp<scalar>(), 0.0, false);
+		syncTools::syncPointList(msh, alphaPSumWeights, plusEqOp<scalar>(), 0.0, false);
+		syncTools::syncPointList(msh, alphaP, plusEqOp<scalar>(), 0.0, false);
 
 
 		return alphaP/(alphaPSumWeights+1.0e-37);
@@ -114,26 +114,25 @@ namespace Foam
         const pointMesh &  pMesh
     )
     {
-        const fvMesh& mesh = U.mesh();
-        //const labelListList& pointCells = mesh.pointCells();
-         //= UP.mesh();
-        const pointField& points = mesh.points();
+        const fvMesh& msh = U.mesh();
+        //const labelListList& pointCells = msh.pointCells();
+        const pointField& points = msh.points();
 
         pointVectorField UP
                         (
-                          IOobject ( "UP",  U.time().timeName(),  U.mesh() ),
+                          IOobject ( "UP",  U.time().timeName(), msh ),
                          pMesh,  dimensionedVector("UP",U.dimensions(),vector::zero)
                        );
         pointScalarField  UPSumWeights
                         (
-                          IOobject  ( "UPSumWeights", U.time().timeName(),  U.mesh() ),
+                          IOobject  ( "UPSumWeights", U.time().timeName(), msh ),
                          pMesh,  dimensionedScalar("UPSumWeights",dimless,0.0)
                        );
 
 
         surfaceVectorField Uf = fvc::interpolate(U);
-        const faceList &  faces=mesh.faces();
-        const surfaceVectorField & Cf=mesh.Cf();
+        const faceList &  faces=msh.faces();
+        const surfaceVectorField & Cf=msh.Cf();
 
 
 
@@ -153,13 +152,13 @@ namespace Foam
         }
 
 
-        const fvBoundaryMesh& patches = mesh.boundary();
-        forAll(patches, patchI)
+        const fvBoundaryMesh& patches = msh.boundary();
+        forAll(patches, bI)
         {
-          label pStart=patches[patchI].patch().start();
-          const vectorField & Cfp = Cf.boundaryField()[patchI];
-          const vectorField & Ufp = U.boundaryField()[patchI];
-          if (patches[patchI].coupled())
+          label pStart=patches[bI].patch().start();
+          const vectorField & Cfp = Cf.boundaryField()[bI];
+          const vectorField & Ufp = U.boundaryField()[bI];
+          if (patches[bI].coupled())
           {
             forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
             {
@@ -193,8 +192,8 @@ namespace Foam
           }
         }
 
-        syncTools::syncPointList(mesh, UPSumWeights, plusEqOp<scalar>(), 0.0, false);
-        syncTools::syncPointList(mesh, UP, plusEqOp<vector>(), vector::zero, false);
+        syncTools::syncPointList(msh, UPSumWeights, plusEqOp<scalar>(), 0.0, false);
+        syncTools::syncPointList(msh, UP, plusEqOp<vector>(), vector::zero, false);
 
 
         return UP/(UPSumWeights+1.0e-37);

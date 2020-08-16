@@ -1,15 +1,36 @@
+/*-------------------------------------------------------------------------*\
+
+ Curvature force smoothing over interface points
+
+ Copyright (C) 2014-2020  Mosayeb Shams
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+\*-------------------------------------------------------------------------*/
+
 {
-	const dictionary pimple =alpha1_.mesh().solutionDict().subDict("PIMPLE");
+	const dictionary pimple =msh.solutionDict().subDict("PIMPLE");
 
     smoothingKernel_=   readLabel( pimple.lookup("smoothingKernel") )%10;
     smoothingRelaxFactor_=   readScalar( pimple.lookup("smoothingRelaxFactor") );
 
 	pointVectorField pointForce
-	(	IOobject( "pointForce", alpha1_.time().timeName(), alpha1_.mesh() ),
+	(	IOobject( "pointForce", timeName(), msh ),
 		 pMesh_,  dimensionedVector("pointForce", curvatureForcef.dimensions(), vector::zero)
 	);
 	pointScalarField interfPointArea
-	(	IOobject( "interfPointArea",  alpha1_.time().timeName(),  alpha1_.mesh() ),
+	(	IOobject( "interfPointArea",  timeName(),  msh ),
 		pMesh_,  dimensionedScalar("interfPointArea", magSf.dimensions(), 0.0)
 	);
 
@@ -33,13 +54,13 @@
 				interfPointArea[pI]+=magDelS[fI]*magInterfaceSf[fI];
 			}
 		}
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			label pStart=patches[patchI].patch().start();
-			const scalarField & pInterfaceSf = magInterfaceSf.boundaryField()[patchI];
-			const scalarField & pMagDelS = magDelS.boundaryField()[patchI];
-			const vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			label pStart=patches[bI].patch().start();
+			const scalarField & pInterfaceSf = magInterfaceSf.boundaryField()[bI];
+			const scalarField & pMagDelS = magDelS.boundaryField()[bI];
+			const vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[bI];
+			if (patches[bI].coupled())
 			 {
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
@@ -55,8 +76,8 @@
 			 else		 {			 }
 		}
 
-		syncTools::syncPointList(mesh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero, false);
-		syncTools::syncPointList(mesh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
+		syncTools::syncPointList(msh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		syncTools::syncPointList(msh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
 
 
 
@@ -74,14 +95,14 @@
 			}
 		}
 
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[patchI];
-			const scalarField & pMagDelS = magDelS.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			const scalarField & pMagInterfaceSf = magInterfaceSf.boundaryField()[bI];
+			const scalarField & pMagDelS = magDelS.boundaryField()[bI];
+			if (patches[bI].coupled())
 			{
-				label pStart=patches[patchI].patch().start();
-				vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[patchI];
+				label pStart=patches[bI].patch().start();
+				vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[bI];
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
 					pCurvatureForcef[pfI] *= 1.0-smoothingRelaxFactor_;
@@ -99,7 +120,7 @@
 		}
 
 
-		//syncTools::syncFaceList(mesh, curvatureForcef, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		//syncTools::syncFaceList(msh, curvatureForcef, plusEqOp<vector>(), pTraits<vector>::zero, false);
 
 	}
 

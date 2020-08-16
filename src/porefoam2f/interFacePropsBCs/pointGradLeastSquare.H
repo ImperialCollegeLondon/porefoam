@@ -1,3 +1,25 @@
+/*-------------------------------------------------------------------------*\
+
+ Least-square gradient at mesh points
+
+ Copyright (C) 2014-2020  Mosayeb Shams
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+\*-------------------------------------------------------------------------*/
+
+
+
 namespace Foam
 {
 	Foam::pointVectorField pointGardLeastSquare
@@ -8,33 +30,33 @@ namespace Foam
 		const labelList& interfPoints
 	)
 	{
-		const fvMesh& mesh = alphaf.mesh();
-		//const labelListList& pointCells = mesh.pointCells();
+		const fvMesh& msh = alphaf.mesh();
+		//const labelListList& pointCells = msh.pointCells();
 		const pointMesh &  pMesh = alpha1P.mesh();
 
 		pointVectorField gradAlphaP
 		(
-		IOobject  (  "gradAlphaP",  mesh.time().timeName(),  mesh  ),
+		IOobject  (  "gradAlphaP",  msh.time().timeName(),  msh  ),
 			pMesh,
 			dimensionedVector("gradAlphaP",dimless/dimLength,vector::zero)
 		);
 
 
 		//surfaceScalarField alphaf = fvc::interpolate(alpha1);
-		const faceList &  faces=mesh.faces();
-		const surfaceVectorField & Cf=mesh.Cf();
-		//const surfaceVectorField & deltaCC_=mesh.delta();
-		//const vectorField& Cc=mesh.C();
-		const surfaceScalarField & magSf=mesh.magSf();
+		const faceList &  faces=msh.faces();
+		const surfaceVectorField & Cf=msh.Cf();
+		//const surfaceVectorField & deltaCC_=msh.delta();
+		//const vectorField& Cc=msh.C();
+		const surfaceScalarField & magSf=msh.magSf();
 		//const surfaceScalarField & snGAlpha=fvc::snGrad(alpha1);
-		//const labelList& owners = mesh.faceOwner();
-		//const labelList& neibors = mesh.faceNeighbour();
-		//  const pointField &  points=mesh.points();
+		//const labelList& owners = msh.faceOwner();
+		//const labelList& neibors = msh.faceNeighbour();
+		//  const pointField &  points=msh.points();
 		//  vectorField gradAlphaP(points.size(),vector::zero);
 
 		// normal surface-gradient of the sharpened alpha
 		//surfaceScalarField deltaS_(fvc::snGrad(alpha1Sharp));
-		//surfaceScalarField DelSdX = (deltaS_)/mesh.deltaCoeffs();
+		//surfaceScalarField DelSdX = (deltaS_)/msh.deltaCoeffs();
 		//surfaceScalarField magdS = mag(DelSdX);
 
 
@@ -57,13 +79,13 @@ namespace Foam
 		}
 
 
-		const fvBoundaryMesh& patches = mesh.boundary();
-		forAll(patches, patchI)
+		const fvBoundaryMesh& patches = msh.boundary();
+		forAll(patches, bI)
 		{
-			label pStart=patches[patchI].patch().start();
-			const scalarField & pmagSf = magSf.boundaryField()[patchI];
-			const vectorField & Cfp = Cf.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			label pStart=patches[bI].patch().start();
+			const scalarField & pmagSf = magSf.boundaryField()[bI];
+			const vectorField & Cfp = Cf.boundaryField()[bI];
+			if (patches[bI].coupled())
 			{
 				forAll(Cfp, pfI) // if(pmagdS[pfI]>1.0e-12)
 				{
@@ -93,7 +115,7 @@ namespace Foam
 			}
 		}
 
-		syncTools::syncPointList(mesh, GG, plusEqOp<symmTensor>(), pTraits<symmTensor>::zero, false);
+		syncTools::syncPointList(msh, GG, plusEqOp<symmTensor>(), pTraits<symmTensor>::zero, false);
 
 
 
@@ -122,13 +144,13 @@ namespace Foam
 		}
 
 
-		forAll(patches, patchI)
+		forAll(patches, bI)
 		{
-			label pStart=patches[patchI].patch().start();
-			const scalarField & pmagSf = magSf.boundaryField()[patchI];
-			const scalarField & alphafp = alphaf.boundaryField()[patchI];
-			const vectorField & Cfp = Cf.boundaryField()[patchI];
-			if (patches[patchI].coupled())
+			const label pStart=patches[bI].patch().start();
+			const scalarField & pmagSf = magSf.boundaryField()[bI];
+			const scalarField & alphafp = alphaf.boundaryField()[bI];
+			const vectorField & Cfp = Cf.boundaryField()[bI];
+			if (patches[bI].coupled())
 			 {
 				forAll(Cfp, pfI) // if(pmagdS[pfI]>1.0e-12)
 				{
@@ -160,7 +182,7 @@ namespace Foam
 			 }
 		  }
 
-		syncTools::syncPointList(mesh, gradAlphaP, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		syncTools::syncPointList(msh, gradAlphaP, plusEqOp<vector>(), pTraits<vector>::zero, false);
 
 
 
