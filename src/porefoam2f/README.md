@@ -52,3 +52,5 @@ http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/p
 ### License
 
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)
+
+TODO: add CREDIT.md and CHANGELOG.md
