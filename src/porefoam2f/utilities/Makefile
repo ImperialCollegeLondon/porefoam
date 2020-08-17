@@ -1,5 +1,5 @@
 
-msSrc ?= ..
+msSrc ?= ../..
 
 all:
 	$(warning "running ${msSrc}/script/AllMake on $(shell dirname $(firstword $(MAKEFILE_LIST)))")

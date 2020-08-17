@@ -58,7 +58,7 @@ Foam::interfaceProperties::interfaceProperties
 )
 :
 #ifndef interfaceProperties_interfaceProperties // folding hint
-    alpha1_(alpha1), // mesh() requires this t be initialized first
+    alpha1_(alpha1), // mesh() requires this to be initialized first
     alpha1S_
     (
 		IOobject( "alpha1S",  timeName(),  mesh(), IOobject::NO_READ, IOobject::NO_WRITE   ),

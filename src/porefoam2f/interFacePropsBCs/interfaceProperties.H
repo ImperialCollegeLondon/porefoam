@@ -182,7 +182,7 @@ public:
     // Member Functions
 
 	const fvMesh& mesh()    const { return alpha1_.mesh(); }
-	const word&  timeName() const { return timeName(); }
+	word  timeName() const { return alpha1_.time().timeName(); }
 
 	scalar pcThicknessFactor() const          {  return pcThicknessFactor_;  }
 

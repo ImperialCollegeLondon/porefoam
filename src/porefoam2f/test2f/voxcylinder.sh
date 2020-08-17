@@ -12,7 +12,7 @@ printf "DimSize = 32 32 32 \n\
 	#kernelRadiusGaussVP  4 \n\
 
 export RefineLevel=0.90  #< this should be less than one for cfMesh to work, check!
-export endTime=0.015
+export endTime=0.002
 export UD1s=1000
 rm -rf voxcylinder*/ AllRunImageTwoPhase 
 AllRunImageTwoPhase voxcylinder.mhd  # this just copies AllRunImageTwoPhase
