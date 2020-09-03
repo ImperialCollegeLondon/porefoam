@@ -40,6 +40,17 @@ The code will not produce identical results to neither of the above papers thoug
 For other relavant publications, see:     
 https://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling/publications/
 
+### Credit
+
+ - Prof. Stephane Zaleski:  supervision -- tracking interface and interfacial force computation.
+
+ - Prof. Stephen Neethling: supervision -- sharpenning of interface transition to reduce spurious currents.
+
+ - Dr. Branko Bijeljic: PhD supervisor.
+
+ - Prof. Martin J Blunt: PhD supervisor.
+
+
 ### Contacts
 
 For any queries, contact:     
@@ -53,4 +64,4 @@ http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/p
 
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)
 
-TODO: add CREDIT.md and CHANGELOG.md
+<!-- TODO: add separate CREDIT.md and CHANGELOG.md -->
