@@ -16,8 +16,7 @@ jobs:
     - name: Cache lib
       uses: actions/cache@v2
       with:
-        path: |
-          ~/lib
+        path: lib
         key: ${{ runner.os }}-lib
 
     - name: install prerequisites
