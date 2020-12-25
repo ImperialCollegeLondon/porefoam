@@ -13,7 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: prereq
-      run: echo ToDo
+    - name: installPreReq
+      run: sudo apt install mpi-default-dev flex libscotch-dev
     - name: make
-      run: make
+      run: make -j
+    - name: test
+      run: make test
