@@ -6,9 +6,7 @@
  
 ### This repository is released in the hope that it will be useful for experts in direct two-phase flow simulation and is not production-ready. 
 
-## See  [src/porefoam2f](src/porefoam2f) for details on porefoam two-phase flow codes.
-
-## See  [src/porefoam1f](src/porefoam1f) for details on porefoam single-phase flow codes.
+## See  [doc](doc), [src/porefoam2f](src/porefoam2f) and [src/porefoam1f](src/porefoam1f) for more specific details.
 
 See also README files for other modules which are located in their own directories:    
 [src/libvoxel](src/libvoxel), [src/script](src/script) and in [thirdparty](thirdparty).
