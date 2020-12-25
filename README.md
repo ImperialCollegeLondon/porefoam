@@ -1,13 +1,19 @@
-# porefoam - direct pore-scale simulation of single- and two-phase flow through confined media.  
 ![make and test](https://github.com/aliraeini/porefoam/workflows/make%20and%20test/badge.svg?branch=master)
+
+### porefoam - direct pore-scale simulation of single- and two-phase flow  
 
  ----------------------------------------------------------------    
  
-## This repository is released in the hope that it will be useful for experts in direct two-phase flow simulation and is not intended for everyday use. 
+### This repository is released in the hope that it will be useful for experts in direct two-phase flow simulation and is not production-ready. 
 
-## See  [src/porefoam2f](src/porefoam2f) for more specific details.
+## See  [src/porefoam2f](src/porefoam2f) for details on porefoam two-phase flow codes.
 
-See also README files for other modules  which are located in their own directories. 
+## See  [src/porefoam1f](src/porefoam1f) for details on porefoam single-phase flow codes.
+
+See also README files for other modules which are located in their own directories:    
+[src/libvoxel](src/libvoxel), [src/script](src/script) and in [thirdparty](thirdparty).
+ 
+
 
  ----------------------------------------------------------------
 
