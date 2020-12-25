@@ -17,4 +17,3 @@ jobs:
       run: echo ToDo
     - name: make
       run: make
-      run: make test
