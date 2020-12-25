@@ -1,4 +1,4 @@
-
+![make and test](https://github.com/aliraeini/porefoam/workflows/make%20and%20test/badge.svg)
 
  ----------------------------------------------------------------    
  
