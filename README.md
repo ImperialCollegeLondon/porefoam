@@ -19,6 +19,11 @@ See also README files for other modules which are located in their own directori
 
 ### Compiling
 
+
+First, install openfoam prerequisites, in Ubuntu by running:     
+
+ `sudo apt install mpi-default-dev flex libscotch-dev`
+
 To compile, open a terminal in the upper most directory and run:    
 
  `make -j`
