@@ -6,7 +6,7 @@ developed by Ali Qaseminejad Raeini for handelling 3D raw images.
 
 
 Please see our website for relavant literature making use of this code:
-http://www3.imperial.ac.uk/earthscienceandengineering/research/perm/porescalemodelling
+https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/
 
 For further information please contact us by email:
 Ali Q Raeini: a.q.raeini@imperial.ac.uk
