@@ -36,6 +36,25 @@ namespace Foam
 	defineTypeNameAndDebug(coordinateSystem, 0);
 	defineRunTimeSelectionTable(coordinateSystem, dictionary);
 	defineRunTimeSelectionTable(coordinateSystem, origRotation);
+
+
+	// * * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * //
+
+	Ostream& operator<<(Ostream& os, const coordinateSystem& cs)
+	{
+		cs.write(os);
+		os.check("Ostream& operator<<(Ostream&, const coordinateSystem&");
+		return os;
+	}
+
+	// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
+
+	bool operator!=(const coordinateSystem& a, const coordinateSystem& b)
+	{
+		return (a.origin() != b.origin() || a.R() != b.R() || a.type() != b.type());
+	}
+
+
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -386,23 +405,6 @@ void Foam::coordinateSystem::operator=(const dictionary& rhs)
 	Rtr_ = R_.T();
 }
 
-
-// * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
-
-bool Foam::operator!=(const coordinateSystem& a, const coordinateSystem& b)
-{
-	return (a.origin() != b.origin() || a.R() != b.R() || a.type() != b.type());
-}
-
-
-// * * * * * * * * * * * * * * * Friend Functions  * * * * * * * * * * * * * //
-
-Foam::Ostream& Foam::operator<<(Ostream& os, const coordinateSystem& cs)
-{
-	cs.write(os);
-	os.check("Ostream& operator<<(Ostream&, const coordinateSystem&");
-	return os;
-}
 
 
 // ************************************************************************* //

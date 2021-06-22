@@ -75,16 +75,16 @@ Foam::procLduInterface::procLduInterface(Istream& is)
 
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
+namespace Foam {
+	Foam::Ostream& operator<<(Ostream& os, const procLduInterface& cldui)
+	{
+		os  << cldui.faceCells_
+			<< cldui.coeffs_
+			<< cldui.myProcNo_
+			<< cldui.neighbProcNo_;
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const procLduInterface& cldui)
-{
-	os  << cldui.faceCells_
-		<< cldui.coeffs_
-		<< cldui.myProcNo_
-		<< cldui.neighbProcNo_;
-
-	return os;
+		return os;
+	}
 }
-
 
 // ************************************************************************* //

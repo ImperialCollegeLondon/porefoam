@@ -87,7 +87,7 @@ void Foam::interfaceProperties::correctContactAngle
 
 
 			vectorField ss=nsp-(nsp&nf)*nf;
-			ss/=mag(ss)+1.0e-8;
+			ss/=mag(ss)+1e-8;
 			nsp=sin(theta)*ss+cos(theta)*nf;
 
 
@@ -133,8 +133,8 @@ void Foam::interfaceProperties::calcCurvatureFSF
 	gradAlpha.correctBoundaryConditions();
 	volScalarField magGradAlpha = mag(gradAlpha) + deltaN_; 
 
-	volVectorField nS_ = a1a2*gradAlpha/magGradAlpha; nS_ = nS_/(mag(nS_) + 1.0e-8);
-	surfaceVectorField nHatfv = fvc::interpolate(nS_,"smoothScheme"); nHatfv/=mag(nHatfv)+1.0e-12;
+	volVectorField nS_ = a1a2*gradAlpha/magGradAlpha; nS_ = nS_/(mag(nS_) + 1e-8);
+	surfaceVectorField nHatfv = fvc::interpolate(nS_,"smoothScheme"); nHatfv/=mag(nHatfv)+1e-12;
 	correctContactAngle(nHatfv.boundaryField(),gradAlpha.boundaryField(),nS_.boundaryField(), alpha1S_.boundaryField());    
 
 
@@ -154,11 +154,11 @@ void Foam::interfaceProperties::calcCurvatureFSF
 		nS_.correctBoundaryConditions();
 
 		nHatfv = fvc::interpolate(nS_,"smoothScheme");
-		nHatfv = nHatfv/(mag(nHatfv) + 1.0e-12);
+		nHatfv = nHatfv/(mag(nHatfv) + 1e-12);
 		correctContactAngle(nHatfv.boundaryField(),gradAlpha.boundaryField(),nS_.boundaryField(),alpha1S_.boundaryField()	);
 
 	}
-	nS_ = nS_/(mag(nS_) + 1.0e-12);
+	nS_ = nS_/(mag(nS_) + 1e-12);
 
 
 

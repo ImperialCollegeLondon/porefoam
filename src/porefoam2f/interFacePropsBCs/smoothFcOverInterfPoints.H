@@ -91,7 +91,7 @@
 			forAll(ff, ip)
 			{
 				label pI = ff[ip];
-				curvatureForcef[fI] += smoothingRelaxFactor_*pointForce[pI]*magInterfaceSf[fI]/(mag(interfPointArea[pI])+1.0e-36);
+				curvatureForcef[fI] += smoothingRelaxFactor_*pointForce[pI]*magInterfaceSf[fI]/(mag(interfPointArea[pI])+1e-36);
 			}
 		}
 
@@ -110,7 +110,7 @@
 					forAll(ff, ip)
 					{
 						label pI = ff[ip];
-						pCurvatureForcef[pfI] += smoothingRelaxFactor_*pointForce[pI]*pMagInterfaceSf[pfI]/(mag(interfPointArea[pI])+1.0e-36);
+						pCurvatureForcef[pfI] += smoothingRelaxFactor_*pointForce[pI]*pMagInterfaceSf[pfI]/(mag(interfPointArea[pI])+1e-36);
 						//pCurvatureForcef[pfI] += 1.0*pCellNybrForce[pfI]*pMagInterfaceSf[pfI]/(pCellNybrArea[pfI]);
 					}
 				}

@@ -8,7 +8,7 @@ your option) any later version. see <http://www.gnu.org/licenses/>.
 
 
 Please see our website for relavant publications:
-https://www.imperial.ac.uk/engineering/departments/earth-science/research/research-groups/perm/research/pore-scale-modelling/
+https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/
 
 For further information please contact me by email:
 Ali Qaseminejad Raeini:    a.q.raeini@imperial.ac.uk
@@ -50,7 +50,7 @@ std::valarray<Dbls> distribution(const scalarField & UcompNormed, const scalarFi
 
 
 	double minU=gMin(UcompNormed);
-	double deltaU=(max(gMax(UcompNormed),minmax)-minU)/128.0+1.0e-72;
+	double deltaU=(max(gMax(UcompNormed),minmax)-minU)/128.0+1e-72;
 
 	for (int i=0; i<128; ++i)	distrib[0][i] = minU+deltaU/2+i*deltaU;
 
@@ -131,13 +131,17 @@ int main(int argc, char *argv[])
 
 	const volVectorField& C=mesh.C();
 
-	int nSams = regionVoxelValues.size();
+	int nSams = CVBounds1.size();
 	for (int iSam=0;iSam<nSams;iSam++)   
 	{
-		clip=0.0;
+
+		volScalarField clip
+		(	IOobject( "clip", runTime.timeName(), mesh),
+			mesh,	dimensionedScalar("clip",dimless,0.0),	"fixedValue"
+		);
 		forAll(C,c) 
 		{ 
-			if (PPRegions[c]==regionVoxelValues[iSam]&& 
+			if (PPRegions[c]==CVxlVals[iSam]&& 
 				(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
 				 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
 				 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
@@ -148,9 +152,9 @@ int main(int argc, char *argv[])
 		volScalarField porosity
 		(	IOobject
 			(	weightporo,	"0",	mesh, IOobject::READ_IF_PRESENT
-			),	max(clip,1.0e-64)
+			),	max(clip,1e-64)
 		);
-		porosity=max(porosity,1.0e-17);
+		porosity=max(porosity,1e-17);
 
 
 		if(max(porosity).value()<0.99999)
@@ -165,17 +169,17 @@ int main(int argc, char *argv[])
 			if (iEnd < 0) { Info	<< "Unable to find  patch " << RightPs[iDir] << nl	<< endl;	 continue; }
 
 
-			scalar fluxIn=gSum(phi.boundaryField()[iBegin]+1.0e-63);
-			scalar fluxOut=gSum(phi.boundaryField()[iEnd]+1.0e-63);
+			scalar fluxIn=gSum(phi.boundaryField()[iBegin]+1e-63);
+			scalar fluxOut=gSum(phi.boundaryField()[iEnd]+1e-63);
 
 
-			scalar PLeft=gSum(p.boundaryField()[iBegin]*(phi.boundaryField()[iBegin]+1.0e-63))/(fluxIn+1.0e-163);
-			scalar PRight=gSum(p.boundaryField()[iEnd]*(phi.boundaryField()[iEnd]+1.0e-63))/(fluxOut+1.0e-163);
+			scalar PLeft=gSum(p.boundaryField()[iBegin]*(phi.boundaryField()[iBegin]+1e-63))/(fluxIn+1e-163);
+			scalar PRight=gSum(p.boundaryField()[iEnd]*(phi.boundaryField()[iEnd]+1e-63))/(fluxOut+1e-163);
 			dp[iDir]=mag(PLeft-PRight);
 
 			fluxIn=gSum(phi.boundaryField()[iBegin]);
 
-			K[iDir]=mag(fluxIn)*mu.value()/A[iDir]*L[iDir]/(dp[iDir]+1.0e-64);
+			K[iDir]=mag(fluxIn)*mu.value()/A[iDir]*L[iDir]/(dp[iDir]+1e-64);
 			VDarcy[iDir]=mag(fluxIn/A[iDir]);
 		}
 
@@ -184,6 +188,7 @@ int main(int argc, char *argv[])
 		scalar Umax=(max(mag(U))).value();
 		scalar Re=rho.value()*VDarcy[iDir]*std::sqrt(K[iDir])/mu.value() ;
 		double porVol = gSum(mesh.V()*porosity.internalField());
+		double cvFraction = gSum(mesh.V()*porosity.internalField()*clip.internalField())/porVol;
 
 		Info << runTime.caseName()
 			<<"\t\t effPorosity=  "<<porVol/(L[x_]*L[y_]*L[z_])<<"                  = V_pore/(L_x*L_y*L_z)= "<<porVol<<" /( "<<L[x_]<<" "<<L[y_]<<" "<<L[z_]<<" )\n"
@@ -195,18 +200,19 @@ int main(int argc, char *argv[])
 			<<" Pmax-Pmin: "<<  Pmax_min
 			<<" Umax= "<<  Umax
 			<<"\t\t Re= "<<  "rho*VDarcy*sqrt(K)/mu= "<< rho.value() <<"*"<<VDarcy[iDir]<<"*sqrt("<<K[iDir]<<")/"<<mu.value()<<")= "<<Re 
+			<<" cvFraction= "<<  cvFraction
 			<< "\n";
-		VDarcy[iDir]=max(1.0e-64,VDarcy[iDir]);
-		std::valarray<Dbls> ditribLogU = distribution(log10(max(1.0e-16,clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir]) ), mesh.V()*porosity.internalField());
+		VDarcy[iDir]=max(1e-64,VDarcy[iDir]);
+		std::valarray<Dbls> ditribLogU = distribution(log10(max(1e-16,clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir]) ), mesh.V()*porosity.internalField());
 		std::valarray<Dbls> ditribU  = distribution(clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir], mesh.V());
 		std::valarray<Dbls> ditribUx = distribution(clip.internalField()*U.internalField().component(vector::X)/porosity.internalField()/VDarcy[iDir], mesh.V()*porosity.internalField());
 		std::valarray<Dbls> ditribUy = distribution(clip.internalField()*U.internalField().component(vector::Y)/porosity.internalField()/VDarcy[iDir], mesh.V()*porosity.internalField());
 		std::valarray<Dbls> ditribUz = distribution(clip.internalField()*U.internalField().component(vector::Z)/porosity.internalField()/VDarcy[iDir], mesh.V()*porosity.internalField());
 
-		std::valarray<Dbls> ditribUmCbrt = distribution(cbrt(clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1.0e9);
-		std::valarray<Dbls> ditribUxCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(0)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1.0e9);
-		std::valarray<Dbls> ditribUyCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(1)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1.0e9);
-		std::valarray<Dbls> ditribUzCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(2)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1.0e9);
+		std::valarray<Dbls> ditribUmCbrt = distribution(cbrt(clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
+		std::valarray<Dbls> ditribUxCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(0)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
+		std::valarray<Dbls> ditribUyCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(1)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
+		std::valarray<Dbls> ditribUzCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(2)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
 
 
 		std::valarray<Dbls> ditribLogUPlus(ditribLogU[0],5);
@@ -242,7 +248,7 @@ int main(int argc, char *argv[])
 			sl=title.find_last_of("\\/"); if (sl<title.size()) title=title.substr(sl+1);
 			Info <<"title: " <<title<<endl;
 			if(nSams>1)  title=title+_s(iSam);
-			std::ofstream of("summary_"+title+".txt"/*,std::ios::app*/);
+			std::ofstream of("summary_"+title+cvTags[iSam]+".txt"/*,std::ios::app*/);
 			assert(of);
 
 			of  << runTime.caseName()<<"  t="<<runTime.value()
@@ -251,6 +257,7 @@ int main(int argc, char *argv[])
 			if(nSams==1) of	<<"FF_"<<directions[iDir]<<"=          "<<  FF[iDir]<<" ";
 			of	<<"\nDarcyVelocity= "<< VDarcy[iDir] <<" m/s,    \t   Umax= "<<  Umax <<"\t  DelP= "<< dp[iDir] <<" Pa "<<",  Pmax-Pmin: "<<Pmax_min<<" \n"
 				<<"Re=            "<<Re<<  "             =  rho*VDarcy*sqrt(K)/mu= "<< rho.value()<<"*"<<VDarcy[iDir]<<"*sqrt("<<K[iDir]<<")/"<<mu.value()<<")" 
+				<<"\ncvFraction=            "<<cvFraction
 				<< "\n\n";
 
 			of<<"\n\nx=mag(U)/U_D \t PDF \t dV/Vdx \t PDF(log10(x)) \t dV/Vd(log10(x))"<<std::endl;
@@ -265,7 +272,7 @@ int main(int argc, char *argv[])
 			of<<ditribU<<std::endl;
 
 			///See  https://en.wikipedia.org/wiki/Probability_density_function#Function_of_random_variables_and_change_of_variables_in_the_probability_density_function
-			/// Note: numerical derivative is used for dXrDy, as it is more accurate and has no division by zero problem
+			/// Note: numerical derivative is used for dXrDy, as it is more accurate here and has no division by zero problem
 			#define pow3(_U_) ((_U_)*(_U_)*(_U_))
 			double dUo2; Dbls dXrDy;
 			dUo2=0.5*(ditribUmCbrt[0][1]-ditribUmCbrt[0][0]);	dXrDy=2.0*dUo2/(pow3(ditribUmCbrt[0]+dUo2)-pow3(ditribUmCbrt[0]-dUo2));

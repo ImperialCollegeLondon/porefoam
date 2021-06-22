@@ -2,15 +2,15 @@ DimSize = 20 20 20
 
 replaceRange 0 255 0
 reset dx  1   1   1
-shapeToVoxel sphere  0   0   0     12   1
-shapeToVoxel sphere  20  0   0     12   1
-shapeToVoxel sphere  0   20  0     12   1
-shapeToVoxel sphere  20  20  0     12   1
+Paint sphere  0   0   0     12   1
+Paint sphere  20  0   0     12   1
+Paint sphere  0   20  0     12   1
+Paint sphere  20  20  0     12   1
 
-shapeToVoxel sphere  0   0   20    12   2
-shapeToVoxel sphere  20  0   20    12   2
-shapeToVoxel sphere  0   20  20    12   2
-shapeToVoxel sphere  20  20  20    12   2
+Paint sphere  0   0   20    12   2
+Paint sphere  20  0   20    12   2
+Paint sphere  0   20  20    12   2
+Paint sphere  20  20  20    12   2
 reset dx 2e-6  2e-6  2e-6
 
 

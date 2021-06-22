@@ -90,11 +90,11 @@
 		if( iLeft>=0 && iRight>=0)
 		{
 
-			scalar fluxIn=gSum(phi.boundaryField()[iLeft]+1.0e-29);
-			scalar fluxOut=gSum(phi.boundaryField()[iRight]+1.0e-29);
+			scalar fluxIn=gSum(phi.boundaryField()[iLeft]+1e-29);
+			scalar fluxOut=gSum(phi.boundaryField()[iRight]+1e-29);
 
-			scalar PLeft=gSum(p.boundaryField()[iLeft]*(phi.boundaryField()[iLeft]))/(fluxIn+1.0e-129);
-			scalar PRight=gSum(p.boundaryField()[iRight]*(phi.boundaryField()[iRight]))/(fluxOut+1.0e-129);
+			scalar PLeft=gSum(p.boundaryField()[iLeft]*(phi.boundaryField()[iLeft]))/(fluxIn+1e-129);
+			scalar PRight=gSum(p.boundaryField()[iRight]*(phi.boundaryField()[iRight]))/(fluxOut+1e-129);
 			dV[iDir]=mag(PLeft-PRight);
 
 			fluxIn=gSum(phi.boundaryField()[iLeft]);
@@ -103,7 +103,7 @@
 		Info<<"A/L: "<<A[iDir]/L[iDir]<<endl;
 		Info<<"mu.value(): "<<mu.value()<<endl;
 
-			FF[iDir]=dV[iDir]*A[iDir]/L[iDir]/(mag(fluxIn)+1.0e-126)/(mu.value());
+			FF[iDir]=dV[iDir]*A[iDir]/L[iDir]/(mag(fluxIn)+1e-126)/(mu.value());
 		Info<<"FF[iDir]: "<<FF[iDir]<<endl;
 		}
 	}

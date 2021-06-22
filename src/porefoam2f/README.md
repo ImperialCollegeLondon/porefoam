@@ -39,8 +39,8 @@ This code has been used in the following works:
 
  - A Q Raeini, B Bijeljic, M J Blunt, “Generalized network modelling: Capillary-dominated two-phase flow”, Phys. Rev. E,  97(2):023308, (2018). https://doi.org/10.1103/physreve.97.023308
  
-For other relevant publications, see:     
-https://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling/publications/
+For other relavant publications, see:     
+https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/publications/
 
 ### Credit
 
@@ -61,6 +61,8 @@ For any queries, contact:
 
 For more information and contacts details, see:  
 https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling
+
+
 ### License
 
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)

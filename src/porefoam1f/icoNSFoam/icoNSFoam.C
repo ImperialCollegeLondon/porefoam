@@ -20,7 +20,7 @@
 
 
 #define SINGLE_PHASE
-#define ifMonitor  if( runTime.timeIndex()%10== 0 ) 
+#define ifMonitor(TEN)  if (runTime.timeIndex()%TEN==0) 
 
 #include "fvCFD.H"
 
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 	Info<< "\nStarting time loop\n" << endl;
 #define 	curtail(a,b) (min (max((a),(b)),(1.-(b))))
 
-	ifMonitor
+	ifMonitor(10)
 	{
 		Info<< "\n         Umax = " << max(mag(U)).value() << " m/s  "
 		<< "Uavg = " << mag(average(U)).value() << " m/s"
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 
 			#include "UEqn.H"
 
-			ifMonitor   { Info<< "ExeTime - tOldPU = " << runTime.elapsedCpuTime()-tOldPU << " s"	<< endl;}
+			ifMonitor(10)   { Info<< "ExeTime - tOldPU = " << runTime.elapsedCpuTime()-tOldPU << " s"	<< endl;}
 
 			while (pimple.correct())// --- PISO loop
 			{
@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 			<< "  timeStepExecutionTime  = " << runTime.elapsedCpuTime()-timeStepExecutionTime << " s"
 			<< endl;
 
-		ifMonitor
+		ifMonitor(10)
 		{
 			scalar maxU = max(mag(U)).value();
 			scalar avgU = average(mag(U)).value();
@@ -138,16 +138,17 @@ int main(int argc, char *argv[])
 			<< "   DP = " << (max(p)-min(p)).value() << " Pa"
 			<< nl<< nl << endl;
 			
-			scalar delUx10 =  mag(avgU - oldAvgU);
-			if (delUx10<refDelUx10*max(avgU,oldAvgU) && oldDelUx10<refDelUx10*max(avgU,oldAvgU))
+			scalar delUx10 =  mag(avgU - oldAvgU10);
+			if (delUx10<refDelUx10*max(avgU,oldAvgU10) && oldDelUx10<refDelUx10*max(avgU,oldAvgU10))
 			{
 				Info<< "converged ! " 	<< endl;
 				
 				runTime.writeAndEnd();
 			}
-			Info<<"! convergence: "<<delUx10<<"<"<<refDelUx10*max(avgU,oldAvgU) <<" && "<< oldDelUx10<<"<"<<refDelUx10*max(avgU,oldAvgU)<<nl<<endl;
+			Info<<"! convergence: "<<delUx10<<"<"<<refDelUx10*max(avgU,oldAvgU10) <<" && "
+			    << oldDelUx10<<"<"<<refDelUx10*max(avgU,oldAvgU10)<<nl<<endl;
 			oldDelUx10=delUx10;
-			oldAvgU=avgU;
+			oldAvgU10=avgU;
 		}
 
 

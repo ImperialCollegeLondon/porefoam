@@ -63,20 +63,14 @@ int main(int argc, char *argv[])
 
 
 
-    IOdictionary meshingDict
-    (
-        IOobject
-        (
-            "meshingDict",
-            runTime.system(),
-            runTime,
-            IOobject::MUST_READ,
-            IOobject::NO_WRITE
+    IOdictionary meshingDict(
+        IOobject("meshingDict", runTime.system(), runTime,
+            IOobject::MUST_READ
         )
     );
     word headerName(meshingDict.lookup("headerName"));
     //word inputName(meshingDict.lookup("inputName"));
-    word outputName(meshingDict.lookup("outputName"));
+    //word outputName(meshingDict.lookup("outputName"));
     word outputSurface(meshingDict.lookup("outputSurface"));
     //word trimName(meshingDict.lookup("trimName"));
 
@@ -261,7 +255,7 @@ int main(int argc, char *argv[])
 	int nAddedX =nAddLyrs + nCopyLyrsYZ+2;
 	int nAddedYZ=nAddLyrs + nCopyLyrsX+2;
 	SmoothedVoxels.cropD({nAddedX,nAddedYZ,nAddedYZ},n-int3(nAddedX,nAddedYZ,nAddedYZ));
-	SmoothedVoxels.write(outputName);
+	//SmoothedVoxels.write(outputName);
 	SmoothedVoxels.writeAConnectedPoreVoxel(headerName+"_aPoreVoxel");
 
 	Info<<"finished  writeSTLBINARY, outputFileName: "<<outputSurface<<endl;
@@ -325,7 +319,7 @@ inline int collectManifoldFaces(label meshPI, label connectingFace ,DynamicList<
 		label eI=myEdges[myeI];
 
 		const labelList & myEFs=eFaces[eI];
-		if (myEFs.size()==1)   Info<<"\n Error point "<<meshPoints[meshPI]<<" conected to edge of only one face   " <<meshPoints[edges[eI][0]]<<"  " <<meshPoints[edges[eI][1]]<<"	face: " <<eFaces[eI] << "\n\n";
+		if (myEFs.size()==1)   Info<<"\n Error point "<<meshPoints[meshPI]<<" connected to edge of only one face   " <<meshPoints[edges[eI][0]]<<"  " <<meshPoints[edges[eI][1]]<<"	face: " <<eFaces[eI] << "\n\n";
 
 		else if (myEFs.size()==2)
 		{
@@ -349,12 +343,12 @@ inline int collectManifoldFaces(label meshPI, label connectingFace ,DynamicList<
 				vector masterNormal=faces[connectingFace].normal(points);
 				vector Ce=0.5*(points[meshPoints[edges[eI][0]]]+points[meshPoints[edges[eI][1]]]);
 				vector tmf=faces[connectingFace].centre(points)-Ce;
-				tmf/=mag(tmf)+1.0e-15;
+				tmf/=mag(tmf)+1e-15;
 
 				forAll(myEFs, fI) if ( !(myEFs[fI]==connectingFace) )
 				{
 					vector tf=faces[myEFs[fI]].centre(points)-Ce;
-					tf/=mag(tf)+1.0e-15;
+					tf/=mag(tf)+1e-15;
 					scalar sin=tf&masterNormal;
 					scalar cos=tf&tmf;
 					const double PI=3.14159265;

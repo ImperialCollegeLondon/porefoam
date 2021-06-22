@@ -12,9 +12,8 @@ FoamFile
 headerName BASENAME.mhd;
 inputName BASENAME.tif;
 outputSurface  BASENAME.obj;
-outputName  BASENAMESurfExt.mhd; 
 outputFormat binary;
-scaleVxlImage 1.0e6;
+scaleVxlImage 1e6;
 
 
 

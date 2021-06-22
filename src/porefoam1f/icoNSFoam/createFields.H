@@ -49,9 +49,14 @@
 
 
 	scalar refDelUx10( pimple.dict().lookupOrDefault("thresholdDelUPer10Step", 0.0005) );
-	scalar oldDelUx10 = 1.0e+64;
-	scalar oldAvgU = 0.0;
+	scalar oldDelUx10 = 1e+64;
+	scalar oldAvgU10 = 0.0;
 
+	label AitkenEvery( pimple.dict().lookupOrDefault("AitkenEvery", 7) );
+	scalar UAkOld = 0.0;
+	scalar UAkOOld = 0.0;
+	scalar UAkOOOld = 0.0;
+	scalar UAkOOOOld = 0.0;
 
 
 	scalar lambda( readScalar(pimple.dict().lookup("lambda")) );

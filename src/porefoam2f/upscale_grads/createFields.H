@@ -45,8 +45,7 @@
 	// Initialisation does not matter because rhoPhi is reset after the
 	// alpha1 solution before it is used in the U equation.
 	surfaceScalarField rhoPhi(
-		IOobject( "rho*phi",  runTime.timeName(),  mesh,
-			       IOobject::NO_READ,  IOobject::NO_WRITE ),
+		IOobject( "rho*phi",  runTime.timeName(),  mesh ),
 		rho1*phi );
 
 

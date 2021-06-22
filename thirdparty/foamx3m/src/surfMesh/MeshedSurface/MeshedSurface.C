@@ -438,7 +438,7 @@ void Foam::MeshedSurface<Face>::remapFaces
 )
 {
 	// recalculate the zone start/size
-	if (&faceMap && faceMap.size())
+	if (faceMap.size())
 	{
 		surfZoneList& zones = storedZones();
 
@@ -868,7 +868,7 @@ Foam::label Foam::MeshedSurface<Face>::triangulate
 	// nothing to do
 	if (nTri <= faceLst.size())
 	{
-		if (&faceMapOut)
+		if (faceMapOut.size())
 		{
 			faceMapOut.clear();
 		}
@@ -879,7 +879,7 @@ Foam::label Foam::MeshedSurface<Face>::triangulate
 	List<label> faceMap;
 
 	// reuse storage from optional faceMap
-	if (&faceMapOut)
+	if (faceMapOut.size())
 	{
 		faceMap.transfer(faceMapOut);
 	}
@@ -936,7 +936,7 @@ Foam::label Foam::MeshedSurface<Face>::triangulate
 	remapFaces(faceMap);
 
 	// optionally return the faceMap
-	if (&faceMapOut)
+	if (faceMapOut.size())
 	{
 		faceMapOut.transfer(faceMap);
 	}

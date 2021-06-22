@@ -30,14 +30,16 @@ Description
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Foam::Ostream& os, const Foam::cellInfo& wDist)
+namespace Foam
 {
-	return os << wDist.type_;
-}
+	Ostream& operator<<(Ostream& os, const cellInfo& wDist)
+	{
+		return os << wDist.type_;
+	}
 
-Foam::Istream& Foam::operator>>(Foam::Istream& is, Foam::cellInfo& wDist)
-{
-	return is >> wDist.type_;
+	Istream& operator>>(Istream& is, cellInfo& wDist)
+	{
+		return is >> wDist.type_;
+	}
 }
-
 // ************************************************************************* //

@@ -28,7 +28,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 )
 {
 	
-	const scalar CONTRAST_FACTOR = 1.0e-14*deltaN_.value();
+	const scalar CONTRAST_FACTOR = 1e-14*deltaN_.value();
 	const fvMesh& msh = alpha1_.mesh();
 		const fvBoundaryMesh& patches = msh.boundary(); 
 
@@ -110,7 +110,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 			forAll(ff, ip)
 			{
 				label pI = ff[ip];
-				curvatureForcefDiff[fI] += smoothingRelaxFactor*pointForce[pI]*magInterfaceSf[fI]/(mag(interfPointArea[pI])+1.0e-36);
+				curvatureForcefDiff[fI] += smoothingRelaxFactor*pointForce[pI]*magInterfaceSf[fI]/(mag(interfPointArea[pI])+1e-36);
 			}
 		}
 
@@ -129,7 +129,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 					forAll(ff, ip)
 					{
 						label pI = ff[ip];
-						pCurvatureForcef[pfI] += smoothingRelaxFactor*pointForce[pI]*pMagInterfaceSf[pfI]/(mag(interfPointArea[pI])+1.0e-36);
+						pCurvatureForcef[pfI] += smoothingRelaxFactor*pointForce[pI]*pMagInterfaceSf[pfI]/(mag(interfPointArea[pI])+1e-36);
 						//pCurvatureForcef[pfI] += 1.0*pCellNybrForce[pfI]*pMagInterfaceSf[pfI]/(pCellNybrArea[pfI]);
 					}
 				}
@@ -161,7 +161,7 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 )
 {
 	
-	const scalar CONTRAST_FACTOR = 1.0e-4*deltaN_.value();
+	const scalar CONTRAST_FACTOR = 1e-4*deltaN_.value();
 	const fvMesh& msh = mesh();
 	//const fvBoundaryMesh& patches = msh.boundary(); 
 	const fvBoundaryMesh& boundary = msh.boundary();
@@ -218,7 +218,7 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 
 					vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.0+2.0*bp2) + nHatSp[ip1]*(1.0+2.0*bp1));
 
-					nHatpEdge /= mag(nHatpEdge) + 1.0e-35;
+					nHatpEdge /= mag(nHatpEdge) + 1e-35;
 					
 					scalar area =  weightDelS/mag( point2 - point1 );//*mag(( point2 - point1 ) ^ (Cf[fI]-point1)) ;
 					//interfFaceArea[ip1] +=  area ;
@@ -260,7 +260,7 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 
 						vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.0+2.0*bp2) + nHatSp[ip1]*(1.0+2.0*bp1));
 
-						nHatpEdge /= mag(nHatpEdge)+1.0e-35;
+						nHatpEdge /= mag(nHatpEdge)+1e-35;
 					
 						scalar area =  weightDelS*0.5/mag( point2 - point1 );//*mag(( point2 - point1 ) ^ (pCf[pfI]-point1)) ;
 						//interfFaceArea[ip1] +=  area ;
@@ -281,9 +281,9 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 
 
 
-	nHatSp = (1.0-smoothingRelaxFactor)*nHatSp + smoothingRelaxFactor*interfFaceNSpS/ (mag(interfFaceNSpS) + 1.0e-18);
+	nHatSp = (1.-smoothingRelaxFactor)*nHatSp + smoothingRelaxFactor*interfFaceNSpS/ (mag(interfFaceNSpS) + 1e-18);
 	
-	nHatSp/=mag(nHatSp)+1.0e-14;
+	nHatSp/=mag(nHatSp)+1e-14;
 	correctForContactAngle(alpha1_,U_,nw_,nHatSp,interfPoints);
 
 

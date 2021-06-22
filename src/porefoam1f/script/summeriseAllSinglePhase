@@ -18,9 +18,22 @@ for cas in $cases ; do
  sumtxt="${cas}summary_$(basename $cas).txt"
  echo  "$sumtxt:" | sed 's/.*summary_//'  | sed 's/\.txt//' 
  cp    "$sumtxt"   summaries/
- more  "$sumtxt"  | grep effPoro  | sed 's/ef/  ef/' 
- more  "$sumtxt"  | grep K_       | sed 's/K_/  K_/' 
- more  "$sumtxt"  | grep FF       | sed 's/FF/  FF/' 
+ res=`cat $sumtxt`
+ printf "$res"  | grep effPoro  | sed 's/ef/  ef/' 
+ printf "$res"  | grep K_       | sed 's/K_/  K_/' 
+ printf "$res"  | grep FF       | sed 's/FF/  FF/' 
  echo
 done
 
+
+printf  "case           \t porosity       \t  FF  \t permeability    \t  Vpore  \t   Lx \t  Ly   \t Lz \n" 
+for cas in $cases ; do 
+ sumtxt="${cas}summary_$(basename $cas).txt"
+ printf  "$cas" | sed 's:\.txt::' | sed 's:-1-\([XYZ]\)/:-\1:'  | sed 's:.*/::' 
+ res=`cat $sumtxt`
+ printf "\t$(printf "$res" | grep effPoro | sed 's:[ ]*= V_pore.*: :'| sed 's:.*=[ ]*: :')"
+ printf "\t$(printf "$res" | grep FF    | sed 's:.*=[ ]*::')"
+ printf "\t$(printf "$res" | grep K_    | sed 's:m\^2.*::' | sed 's:.*=[ ]*::')"
+ printf "\t$(printf "$res" | grep effPoro | sed 's:.*=[ ]*: :' | sed 's:[ ]*[\/\(\)][\/\(\)]*[ ]*: :g' | sed 's:[ ]?*:\t:g')"
+ echo
+done

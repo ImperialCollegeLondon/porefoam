@@ -47,14 +47,14 @@ namespace Foam
           const vectorField & Cfp = Cf.boundaryField()[bI];
           if (!patches[bI].coupled())
           {
-            forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
+            forAll(Cfp, pfI)  //if (pmagdS[pfI]>1e-8)
             {
 					const face& ff = faces[pStart+pfI];
 					forAll(ff, ip)
 					{
 						label pI = ff[ip];
-						alphaPSumWeights[pI] *= 1.0e-32;
-						alphaP[pI] *= 1.0e-32;
+						alphaPSumWeights[pI] *= 1e-32;
+						alphaP[pI] *= 1e-32;
 					}
             }
           }
@@ -67,7 +67,7 @@ namespace Foam
 			const scalarField & alphafp = alphaf.boundaryField()[bI];
 			if (patches[bI].coupled())
 			{
-				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
+				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1e-8)
 				{
 					vector Cfi = Cfp[pfI];
 					scalar alphafi = alphafp[pfI];
@@ -83,7 +83,7 @@ namespace Foam
 			}
 			else
 			{
-				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
+				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1e-8)
 				{
 					vector Cfi = Cfp[pfI];
 					scalar alphafi = alphafp[pfI];
@@ -103,7 +103,7 @@ namespace Foam
 		syncTools::syncPointList(msh, alphaP, plusEqOp<scalar>(), 0.0, false);
 
 
-		return alphaP/(alphaPSumWeights+1.0e-37);
+		return alphaP/(alphaPSumWeights+1e-37);
 	}
 }
 namespace Foam
@@ -160,7 +160,7 @@ namespace Foam
           const vectorField & Ufp = U.boundaryField()[bI];
           if (patches[bI].coupled())
           {
-            forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
+            forAll(Cfp, pfI)  //if (pmagdS[pfI]>1e-8)
             {
 					vector Cfi = Cfp[pfI];
 					vector Ufi = Ufp[pfI];
@@ -176,7 +176,7 @@ namespace Foam
           }
           else
           {
-            forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
+            forAll(Cfp, pfI)  //if (pmagdS[pfI]>1e-8)
             {
 					vector Cfi = Cfp[pfI];
 					vector Ufi = Ufp[pfI];
@@ -196,6 +196,6 @@ namespace Foam
         syncTools::syncPointList(msh, UP, plusEqOp<vector>(), vector::zero, false);
 
 
-        return UP/(UPSumWeights+1.0e-37);
+        return UP/(UPSumWeights+1e-37);
     }
 }

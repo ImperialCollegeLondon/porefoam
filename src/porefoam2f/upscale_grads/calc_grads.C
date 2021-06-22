@@ -97,8 +97,7 @@ int main(int argc, char *argv[])
 					"pc",
 					runTime.timeName(),
 					mesh,
-					IOobject::MUST_READ,
-					IOobject::NO_WRITE
+					IOobject::MUST_READ
 				),
 				mesh
 			);
@@ -110,8 +109,7 @@ int main(int argc, char *argv[])
 					"pd",
 					runTime.timeName(),
 					mesh,
-					IOobject::MUST_READ,
-					IOobject::NO_WRITE
+					IOobject::MUST_READ
 				),
 				mesh
 			);
@@ -136,8 +134,7 @@ int main(int argc, char *argv[])
 				(	"U",
 					runTime.timeName(),
 					mesh,
-				  IOobject::READ_IF_PRESENT,
-				  IOobject::NO_WRITE
+				  IOobject::READ_IF_PRESENT
 				),
 				  fvc::reconstruct
 				  (surfaceScalarField 
@@ -147,8 +144,7 @@ int main(int argc, char *argv[])
 						  "phi",
 						  runTime.timeName(),
 						  mesh,
-						  IOobject::READ_IF_PRESENT,
-						  IOobject::NO_WRITE
+						  IOobject::READ_IF_PRESENT
 					  ),
 					 (linearInterpolate(U) & mesh.Sf())*0.0
 					)
@@ -162,8 +158,7 @@ int main(int argc, char *argv[])
 						  "phi",
 						  runTime.timeName(),
 						  mesh,
-						  IOobject::READ_IF_PRESENT,
-						  IOobject::NO_WRITE
+						  IOobject::READ_IF_PRESENT
 					  ),
 					  linearInterpolate(U) & mesh.Sf()
 				  );
@@ -176,8 +171,7 @@ int main(int argc, char *argv[])
 					(	"gPc",
 						runTime.timeName(),
 						mesh,
-						IOobject::READ_IF_PRESENT,
-						IOobject::NO_WRITE
+						IOobject::READ_IF_PRESENT
 					),
 					0.0*fvc::grad(pc)
 				);	

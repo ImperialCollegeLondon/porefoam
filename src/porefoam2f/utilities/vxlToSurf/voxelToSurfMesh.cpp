@@ -28,8 +28,7 @@
 //#include "voxelSurface.h"
 
 
-int usage()
-{
+int usage()  {
 	std::cout<<"\nvoxelToSurfMesh:\n converting 3D image file to  surface format"
 		<<"\nusages: \n"
 		<<"    voxelToSurfMesh inputMetaImage.mhd outPutFile.obj \n"
@@ -37,31 +36,28 @@ int usage()
 	return -1;
 }
 
-//int debugLevel_ = 0;
 #define MAIN
-//#include "globals.cpp"
-#include "voxelImageConvert.cpp"
+#include "voxelImage.h"
 
 #include "surfUtils.h"
-surfMsh createSurface(InputFile& meshingDict,  const voxelImage & vxlImg, const int nVVs, const std::string& outputSurface);
+surfMsh createSurface(InputFile& inp,  const voxelImage & vxlImg, const int nVVs, const std::string& outputSurface);
 
-int main(int argc, char *argv[])
-{
+using namespace std;
+int main(int argc, char *argv[])  {
 
 	if(argc<2) return usage();
 
-	std::string headerName(argv[1]);
+	std::string fnam(argv[1]); // .mhd header or image name
 
-    InputFile meshingDict(headerName, 0);
-		meshingDict.echoKeywords(cout);
+    InputFile inp(std::string(hasExt(fnam,".mhd")? fnam : ""), 0);
+		inp.echoKeywords(cout);
 
-	if(headerName.size()<4) return usage();
-	std::string outputSurface = (argc>2) ? string(argv[2]) : 
-		meshingDict.getOr(headerName.substr(0,headerName.size()-4)+".obj", "outputSurface");
-
+	if(fnam.size()<4) return usage();
+	std::string outputSurface = (argc>2)  ? string(argv[2]) : inp.getOr("outputSurface", baseName(fnam)+".obj");
 
 
-	voxelImage vimage(headerName);
+
+	voxelImage vimage(fnam);
 	int3 n = vimage.size3();
 
 	vimage.cropD(int3(0,0,0),vimage.size3(),1,1);	//		 XXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -83,8 +79,7 @@ int main(int argc, char *argv[])
 	cout<<"nVVs:"<<int(nVVs)<<endl;
 
 
-	if (meshingDict.lookupOr("extractBoxBoundary",false))
-	{
+	if (inp.getOr("extractBoxBoundary",false))  {
 		cout<<"extracting box boundary"<<endl;
 		const int
 			Left  =nVVs+0,
@@ -105,8 +100,7 @@ int main(int argc, char *argv[])
 		vimage.zeroGrad(1);
 	}
 
-	if (meshingDict.lookupOr("filterImage",true))
-	{
+	if (inp.getOr("filterImage",true))  {
 		bool verbose=true;
 		(cout<<" Filtering Image: ").flush();
 		//modeNSames(vimage,2,verbose);
@@ -116,7 +110,7 @@ int main(int argc, char *argv[])
 
 		(cout<<"\n.").flush();
 		maxitr=20;
-		while(modeNSames(vimage,2,verbose) && (--maxitr)) (cout<<".").flush(); //was .mod(3) // without this the surface correction most likely would crash
+		while(modeNSames(vimage,2,verbose) && (--maxitr)) (cout<<"; ").flush(); //was .mod(3) // without this the surface correction most likely would crash
 	}
 	else (cout<<"Warning, not filetring image is not a good idea").flush();
 
@@ -125,16 +119,19 @@ int main(int argc, char *argv[])
 	vimage.printInfo();
 
 	cout<<" createSurface { outputFileName: "<<outputSurface<<endl;
+	try {
+		surfMsh srfMsh = createSurface(inp, vimage,nVVs, outputSurface);//         XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-	surfMsh srfMsh = createSurface(meshingDict, vimage,nVVs, outputSurface);//         XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		//piece<point> pointsp=piece<point>(srfMsh.points);
 
-	//piece<point> pointsp=piece<point>(srfMsh.points);
+		smoothSurf(inp, srfMsh.faces_bs, srfMsh.points);
 
-	smoothSurf(meshingDict, srfMsh.faces_bs, srfMsh.points);
-
-	writeSurfaceFiles(srfMsh.faces_bs, srfMsh.points, outputSurface);
-	writeMergeSurfaceFile(srfMsh.faces_bs, srfMsh.points, outputSurface);
-
+		writeSurfaceFiles(srfMsh.faces_bs, srfMsh.points, outputSurface);
+		writeMergeSurfaceFile(srfMsh.faces_bs, srfMsh.points, outputSurface);
+	}
+	catch (std::exception& e)	{  std::cerr << "Error in surfMsh " << e.what()<<endl;  }
+	catch (...)	{  std::cerr << "Error in surfMsh "<<endl;   }
+	
 
 	cout<< "end }" << endl;
 

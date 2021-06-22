@@ -25,7 +25,7 @@
 : ${oilFilldFracs:=" 0.1"} #  1.05
 
 # In case you want to refine the mesh increase this, or vise-versa. 
-: ${RefineLevel:="0.9"}
+: ${RefineLevel:=1}
 
 # number of processors used for flow simulation
 : ${nProc:=24}
@@ -33,6 +33,7 @@
 
 : ${meshTag:=""}
 : ${caseTag:=""}
+: ${cfMshTg:="cfMesh"}
 
 
 # discretization parameters,
@@ -46,7 +47,7 @@
 : ${wallSmoothingKernel:=2}
 : ${fcdFilter:=0.01}
 : ${maxDeltaT:=1e-5}
-: ${maxAlphaCo:=50}
+: ${maxAlphaCo:=30}
 : ${endTime:=0.2}
 
 
@@ -160,34 +161,33 @@ echo "_________________________ $dataFile  ____________________________"
 		cp "$dataFile".mhd  $mshDir/"$dataFile"_input.mhd # for future reference
 		sed -i 's/ElementDataFile[ \t]*=[ \t]*/ElementDataFile = ..\//'  $mshDir/${dataFile}_input.mhd
 		sed -i 's/\(ElementDataFile.*\)/\1\nUnit = 1e6 /'  $mshDir/${dataFile}_input.mhd #  @scale for snappyHexMesh
-		(cd $mshDir && runApp voxelImageConvert  "$dataFile"_input.mhd   "$mshDir.mhd" && mv log.voxelImageConvert log.voxelImageConvert- )
+		(cd $mshDir && runApp voxelImageProcess  "$dataFile"_input.mhd   "$mshDir.mhd" && mv log.voxelImageProcess log.voxelImageProcess- )
 		#(cd $mshDir && RunUpdateBlockMeshDict ${mshDir}.mhd  2  $RefineLevel $nSkip )
 		vxlSiz="$(cat $mshDir/$mshDir.mhd | grep ElementSize | sed -e 's/[\t ]/\n/g' | grep [0-9] | head -1 )" # note `more` doesn't work, breaks piping
 		echo vxlSiz $vxlSiz
 
 		# create STL surface for SHM
 		echo " ------------------------  "
+
+
 		setValues BASENAME "$mshDir" $mshDir/system/meshingDict
-		#setValues solidwalls "${mshDir}0" $mshDir/system/meshDict.cfMesh
 		#(cd $mshDir && runApp voxelToSurface  )
 		printf "\n extractBoxBoundary true\n\n" >> $mshDir/${dataFile}_input.mhd  
 		(cd $mshDir && runApp vxlToSurf  ${dataFile}_input.mhd  ${dataFile}.obj  )
-		(cd $mshDir/  && runApp surfaceAutoPatch ${dataFile}0.obj solidwalls.stl   100 )
+		(cd $mshDir && runApp surfaceAutoPatch ${dataFile}0.obj solidwalls.stl   100 )
 		#(cd $mshDir && runApp surfaceSmoothVP )
 		echo "$mshDir/constant/ : ";	(cd $mshDir && ls *.obj )
-		#(cd $mshDir/constant/triSurface && cp ../../"$mshDir"Smooth.obj solidwalls.obj )
-		#ls $mshDir/constant/triSurface
-		(cd $mshDir && runApp voxelToFoamPar  ${mshDir}SurfExt.mhd 1 1 1 F)
+		#(cd $mshDir && runApp voxelToFoamPar  ${mshDir}.mhd 1 1 1 F)
 		echo " ------------------------  "
 
 
-		(cd $mshDir/system && mv meshDict.cfMesh meshDict )
+		(cd $mshDir/system && mv meshDict.$cfMshTg meshDict )
 		setKeywordValues maxCellSize "$(calc $vxlSiz/$RefineLevel)" $mshDir/system/meshDict
-		setKeywordValues nLayers "1" $mshDir/system/meshDict
+		setKeywordValues nLayers "2" $mshDir/system/meshDict
 		setKeywordValues stopAfter "end" $mshDir/system/meshDict
 		(cd $mshDir && runApp cartesianMesh && mv log.cartesianMesh log.cartesianMesh-1)
 		(cd $mshDir && runApp ofMesh2Voxel && mv log.ofMesh2Voxel log.ofMesh2Voxel-)
-		(cd $mshDir && runApp voxelImageConvert vxlImage.mhd "$mshDir.mhd")
+		(cd $mshDir && runApp voxelImageProcess vxlImage.mhd "$mshDir.mhd")
 		(cd $mshDir && runApp checkMesh && mv log.checkMesh log.checkMesh.0)
 
 		#(cd $mshDir && runApp  meshAddFaceLayer )
@@ -198,6 +198,13 @@ echo "_________________________ $dataFile  ____________________________"
 		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.2)
 		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
 		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.3)
+
+		(cd $mshDir && runApp  smoothMesh 0.2 10 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.4.1)
+		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.4.2)
+		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.4.3)
 
 		#setKeywordValues lastStep "templateGeneration" $mshDir/system/meshDict
 		#setKeywordValues stopAfter "end" $mshDir/system/meshDict
@@ -212,8 +219,26 @@ echo "_________________________ $dataFile  ____________________________"
 		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.5-1)
 		(cd $mshDir && runApp  smoothMesh 0.3 20 true && mv  log.smoothMesh log.smoothMesh-)
 		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.5-2)
-		(cd $mshDir && runApp  smoothMesh 0.1 20 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
 		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.5-3)
+
+		 #remove these when adding a single layer maybe?
+		(cd $mshDir && runApp  smoothMesh 0.05 10 false && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.6-1)
+		(cd $mshDir && runApp  smoothMesh 0.3 10 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.6-2)
+		(cd $mshDir && runApp  smoothMesh 0.1 10 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.6-3)
+
+		 #remove these when adding a single layer maybe?
+		(cd $mshDir && runApp  smoothMesh 0.05 10 false && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.7-1)
+		(cd $mshDir && runApp  smoothMesh 0.3 10 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.7-2)
+		(cd $mshDir && runApp  smoothMesh 0.1 10 true && mv  log.smoothMesh log.smoothMesh-)
+		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.7-3)
+
+
 
 		#################################################################################################
 
@@ -222,7 +247,6 @@ echo "_________________________ $dataFile  ____________________________"
 
 		setKeywordValues method scotch ./$mshDir/system/decomposeParDict
 
-		(cd $mshDir && runApp checkMesh && mv log.checkMesh log.checkMesh.5-5)
 
 
 
@@ -312,7 +336,7 @@ echo "_________________________ $dataFile  ____________________________"
 			cp -r $mshDir/constant  $runDir/
 			cp -r $mshDir/system  $runDir/
 			touch $runDir/$runDir.foam
-			(cd $runDir && runApp transformPoints -scale "(1.0e-6 1.0e-6 1.0e-6)" ) # #scale back
+			(cd $runDir && runApp transformPoints -scale "(1e-6 1e-6 1e-6)" ) # #scale back
 			(cd $runDir && runApp checkMesh)
 
 
@@ -365,7 +389,7 @@ echo "_________________________ $dataFile  ____________________________"
 				cp -r $mshDir/${vxlSElems}0.mhd  $runDir/${vxlSElems}$VSElml.mhd
 				replaceValues "_VSubElems0" "_VSubElems$VSElml"   $runDir/${vxlSElems}$VSElml.mhd
 				echo  "threshold 120 200"  >> $runDir/${vxlSElems}$VSElml.mhd
-				(cd $runDir && runApp  voxelImageConvert ${vxlSElems}$VSElml.mhd alpha1.mhd UChar)
+				(cd $runDir && runApp  voxelImageProcess ${vxlSElems}$VSElml.mhd alpha1.mhd UChar)
 				(cd $runDir && runApp  voxelAlphaFieldToFoam alpha1.mhd -nGrowAlpha 0)   #-invertAlpha
 			 fi
 			else

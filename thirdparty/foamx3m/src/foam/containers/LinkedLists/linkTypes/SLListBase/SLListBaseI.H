@@ -56,12 +56,6 @@ inline Foam::SLListBase::SLListBase(link* a)
 {}
 
 
-// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
-
-inline Foam::SLListBase::~SLListBase()
-{}
-
-
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 inline Foam::label Foam::SLListBase::size() const
@@ -171,11 +165,11 @@ inline Foam::SLListBase::iterator::iterator(SLListBase& s)
 {}
 
 
-inline void Foam::SLListBase::iterator::operator=(const iterator& iter)
-{
-	curElmt_ = iter.curElmt_;
-	curLink_ = iter.curLink_;
-}
+//inline void Foam::SLListBase::iterator::operator=(const iterator& iter)
+//{
+	//curElmt_ = iter.curElmt_;
+	//curLink_ = iter.curLink_;
+//}
 
 
 inline bool Foam::SLListBase::iterator::operator==(const iterator& iter) const
@@ -212,13 +206,13 @@ inline Foam::SLListBase::iterator& Foam::SLListBase::iterator::operator++()
 }
 
 
-inline Foam::SLListBase::iterator
-Foam::SLListBase::iterator::operator++(int)
-{
-	iterator tmp = *this;
-	++*this;
-	return tmp;
-}
+//inline Foam::SLListBase::iterator
+//Foam::SLListBase::iterator::operator++(int)
+//{
+	//iterator tmp = *this;
+	//++*this;
+	//return tmp;
+//}
 
 
 inline Foam::SLListBase::iterator
@@ -262,13 +256,13 @@ inline Foam::SLListBase::const_iterator::const_iterator(const iterator& iter)
 {}
 
 
-inline void Foam::SLListBase::const_iterator::operator=
-(
-	const const_iterator& iter
-)
-{
-	curElmt_ = iter.curElmt_;
-}
+//inline void Foam::SLListBase::const_iterator::operator=
+//(
+	//const const_iterator& iter
+//)
+//{
+	//curElmt_ = iter.curElmt_;
+//}
 
 
 inline bool Foam::SLListBase::const_iterator::operator==

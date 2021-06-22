@@ -56,7 +56,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 		//const surfaceScalarField& deltaS_
 )
 {
-	const scalar CONTRAST_FACTOR = 1.0e-4*deltaN_.value();
+	const scalar CONTRAST_FACTOR = 1e-4*deltaN_.value();
 	const fvMesh& msh = mesh();
 	const fvBoundaryMesh& boundary = msh.boundary();
 	const fvBoundaryMesh& patches = msh.boundary(); 
@@ -132,7 +132,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 	pointVectorField nHatSp = gradAlphaP/magGradAlphaP;
 	smoothNSOverInterfPoints(nHatSp, magDelS, msh.magSf(), smoothingKernel_, smoothingRelaxFactor_,interfPoints);
-	nHatSp /= mag(nHatSp) + 1.0e-12;
+	nHatSp /= mag(nHatSp) + 1e-12;
 
 	#include "calcInterfaceLocation.H"
 
@@ -166,7 +166,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 					label ip1(fac[pI]),  ip2(fac.nextLabel(pI));
 					vector Le = (points[ip2] - points[ip1]) + (distPointInterface_[ip2] - distPointInterface_[ip1]); // edge vector
 
-					vector Ne = 0.5*(nHatSp[ip2]+nHatSp[ip1]);    Ne /= mag(Ne)+1.0e-15;
+					vector Ne = 0.5*(nHatSp[ip2]+nHatSp[ip1]);    Ne /= mag(Ne)+1e-15;
 
 
 					curvatureForcef[fI] +=  (2.0*(deltaS_[fI]>=0)-1.0) * Le^Ne;
@@ -195,7 +195,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 					label ip1(fac[pI]),  ip2(fac.nextLabel(pI));
 					vector Le = (points[ip2]-points[ip1])  + (distPointInterface_[ip2]-distPointInterface_[ip1]);
 
-					vector Ne = 0.5*(nHatSp[ip2]+nHatSp[ip1]);   Ne /= mag(Ne)+1.0e-15;
+					vector Ne = 0.5*(nHatSp[ip2]+nHatSp[ip1]);   Ne /= mag(Ne)+1e-15;
 
 					patchCurveIntegralf[bfI] += (2.0*(deltaS_p[bfI]>=0)-1.0) * Le^Ne;
 					nSHatfvp[bfI] += gradAlphaP[ip1];
@@ -205,7 +205,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 		}
 	}
 
-	nSHatfv /= mag(nSHatfv)+1.0e-15;
+	nSHatfv /= mag(nSHatfv)+1e-15;
 	//nHatf = nSHatfv;
 	//nSHatfv=nHatf;
 
@@ -216,7 +216,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 	//#include "smoothCurvatureForce.H"
 
-	surfaceScalarField magInterfaceSf(mag(interfaceSf & nSHatfv)+ 1.0e-14*magSf);
+	surfaceScalarField magInterfaceSf(mag(interfaceSf & nSHatfv)+ 1e-14*magSf);
 	#include "smoothFcOverInterfPoints.H"
 
 	#include "smoothCurvatureForce.H"

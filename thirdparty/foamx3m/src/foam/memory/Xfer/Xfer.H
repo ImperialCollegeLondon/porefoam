@@ -97,7 +97,8 @@ public:
 		//- Empty Xfer
 		static const Xfer<T> zero;
 
-
+		operator const T*() const { return ptr_; }
+		 const T* operator&() const { return ptr_; }
 	// Constructors
 
 		//- Store object pointer and manage its deletion

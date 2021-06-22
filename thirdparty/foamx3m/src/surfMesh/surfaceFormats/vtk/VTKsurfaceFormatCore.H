@@ -129,6 +129,7 @@ protected:
 		const string& readMode
 	)
 	{
+		Info<<" ***readMode: "<<readMode<<"*** ";
 		if (readMode == "CELL_DATA")
 		{
 			return cellData_;

@@ -31,7 +31,7 @@
 	//nSpCurl_=0.1*nHatSp^pointCurl(nHatSp,Up,fvc::interpolate(U_),msh.time().deltaT().value());
 	//nSpCurl_/=0.1*mag(nSpCurl_)+0.99*mag(nHatSp)+0.01;
 	//nHatSp += nSpCurl_;
-	//nHatSp /= mag(nHatSp) +1.0e-15;
+	//nHatSp /= mag(nHatSp) +1e-15;
 
 	//nSpCurl_=nHatSp;
 
@@ -69,20 +69,20 @@
 		///. delete gap between interface and wall
 		const polyBoundaryMesh& boundaryMesh = msh.boundaryMesh();
 		//const fvBoundaryMesh& patches = msh.boundary();
-		forAll(boundaryMesh, patchi)
+		forAll(boundaryMesh, bi)
 		{
-			const labelList& patchPoints = boundaryMesh[patchi].meshPoints();
-			if (patches[patchi].coupled()) {}
-			else	if (isA<alphaContactAngleFvPatchScalarField>(alpha1_.boundaryField()[patchi]))
+			const labelList& patchPoints = boundaryMesh[bi].meshPoints();
+			if (patches[bi].coupled()) {}
+			else	if (isA<alphaContactAngleFvPatchScalarField>(alpha1_.boundaryField()[bi]))
 			{
-				primitivePatchInterpolation pinterpolator(boundaryMesh[patchi]);
-				pointField nWp= pinterpolator.faceToPointInterpolate(nw_.boundaryField()[patchi]);
-				nWp/=mag(nWp)+1.0e-15;
+				primitivePatchInterpolation pinterpolator(boundaryMesh[bi]);
+				pointField nWp= pinterpolator.faceToPointInterpolate(nw_.boundaryField()[bi]);
+				nWp/=mag(nWp)+1e-15;
 				forAll(patchPoints, ppI)
 				{
 					label pI = patchPoints[ppI];
 					vector ns = nHatSp[pI];
-					vector ss =  ns -  (ns & nWp[ppI])*nWp[ppI];  ss/=mag(ss)+1.0e-6;
+					vector ss =  ns -  (ns & nWp[ppI])*nWp[ppI];  ss/=mag(ss)+1e-6;
 					const scalar cosNsSs = ns&ss;
 					distPointInterface_[pI] = 1.1*((distPointInterface_[pI] & ss)/(cosNsSs+0.1)) * ss;
 				}

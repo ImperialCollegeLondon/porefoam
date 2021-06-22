@@ -3,14 +3,14 @@
     const pointField & points=surf1.points();
     const pointField& Cf=surf1.faceCentres();
 
-// 1.  to re-implement, to avoid crash with multiply-conected surfaces
+// 1.  to re-implement, to avoid crash with multiply-connected surfaces
     vectorField fNorms(faces.size(),vector(0,0,0));
     forAll(faces,faceI)
     {
         const face & f=faces[faceI];
         forAll(f, pI)  fNorms[faceI] += (newPoints[f.prevLabel(pI)]-newPoints[f[pI]])^(newPoints[f.nextLabel(pI)]-newPoints[f[pI]]);
 	}
-    fNorms=fNorms/(mag(fNorms)+1.0e-12);
+    fNorms=fNorms/(mag(fNorms)+1e-12);
 ///. point-normal vectors
     vectorField pNorms(pointPoints.size(),vector(0,0,0));
     forAll(faces,faceI)
@@ -27,9 +27,9 @@
         }
     }
 
-	scalarField pAreas(mag(pNorms)+1.0e-18);
+	scalarField pAreas(mag(pNorms)+1e-18);
 
-	pNorms=pNorms/(mag(pNorms)+1.0e-12);
+	pNorms=pNorms/(mag(pNorms)+1e-12);
 
 
 
@@ -44,7 +44,7 @@
 		forAll(pointPoints, vertI)
 		{
 			vector avgPos(vector::zero);
-			scalar sumWeights(1.0e-14);
+			scalar sumWeights(1e-14);
 
 			const labelLoop& neiPoints = pointPoints[vertI];
 			forAll(neiPoints, neipI)
@@ -79,7 +79,7 @@ Info<< "VP, avgDisp: "; cout.flush();
         {
 			vector avgDispV(displacements[vertI]);
             //scalar avgDispS((pNorms[vertI] & dispTmp[vertI]));
-            //scalar sumWeightsDisp(1.0e-14);
+            //scalar sumWeightsDisp(1e-14);
             scalar sumWeights(1.0000000001);
 
             const labelLoop& neiPoints = pointPoints[vertI];

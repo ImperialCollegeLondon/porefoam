@@ -25,7 +25,6 @@
 
 #include <assert.h>
 #include "voxelImage.h"
-//#include "globals.cpp"
 
 #include "fvCFD.H"
 
@@ -60,7 +59,7 @@ void convertToFoamWrite
 
 	int3 n=vximage.size3();
 	dbl3 xmin=vximage.X0();
-	dbl3 dx=vximage.dx();   //dx*=1.0e-6;
+	dbl3 dx=vximage.dx();   //dx*=1e-6;
 
 	if (!n[0]) Info<<"\nError: no image read\n"<<endl;
 
@@ -76,7 +75,7 @@ void convertToFoamWrite
 
 	const vectorField & C =	mesh.C().internalField();
 	Type sumAlpha = Type();
-	double sumWalpha=1.0e-64;
+	double sumWalpha=1e-64;
 	if (vximage.nx())
 	{
 	  forAll(C,c)
@@ -91,8 +90,8 @@ void convertToFoamWrite
 	}
 	Info<<" AvgAlpha: "<<sumAlpha/sumWalpha<<endl;
 
-	forAll(boundary, patchi)
-		Vfield.boundaryFieldRef()[patchi]==Vfield.boundaryField()[patchi].patchInternalField();
+	forAll(boundary, bi)
+		Vfield.boundaryFieldRef()[bi]==Vfield.boundaryField()[bi].patchInternalField();
 
 	
 	OFstream AOF(Vfield.time().timeName()+"/"+name);

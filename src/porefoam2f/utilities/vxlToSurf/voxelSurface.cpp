@@ -44,8 +44,7 @@ using namespace std;
 
 
 inline int collectManifoldFaces(label pI, label connectingFace ,DynamicList<label> & group1, bool handlNonManiflEdges,
-const facePiece& faces, const piece<point>& points, const labelListList& pPoints, const labelListList& pFaces )
-{
+const facePiece& faces, const piece<point>& points, const labelListList& pPoints, const labelListList& pFaces )  {
 
 
 	const bool selectMin=false;
@@ -54,38 +53,33 @@ const facePiece& faces, const piece<point>& points, const labelListList& pPoints
 	nClctd+=appendUnique(group1,connectingFace);
 
 	const labelListList eFaces = edgeFaces(pPoints[pI],faces,pFaces[pI]);
-	for_(pPoints[pI], eI)
-	{
+	for_(pPoints[pI], eI)  {
 
 		const ints & myEFs=eFaces[eI];
-		if (myEFs.size()==1)   Info<<"\n Error point "<<points[pI]<<" conected to edge of only one face   " <<points[pI]<<"  " <<points[pPoints[pI][eI]]<<"	face: " <<eFaces[eI] << "\n\n";
+		if (myEFs.size()==1)   Info<<"\n Error point "<<points[pI]<<" connected to edge of only one face   " <<points[pI]<<"  " <<points[pPoints[pI][eI]]<<"	face: " <<eFaces[eI] << "\n\n";
 
-		else if (myEFs.size()==2)
-		{
+		else if (myEFs.size()==2)  {
 			if      (myEFs[0]==connectingFace) nClctd+=appendUnique(group1,myEFs[1]);
 			else if (myEFs[1]==connectingFace) nClctd+=appendUnique(group1,myEFs[0]);
 		}
-		else if (myEFs.size()>2 && handlNonManiflEdges)
-		{
+		else if (myEFs.size()>2 && handlNonManiflEdges)  {
 			bool isMyEdge =false;
 			for_(myEFs, fI)
 				if( myEFs[fI]==connectingFace )
 					isMyEdge=true;
 
-			if(isMyEdge)
-			{
+			if(isMyEdge)  {
 
 
 				dbls closeNess(myEFs.size(), selectMin ? 1000.0: -1000.0 );
 				dbl3 masterNormal=normal(faces[connectingFace],points);
 				dbl3 Ce=0.5*(points[pI]+points[pPoints[pI][eI]]);
 				dbl3 tmf=centre(faces[connectingFace],points)-Ce;
-				tmf/=mag(tmf)+1.0e-15;
+				tmf/=mag(tmf)+1e-15;
 
-				for_(myEFs, fI) if ( !(myEFs[fI]==connectingFace) )
-				{
+				for_(myEFs, fI) if ( !(myEFs[fI]==connectingFace) )  {
 					dbl3 tf=centre(faces[myEFs[fI]],points)-Ce;
-					tf/=mag(tf)+1.0e-15;
+					tf/=mag(tf)+1e-15;
 					scalar sin=tf&masterNormal;
 					scalar cos=tf&tmf;
 					const double PI=3.14159265;
@@ -115,15 +109,14 @@ const facePiece& faces, const piece<point>& points, const labelListList& pPoints
 //=============================================================================================
 
 
-void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManiflEdges )
-{
-	Info<<"	"<<points.size()<<"  points and  "<<faces.size()<<"  faces in surface, looking for errors:"<<endl;		/*Info.flush()*/;
+void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManiflEdges )  {
+	Info<<"	"<<points.size()<<"  points and  "<<faces.size()<<"  faces in surface, looking for non-manifolds:"<<endl;		/*Info.flush()*/;
 
 	// new points and changed faces
 	DynamicList<point> addedPoints; addedPoints.reserve(points.size()/100+1);
 	//DynamicList<face>  modifiedFaces(faces.size()/100+1);
 	std::map<label,face>  changedFaces;//(faces.size()/100+1);
-	const auto& meshPoints = points;
+	//const auto& meshPoints = points;
 
 	label nProblemPoints = 0;
 
@@ -132,19 +125,16 @@ void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManif
 	const labelListList pFaces  = pointFaces(points.size(),faces);
 	const labelListList pPoints = getPointPoints(points.size(),faces);
 
-
 	size_t nSkipped = 0;
 	label iLastPoint=points.size()-1;
-	for_(points, pI)
-	{
+	for_(points, pI)  {
 		const ints& myFaces = pFaces[pI];
-		if (myFaces.size()>5)
-		{
+		if (myFaces.size()>5)  {
 
 			DynamicList<label> group1; group1.reserve(myFaces.size());
 
 			group1.append(myFaces[0]);
-			int nClctdTotal=1;
+			size_t nClctdTotal=1;
 
 			//int gfI=0;
 			{int nClctd; do { nClctd=0;
@@ -154,19 +144,16 @@ void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManif
 			for_(group1, gfI)  
 			nClctdTotal+= collectManifoldFaces(pI, group1[gfI] ,group1,handlNonManiflEdges, faces, points, pPoints, pFaces);
 
-			if(nClctdTotal<myFaces.size())
-			{
+			if(nClctdTotal<myFaces.size())  {
 				  bool PreviouslyModified=false;
 				  for_(group1,gfI)   if (changedFaces.find(group1[gfI])!=changedFaces.end())	PreviouslyModified=true;
 
 				
-				if( (nClctdTotal<myFaces.size()-2) &&  (nClctdTotal>2) && !PreviouslyModified)
-				{	++nProblemPoints;
+				if( (nClctdTotal<myFaces.size()-2) &&  (nClctdTotal>2) && !PreviouslyModified)  {	++nProblemPoints;
 
 					addedPoints.append(points[pI]); ++iLastPoint;  ///. clone the point, the clone will go to the end
 					ensure(group1.size());
-					for_(group1,gfI)
-					{
+					for_(group1,gfI)  {
 						face modifedF=faces[group1[gfI]];        ///. get the face
 						label index=distance(modifedF.begin(), find(modifedF.begin(),modifedF.end(),pI));
 
@@ -202,6 +189,13 @@ void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManif
 
 	for(const auto& chngdF:changedFaces)	faces[chngdF.first]= chngdF.second;
 
+
+
+
+	size_t nEdges=0; 
+	for_(pPoints,pI) for(auto pJ:pPoints[pI]) if(pJ>int(pI)) ++nEdges;
+	Info<<"nEdges: \t"<<nEdges <<"\t;  nPoints: \t"<<len(pPoints) <<"\t;  nFaces: \t"<<len(faces)<<"\t;  Euler_characteristic: \t"<<len(faces)-int(nEdges-len(pPoints))<< "\n\n"; // used for Euler number computation
+
 	Info<<faces.size()<<" faces "<<points.size()<<" points "<<endl;
 
 }
@@ -212,8 +206,7 @@ void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManif
 
 
 
-void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stage )
-{
+void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stage )  {
 	Info<<points.size()<<" points,  "<<faces.size()<<" faces,  stage:"<<stage<<"   correcting: ";  cout.flush();
 
 	std::set<label>  deletedFaceIs;//(faces.size()/100+1);
@@ -225,14 +218,12 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 	facePiece & Sfaces=faces;
 	ints pMarks(points.size(),0);
 	std::vector<labelList> pFaces(points.size());
-	for_(Sfaces, fI)
-	{	const face& f = Sfaces[fI];
+	for_(Sfaces, fI)  {	const face& f = Sfaces[fI];
 		for_(f,i) ++pMarks[f[i]];
 	}
 	for_(pFaces, pI)	pFaces[pI].resize(pMarks[pI]);
 	pMarks=-1;
-	for_(Sfaces, fI)
-	{	const face& f = Sfaces[fI];
+	for_(Sfaces, fI)  {	const face& f = Sfaces[fI];
 		for_(f,i) pFaces[f[i]][++pMarks[f[i]]]=fI;
 	}
 
@@ -241,39 +232,31 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 
 
 
-	for_(pFaces, pI)
-	{
+	for_(pFaces, pI)  {
 		label pII = pI;///surf1.meshPoints()[pI];
 		label n3fs(0),delFI(-1);
 		const labelList& myFaces = pFaces[pI];
-		if (myFaces.size()>4)
-		{
+		if (myFaces.size()>4)  {
 			label myMark(fMarks[myFaces[0]]); bool CLine(false);
-			for_(myFaces,i)
-			{
+			for_(myFaces,i)  {
 				const face& f=Sfaces[myFaces[i]];
 				auto fItr=find(f.begin(), f.end(),pII);  //find(list.begin(), list.end(),val)
 				if (fItr==f.end())
 					++nbads;
 				else
 					if (pFaces[*nextCircIter(f,fItr)].size() ==3 && pFaces[*prevCircIter(f,fItr)].size() ==3) {++n3fs; delFI=myFaces[i];}
-					if(myMark!=fMarks[myFaces[i]]) CLine=true;
+				if(myMark!=fMarks[myFaces[i]]) CLine=true;
 			}
-			if (CLine && n3fs==0 && stage==2)
-			{
-			  for_(myFaces,i)
-			  {
+			if (CLine && n3fs==0 && stage==2)  {
+			  for_(myFaces,i)  {
 				const face& f=Sfaces[myFaces[i]];
 				auto fItr=find(f.begin(), f.end(),pII);  //find(list.begin(), list.end(),val)
 				if (fItr==f.end())
-				{
 					++nbads;//Info<<"  bad:"<<pI<<" "<<pII<<"  ";
-				}
 				else
 				{
 					auto opospItr= nextCircIter(f,nextCircIter(f,fItr)); //f[(mePIinf+2)%f.size()];
-					if (pFaces[*opospItr].size() ==3 && pFaces[*prevCircIter(f, fItr)].size()>6 && pFaces[*nextCircIter(f,fItr)].size()>6)
-					{
+					if (pFaces[*opospItr].size() ==3 && pFaces[*prevCircIter(f, fItr)].size()>6 && pFaces[*nextCircIter(f,fItr)].size()>6)  {
 						++n3fs; delFI=myFaces[i]; pII=*prevCircIter(f, fItr);
 						//~ Info<<"!"<<(mePIinf+2)%f.size()<<" "<<delFI<<"    "<<pI<<" "<<opospI<<" "<<pII<<" "<<endl;
 						//~ exit(-1);
@@ -283,8 +266,7 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 			}
 		}
 
-		if ( (n3fs==1 ||  (stage>=1 && n3fs>=1)) && (deletedFaceIs.find(delFI)==deletedFaceIs.end())  && pointPointmap[pII]==-1  && pointPointmap[pI]==-1 )
-		{
+		if ( (n3fs==1 ||  (stage>=1 && n3fs>=1)) && (deletedFaceIs.find(delFI)==deletedFaceIs.end())  && pointPointmap[pII]==-1  && pointPointmap[pI]==-1 )  {
 			nProblemPoints++;
 
 			const face& f=Sfaces[delFI];
@@ -294,12 +276,10 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 			else
 			{
 				int keptP,delP;
-				if(*nextCircIter(f, fItr) < *prevCircIter(f, fItr))
-					{keptP=*nextCircIter(f, fItr);  delP=*prevCircIter(f, fItr);}
+				if(*nextCircIter(f, fItr) < *prevCircIter(f, fItr))  {keptP=*nextCircIter(f, fItr);  delP=*prevCircIter(f, fItr);}
 				else{delP=*nextCircIter(f, fItr);  keptP=*prevCircIter(f, fItr);}
 				
-				if (pointPointmap[delP]==-1 && pointPointmap[keptP]==-1)
-				{
+				if (pointPointmap[delP]==-1 && pointPointmap[keptP]==-1)  {
 					pointPointmap[delP]=keptP;
 					deletedFaceIs.insert(delFI);
 					//~ mergedPointIndices.append(keptP);
@@ -318,16 +298,14 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 
 	{
 		label iLastPoint=-1;
-		for_(points,i)
-		{
-			if (pointPointmap[i]<0)
-			{
+		for_(points,i)  {
+			if (pointPointmap[i]<0)  {
 				points[++iLastPoint]=points[i];
 				pointPointmap[i]=iLastPoint;
 			}
 			else
 			{
-				if (pointPointmap[i]>=i) Info<<" Errorsddsfdf "<<endl;
+				if (pointPointmap[i]>=int(i)) Info<<" Errorsddsfdf "<<endl;
 				pointPointmap[i]=pointPointmap[pointPointmap[i]];
 				points[pointPointmap[i]]=0.5*(points[i]+points[pointPointmap[i]]);
 			}
@@ -338,10 +316,8 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 	{
 		for(auto delF:deletedFaceIs)	faces[ delF ]=face({-1,-1,-1,-1});
 		label iLastFace=-1;
-		for_(Sfaces,i)
-		{
-			if(faces[i].size())
-			{
+		for_(Sfaces,i)  {
+			if(faces[i].size())  {
 				face f=faces[i];
 				for_(f,ii)  f[ii]=pointPointmap[f[ii]];
 				faces[++iLastFace]=f;
@@ -350,7 +326,7 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 		}
 		//faces.resize(iLastFace+1);
 		//fMarks.resize(iLastFace+1); 
-		int Errr, Fixme;
+		int Errr_Fixme;
 	}
    Info<<faces.size()<<" faces "<<endl;
 
@@ -362,8 +338,7 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 
 
 
-surfMsh createSurface(InputFile& meshingDict, const voxelImage & vxlImg, const int nVVs, const std::string& outputSurface)
-{
+surfMsh createSurface(InputFile& inp, const voxelImage & vxlImg, const int nVVs, const std::string& outputSurface)  {
 	surfMsh srfmsh;
 	facePieceList& faces_bs = srfmsh.faces_bs;
 	DynamicField<point>& points = srfmsh.points;
@@ -379,10 +354,8 @@ surfMsh createSurface(InputFile& meshingDict, const voxelImage & vxlImg, const i
 
 	for (int iz=1;iz<=n[2];++iz)
 	 for (int iy=1;iy<=n[1];++iy)
-	  for (int ix=1;ix<=n[0];++ix)
-	  {
-		//if (!vxlImg(ix,iy,iz))
-	    {
+	  for (int ix=1;ix<=n[0];++ix)  {
+		//if (!vxlImg(ix,iy,iz))  {
 			unsigned char vv=vxlImg(ix,iy,iz);
 			unsigned char
 			neiv=vxlImg(ix-1,iy,iz);
@@ -402,7 +375,7 @@ surfMsh createSurface(InputFile& meshingDict, const voxelImage & vxlImg, const i
 
 			neiv=vxlImg(ix,iy,iz+1);
 			if (neiv>vv) ++nFaces[vv];
-	    }
+	    //}
 	  }
 
 	for(int ib=0;ib<256;++ib)  if(nFaces[ib])  cout<< " Faces_"<<ib<<" "<<nFaces[ib]<<endl;
@@ -411,7 +384,7 @@ surfMsh createSurface(InputFile& meshingDict, const voxelImage & vxlImg, const i
 
 
 
-	cout<<"creating faces"<<endl;
+	(cout<<"creating faces, ").flush();
 
 	{ 	size_t nAll=0; 
 		for(int ib=0;ib<256;++ib)  nAll+=nFaces[ib]; 
@@ -425,12 +398,11 @@ surfMsh createSurface(InputFile& meshingDict, const voxelImage & vxlImg, const i
 
 
 
-	cout<<"collecting faces"<<endl;
+	cout<<"creating surface mesh"<<endl;
 	int iPoints=-1;
 	auto point_mapper_insert = [&point_mapper, &points,  &dx,  &X0, &iPoints](int iix, int iiy, int iiz) ->
 	 int {
-		if (point_mapper(iix,iiy,iiz)<0)
-		{
+		if (point_mapper(iix,iiy,iiz)<0)  {
 			points.append(point(dx[0]*iix+X0[0],dx[1]*iiy+X0[1],dx[2]*iiz+X0[2]));
 			point_mapper(iix,iiy,iiz)=++iPoints;
 			return	iPoints;
@@ -464,34 +436,32 @@ surfMsh createSurface(InputFile& meshingDict, const voxelImage & vxlImg, const i
 
 	std::array<int,256> iFaces; iFaces.fill(-1);
 
-	for (int iz=1;iz<=n[2];iz++)
-	{  cout<<(iz%100 ? '.' : '\n');cout.flush();
+	for (int iz=1;iz<=n[2];iz++)  { 					if(iz%20==9) { (cout<<(iz%100 ? '.' : '\n')).flush(); }
 	  for (int iy=1;iy<=n[1];iy++)
-	    for (int ix=1;ix<=n[0];ix++)
-		  //if (!vxlImg(ix,iy,iz))
-		  {
+		for (int ix=1;ix<=n[0];ix++)  //if (!vxlImg(ix,iy,iz)) // 
+		{
 			unsigned char vv=vxlImg(ix,iy,iz);
 
-				unsigned char
-				neiv=vxlImg(ix-1,iy,iz);
-				if (neiv>vv)  {iclockwiserecordF( vv)}
+			unsigned char
+			neiv=vxlImg(ix-1,iy,iz);
+			if (neiv>vv)  {iclockwiserecordF( vv)}
 
-				neiv=vxlImg(ix+1,iy,iz);
-				if (neiv>vv)  {iuclockwiserecordF( vv)}
-
-
-				neiv=vxlImg(ix,iy-1,iz);
-				if (neiv>vv)  {jclockwiserecordF( vv)}
-
-				neiv=vxlImg(ix,iy+1,iz);
-				if (neiv>vv)  {juclockwiserecordF( vv)}
+			neiv=vxlImg(ix+1,iy,iz);
+			if (neiv>vv)  {iuclockwiserecordF( vv)}
 
 
-				neiv=vxlImg(ix,iy,iz-1);
-				if (neiv>vv)  {kclockwiserecordF( vv)}
+			neiv=vxlImg(ix,iy-1,iz);
+			if (neiv>vv)  {jclockwiserecordF( vv)}
 
-				neiv=vxlImg(ix,iy,iz+1);
-				if (neiv>vv)  {kuclockwiserecordF( vv)}
+			neiv=vxlImg(ix,iy+1,iz);
+			if (neiv>vv)  {juclockwiserecordF( vv)}
+
+
+			neiv=vxlImg(ix,iy,iz-1);
+			if (neiv>vv)  {kclockwiserecordF( vv)}
+
+			neiv=vxlImg(ix,iy,iz+1);
+			if (neiv>vv)  {kuclockwiserecordF( vv)}
 
 		}
 	}
@@ -502,11 +472,10 @@ surfMsh createSurface(InputFile& meshingDict, const voxelImage & vxlImg, const i
 	point_mapper.reset(0,0,0,0);
 
 
-	Info<<"nPoints: "<<points.size()<<"  "<<endl;
+	Info<<"\nnPoints: "<<points.size()<<"  "<<endl;
 
-	if (meshingDict.getOr(string("true"),"correctSurface")[0]=='t')
-	 for(auto& facezs:faces_bs) if(facezs.size())
-	 {
+	if (inp.getOr("correctSurface", true))
+	 for(auto& facezs:faces_bs) if(facezs.size())  {
 		correct(facezs,points,true);
 		correct(facezs,points,true);
 		correct(facezs,points,true);

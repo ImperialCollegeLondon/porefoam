@@ -3,12 +3,19 @@
 This library serves as a header-only 3D image manipulation and I/O for my other 
 software which work with X-ray computer tomography data.
 
-In addition, voxelImageConvert and voxelToFoam(Par) applications are included here for convinience; the libvoxel codes (all starting with voxelImage) are independent of these two packages.
+In addition, voxelImageProcess and voxelToFoam(Par) applications are included here for convinience; the libvoxel codes (all starting with voxelImage) are independent of these two packages.
 
 
 The library can read raw data in ascii (.dat) or binary (.raw) formats, in Avizo (.am) formats (only uncompressed and ByteRLE encoded data are supported).  It can also read raw.gz and .tif image formats provided that the  [libz] and [libtiff] libraries are available.
 
-### Instructions
+### Usage
+
+This library is used to read 3D image files from other codes, however the standalone app `voxelImageProcess`, which solely acts as an interface to libvoxel, can be used to print help messages about the keywords supported by libvoxel:
+
+   `voxelImageProcess -h`
+
+
+### Compile instructions
 
 #### pre-requisites:
 
@@ -19,7 +26,7 @@ To install necassary libraries in Ubuntu (18.08 etc.), run:
 ### Download, build and install
 This library is not to be compiled (after all its a header-only template library), and a component of my other `apps`: for instance [pnextract]/[pnflow] and [porefoam].  
 
-Nevertheless, if you want to generate the voxelImageConvert and voxelToFoam(Par) executables, run the following commands in order (tested in Linux Ubuntu 18.04)
+Nevertheless, if you want to generate the voxelImageProcess and voxelToFoam(Par) executables, run the following commands in order (tested in Linux Ubuntu 18.04)
 
 ```shell
 
@@ -49,9 +56,9 @@ For further information contact me by email:   a.q.raeini@imperial.ac.uk
 ### References
 See the [Publications on our website], also [Images on our website].
 
-[Publications on our website]: http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling/publications/
-[Images on our website]: http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling/micro-ct-images-and-networks/
-[Imperial College - pore-scale consortium]: http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling
+[Publications on our website]: https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/publications/
+[Images on our website]: https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/micro-ct-images-and-networks/
+[Imperial College - pore-scale consortium]: https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling
 [libtiff]: https://gitlab.com/libtiff/libtiff
 [porefoam]: https://github.com/aliraeini/porefoam
 [pnextract]: https://github.com/aliraeini/pnextract

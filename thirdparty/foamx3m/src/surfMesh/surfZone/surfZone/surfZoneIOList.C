@@ -137,19 +137,22 @@ bool Foam::surfZoneIOList::writeData(Ostream& os) const
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const surfZoneIOList& L)
+namespace Foam
 {
-	os  << L.size() << nl << token::BEGIN_LIST << incrIndent << nl;
 
-	forAll(L, i)
+	Ostream& operator<<(Ostream& os, const surfZoneIOList& L)
 	{
-		L[i].writeDict(os);
+		os  << L.size() << nl << token::BEGIN_LIST << incrIndent << nl;
+
+		forAll(L, i)
+		{
+			L[i].writeDict(os);
+		}
+
+		os  << decrIndent << token::END_LIST;
+
+		return os;
 	}
 
-	os  << decrIndent << token::END_LIST;
-
-	return os;
 }
-
-
 // ************************************************************************* //

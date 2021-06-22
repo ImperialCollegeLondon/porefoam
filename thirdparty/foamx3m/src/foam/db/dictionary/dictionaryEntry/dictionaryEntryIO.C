@@ -77,31 +77,33 @@ void Foam::dictionaryEntry::write(Ostream& os) const
 	dictionary::write(os);
 }
 
-
+namespace Foam
+{
 // * * * * * * * * * * * * * Ostream operator  * * * * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const dictionaryEntry& de)
-{
-	de.write(os);
-	return os;
+	Ostream& operator<<(Ostream& os, const dictionaryEntry& de)
+	{
+		de.write(os);
+		return os;
+	}
+
+
+	#if defined (__GNUC__)
+	template<>
+	#endif
+	Ostream& operator<<
+	(
+		Ostream& os,
+		const InfoProxy<dictionaryEntry>& ip
+	)
+	{
+		const dictionaryEntry& e = ip.t_;
+
+		os  << "    dictionaryEntry '" << e.keyword() << "'" << endl;
+
+		return os;
+	}
+
 }
-
-
-#if defined (__GNUC__)
-template<>
-#endif
-Foam::Ostream& Foam::operator<<
-(
-	Ostream& os,
-	const InfoProxy<dictionaryEntry>& ip
-)
-{
-	const dictionaryEntry& e = ip.t_;
-
-	os  << "    dictionaryEntry '" << e.keyword() << "'" << endl;
-
-	return os;
-}
-
 
 // ************************************************************************* //

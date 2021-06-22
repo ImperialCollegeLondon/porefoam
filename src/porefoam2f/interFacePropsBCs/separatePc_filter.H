@@ -1,7 +1,13 @@
 
-#define SET_REF_(rfc, rfv, sfx, _alpha1_) \
-	for(rfc = rfc##sfx; rfc<_alpha1_.size()-5; ++rfc) if ((_alpha1_[rfc]<0.01) && (magGradAlpha[rfc]<100.0*deltaN_.value()) )  break;   \
-	rfv=0.995*pc_[rfc]+0.005*rfv##sfx 
+
+// TODO clean up & convert to a function, sync_with:findRefCell.C
+#define SET_REF_(rfc, rfv, sfx, _alpha1SAtanh_) 			if (Pstream::master()) { \
+	constexpr scalar aSp01=std::atanh(1.8*0.01-0.9); /* SYN123433*/ \
+	for(rfc = rfc##sfx; rfc<_alpha1SAtanh_.size()-5; ++rfc) \
+		if ((_alpha1SAtanh_[rfc]<aSp01 || _alpha1SAtanh_[rfc]>-aSp01) && (magGradAlpha[rfc]<1000.0*deltaN_.value()) && IsRefCandid_[rfc])  break; \
+	if (rfc==_alpha1SAtanh_.size()) Info<<"Error cannot find suitable refCell for pc solver"<<endl;\
+	rfv=0.9999*pc_[rfc]+0.0001*rfv##sfx; \
+	} else rfc=-1;
 
 
 { ///. pc computation and filtering
@@ -17,16 +23,19 @@
 	volVectorField gradAlpha = fvc::grad(alpha1f_); 
 	volScalarField magGradAlpha = (mag(gradAlpha) + 0.0001*deltaN_); 
 	volVectorField nS = gradAlpha/magGradAlpha;
-	surfaceVectorField nHatfv = fvc::interpolate(gradAlpha)/fvc::interpolate(magGradAlpha); nHatfv/=mag(nHatfv)+1.0e-15;
+	surfaceVectorField nHatfv = fvc::interpolate(gradAlpha)/fvc::interpolate(magGradAlpha); nHatfv/=mag(nHatfv)+1e-15;
 	//correctContactAngle(nHatfv.boundaryField(),gradAlpha.boundaryField(),nS.boundaryField(),alpha1S_.boundaryField(), a1a2.boundaryField());
 	nHatf_ = nHatfv & Sf;
 
-	surfaceScalarField dInterf=(mag(deltaS_)/(mag(deltaS_)+1.0e-4*deltaN_));
+	surfaceScalarField dInterf=(mag(deltaS_)/(mag(deltaS_)+1e-4*deltaN_));
 	//surfaceScalarField dInterf=/*0.001*(mag(deltaS_)/(mag(deltaS_)+deltaN_))+0.999**/(mag(snGradaS)/(mag(snGradaS)+deltaN_));
 	sgPcErr_*=fcCorrectTangentRelax_*dInterf;
 	sgPc_=(stf -sgPcErr_);
 
-	SET_REF_(pcRefCell,pcRefValue,Orig_,alpha1_);
+
+	pc_ = 0.9*pc_+0.1*fvc::average(fvc::interpolate(pc_));// hoping to avoid solver crash for bad quality meshes
+
+	SET_REF_(pcRefCell,pcRefValue,Orig_,alpha1S_);
 
     for(int nonOrth=0; nonOrth<=nPcNonOrthCorr_; nonOrth++)
     {
@@ -52,11 +61,16 @@
 
 	if(!std::isfinite(average(pc_).value()))
 	{// code used to crash
-		Info<<"!std::isfinite(average(pc_)), sgPc_:"<<min(sgPc_)<<max(sgPc_)<<endl;
-		Info<<"!std::isfinite(average(pc_)), sgPcErr_:"<<min(sgPcErr_)<<max(sgPcErr_)<<endl;
-		Info<<"!std::isfinite(average(pc_)), stf:"<<min(stf)<<max(stf)<<endl;
+		Info<<"!std::isfinite(average(pc_)), sgPc_   :"<<min(sgPc_)   <<"    "<<max(sgPc_)<<endl;
+		Info<<"!std::isfinite(average(pc_)), sgPcErr_:"<<min(sgPcErr_)<<"   "<<max(sgPcErr_)<<endl;
+		Info<<"!std::isfinite(average(pc_)), stf:    "<<min(stf)      <<"   "<<max(stf)<<endl;
+		Info<<"!std::isfinite(average(pc_)), alpha1_:"<<min(alpha1_)  <<"   "<<max(alpha1_)<<endl;
 		Info<<"pcRefValue:"<<pcRefValue<<endl;
 		Info<<"pcRefCell:"<<pcRefCell<<endl;
+		Info<<"pc_[pcRefCell]:"<<pc_[pcRefCell]<<endl;
+		Info<<"alpha1S_[pcRefCell]:"<<alpha1S_[pcRefCell]<<endl;
+		Info<<"alpha1_[pcRefCell]:"<<alpha1_[pcRefCell]<<endl;
+		Info<<endl;
 		sleep(1);
 		std::terminate();
 	}
@@ -84,7 +98,7 @@
 	long long sgPcErr_checkErrs=0;
 	forAll(sgPcErr_,i)
 	{
-		if (sgPc_[i]*sgPcErr_[i] < -1.0e-6*stfTypicalLow[i])  sgPcErr_[i]  *= 0.99;
+		if (sgPc_[i]*sgPcErr_[i] < -1e-6*stfTypicalLow[i])  sgPcErr_[i]  *= 0.99;
 		if( mag(sgPc_[i])<0.5*mag(sgPcErr_[i]) ) {   sgPcErr_[i] = 0.5*sgPc_[i]; } //++sgPcErr_checkErrs;    Info<<"bEC:"<<sgPcErr_[i]<<" "<<sgPc_[i]<<endl; 
 	}
 	forAll(boundary, bI)
@@ -99,7 +113,7 @@
 			Field<scalar> & psgPc_ = sgPc_.boundaryField()[bI];
 			forAll(psgPcErr_,i)
 			{
-				if(psgPc_[i]*psgPcErr_[i] < -1.0e-6*stfTypicalLow[i])  psgPcErr_[i] *= 0.99;
+				if(psgPc_[i]*psgPcErr_[i] < -1e-6*stfTypicalLow[i])  psgPcErr_[i] *= 0.99;
 				if( mag(psgPc_[i])<0.5*mag(psgPcErr_[i]) ) {  psgPcErr_[i] = 0.5*psgPc_[i];} // ++sgPcErr_checkErrs;   Info<<"bEC:"<<psgPcErr_[i]<<" "<<psgPc_[i]<<endl;
 			}
 		}

@@ -5,20 +5,20 @@
 
 
     const fvBoundaryMesh& boundary = mesh.boundary();
-    forAll(boundary, patchi)
+    forAll(boundary, bi)
     {
-		auto& Upi = U.boundaryFieldRef()[patchi];
+		auto& Upi = U.boundaryFieldRef()[bi];
 		if (isA<fixedValueFvPatchVectorField>(Upi))
 		{ 
 			//- delta() is not cached, no good for memory nor efficiency, use 1/deltaCoeffs() instead
-			auto& delCoefs = boundary[patchi].deltaCoeffs();
+			auto& delCoefs = boundary[bi].deltaCoeffs();
 
-			 muEff.boundaryFieldRef()[patchi]+=
+			 muEff.boundaryFieldRef()[bi]+=
 			 min(0.001*cBC* //1.0526315789474;
-			 (mag(gradP.boundaryField()[patchi].patchInternalField()))/
-			 ( delCoefs*delCoefs*( mag(Upi.patchInternalField())+(0.001*gAverage(mag(Upi.patchInternalField()))+1.0e-9))), 1.0*mu.value());
+			 (mag(gradP.boundaryField()[bi].patchInternalField()))/
+			 ( delCoefs*delCoefs*( mag(Upi.patchInternalField())+(0.001*gAverage(mag(Upi.patchInternalField()))+1e-9))), 1.0*mu.value());
 
-			 muEff.boundaryFieldRef()[patchi]*=1.0/delCoefs/(1.0/delCoefs+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
+			 muEff.boundaryFieldRef()[bi]*=1.0/delCoefs/(1.0/delCoefs+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
 
 		}
 	}

@@ -79,10 +79,6 @@ public:
         VTKsurfaceFormat(const fileName& filename);
 
 
-    //- Destructor
-    virtual ~VTKsurfaceFormat() = default;
-
-
 		static autoPtr<MeshedSurface<Face> > New(const fileName& name)
 		{
 			return autoPtr<MeshedSurface<Face> >
@@ -90,12 +86,14 @@ public:
 				new VTKsurfaceFormat(name)
 			);
 		}
+
+    //- Destructor
+    virtual ~VTKsurfaceFormat() = default;
+
+
     // Static Member Functions
 
     // Member Functions
-
-        //- Read from file
-        virtual bool read(const fileName& filename);
 
 		// Write
 
@@ -116,6 +114,9 @@ public:
 		{
 			write(os, MeshedSurfaceProxy<Face>(*this));
 		}
+
+        //- Read from file
+        virtual bool read(const fileName& filename);
 
 		virtual void write(const fileName& name) const
 		{

@@ -58,83 +58,85 @@ void Foam::UList<T>::writeEntry(const word& keyword, Ostream& os) const
 }
 
 
-template<class T>
-Foam::Ostream& Foam::operator<<(Foam::Ostream& os, const Foam::UList<T>& L)
+namespace Foam
 {
-	// Write list contents depending on data format
-	if (os.format() == IOstream::ASCII || !contiguous<T>())
+	template<class T>
+	Ostream& operator<<(Ostream& os, const UList<T>& L)
 	{
-		bool uniform = false;
-
-		if (L.size() > 1 && contiguous<T>())
+		// Write list contents depending on data format
+		if (os.format() == IOstream::ASCII || !contiguous<T>())
 		{
-			uniform = true;
+			bool uniform = false;
 
-			forAll(L, i)
+			if (L.size() > 1 && contiguous<T>())
 			{
-				if (L[i] != L[0])
+				uniform = true;
+
+				forAll(L, i)
 				{
-					uniform = false;
-					break;
+					if (L[i] != L[0])
+					{
+						uniform = false;
+						break;
+					}
 				}
 			}
-		}
 
-		if (uniform)
-		{
-			// Write size and start delimiter
-			os << L.size() << token::BEGIN_BLOCK;
-
-			// Write contents
-			os << L[0];
-
-			// Write end delimiter
-			os << token::END_BLOCK;
-		}
-		else if (L.size() < 11 && contiguous<T>())
-		{
-			// Write size and start delimiter
-			os << L.size() << token::BEGIN_LIST;
-
-			// Write contents
-			forAll(L, i)
+			if (uniform)
 			{
-				if (i > 0) os << token::SPACE;
-				os << L[i];
-			}
+				// Write size and start delimiter
+				os << L.size() << token::BEGIN_BLOCK;
 
-			// Write end delimiter
-			os << token::END_LIST;
+				// Write contents
+				os << L[0];
+
+				// Write end delimiter
+				os << token::END_BLOCK;
+			}
+			else if (L.size() < 11 && contiguous<T>())
+			{
+				// Write size and start delimiter
+				os << L.size() << token::BEGIN_LIST;
+
+				// Write contents
+				forAll(L, i)
+				{
+					if (i > 0) os << token::SPACE;
+					os << L[i];
+				}
+
+				// Write end delimiter
+				os << token::END_LIST;
+			}
+			else
+			{
+				// Write size and start delimiter
+				os << nl << L.size() << nl << token::BEGIN_LIST;
+
+				// Write contents
+				forAll(L, i)
+				{
+					os << nl << L[i];
+				}
+
+				// Write end delimiter
+				os << nl << token::END_LIST << nl;
+			}
 		}
 		else
 		{
-			// Write size and start delimiter
-			os << nl << L.size() << nl << token::BEGIN_LIST;
-
-			// Write contents
-			forAll(L, i)
+			os << nl << L.size() << nl;
+			if (L.size())
 			{
-				os << nl << L[i];
+				os.write(reinterpret_cast<const char*>(L.v_), L.byteSize());
 			}
-
-			// Write end delimiter
-			os << nl << token::END_LIST << nl;
 		}
-	}
-	else
-	{
-		os << nl << L.size() << nl;
-		if (L.size())
-		{
-			os.write(reinterpret_cast<const char*>(L.v_), L.byteSize());
-		}
-	}
 
-	// Check state of IOstream
-	os.check("Ostream& operator<<(Ostream&, const UList&)");
+		// Check state of IOstream
+		os.check("Ostream& operator<<(Ostream&, const UList&)");
 
-	return os;
+		return os;
+	}
 }
-
 
 // ************************************************************************* //

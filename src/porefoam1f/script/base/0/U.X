@@ -17,7 +17,7 @@ FoamFile // -*- C++ -*-
 
 dimensions	  [0 1 -1 0 0 0 0];
 
-internalField   uniform (1.0e-6 0 0);
+internalField   uniform (1e-6 0 0);
 
 
 

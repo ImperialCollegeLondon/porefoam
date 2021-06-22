@@ -302,7 +302,10 @@ void cartesianMeshExtractor::createPolyMesh()
     }
 
     # ifdef DEBUGMesh
+    {
     label nProcBoundaries(0);
+        const PtrList<processorBoundaryPatch>& procBoundaries =
+            mesh_.procBoundaries();
     forAll(procBoundaries, patchI)
         nProcBoundaries += procBoundaries[patchI].patchSize();
 
@@ -319,10 +322,10 @@ void cartesianMeshExtractor::createPolyMesh()
     }
 
     vectorField closedness(cells.size(), vector::zero);
-    const labelList& owner = mesh_.owner();
+    const labelList& mowner = mesh_.owner();
     const labelList& neighbour = mesh_.neighbour();
-    forAll(owner, faceI)
-        if( owner[faceI] == -1 )
+    forAll(mowner, faceI)
+        if( mowner[faceI] == -1 )
         {
             Info << "faces " << faces << endl;
             FatalErrorIn
@@ -340,7 +343,7 @@ void cartesianMeshExtractor::createPolyMesh()
     forAll(faces, faceI)
     {
         const vector area = faces[faceI].normal(mesh_.points());
-        closedness[owner[faceI]] += area;
+        closedness[mowner[faceI]] += area;
         if( neighbour[faceI] != -1 )
             closedness[neighbour[faceI]] -= area;
     }
@@ -349,7 +352,7 @@ void cartesianMeshExtractor::createPolyMesh()
         if( mag(closedness[cellI]) > 1e-10 )
             Info << "Cell " << cellI << " is not closed by "
                 << closedness[cellI] << endl;
-
+	}
     # endif
 
     meshModifier.reorderBoundaryFaces();

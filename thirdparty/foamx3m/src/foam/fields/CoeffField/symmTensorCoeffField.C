@@ -123,26 +123,26 @@ void Foam::CoeffField<Foam::symmTensor>::operator=
 
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
+namespace Foam {
+	Ostream& operator<<(Ostream& os, const CoeffField<symmTensor>& f)
+	{
+		const DecoupledCoeffField<symmTensor>& df = f;
+		return operator<<(os, df);
+	}
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const CoeffField<symmTensor>& f)
-{
-	const DecoupledCoeffField<symmTensor>& df = f;
-	return operator<<(os, df);
+
+	Ostream& operator<<
+	(
+		Ostream& os,
+		const tmp<CoeffField<symmTensor> >& tf
+	)
+	{
+		const DecoupledCoeffField<symmTensor>& df = tf();
+		os << df;
+		tf.clear();
+		return os;
+	}
 }
-
-
-Foam::Ostream& Foam::operator<<
-(
-	Ostream& os,
-	const tmp<CoeffField<symmTensor> >& tf
-)
-{
-	const DecoupledCoeffField<symmTensor>& df = tf();
-	os << df;
-	tf.clear();
-	return os;
-}
-
 
 /* * * * * * * * * * * * * * * * Global functions  * * * * * * * * * * * * * */
 

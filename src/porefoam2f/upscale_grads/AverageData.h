@@ -63,8 +63,7 @@ class snapShot_zt
 	snapShot_zt();   
 };
 
-void writePostProcHeader(std::string fname, int nSlices)
-{
+void writePostProcHeader(std::string fnam, int nSlices)  {
 	std::string Names[32]={
 	"alpha", 
 	"U", 
@@ -101,28 +100,28 @@ void writePostProcHeader(std::string fname, int nSlices)
 	}	;
 
 
-	std::ofstream out (fname.c_str());
+	std::ofstream out (fnam);
 
 	out << "t ";
 	out << "maxMagU ";
 	out << "aAvg ";
 	out << "aAvgL ";
 	out << "aAvgR ";
-	for (int i=0;i<3;i++)    out << "avgUAlpha1_"<<i<<" ";
-	for (int i=0;i<3;i++)    out << "avgUAlpha2_"<<i<<" ";
+	for (int i=0; i<3; ++i)    out << "avgUAlpha1_"<<i<<" ";
+	for (int i=0; i<3; ++i)    out << "avgUAlpha2_"<<i<<" ";
 	out << "QIn ";
 	out << "QOut ";
 	out << "Dp ";
 	out << "Dpc ";
 	out << "pcAvg ";
 	out << "ADarcy ";
-	for ( int i=0;i<nSlices;i++) 
+	for (int i=0; i<nSlices; ++i) 
 	{
-	 for(int j=0; j<32 ; ++j )   out << "S"<<i+1<<"-"<<Names[j]<<" ";
+	 for(int j=0; j<32; ++j)   out << "S"<<i+1<<"-"<<Names[j]<<" ";
 	}
 	out << std::endl ;
 	out.close();
-	Info<<"wrote "<< fname <<endl;
+	Info<<"wrote "<< fnam <<endl;
 
 }
 
@@ -175,15 +174,15 @@ class snapShot_t
 		in >> aAvg;
 		in >> aAvgL;
 		in >> aAvgR;
-		for (int i=0;i<3;i++)    in >> avgUAlpha1[i];
-		for (int i=0;i<3;i++)    in >> avgUAlpha2[i];
+		for (int i=0; i<3; ++i)    in >> avgUAlpha1[i];
+		for (int i=0; i<3; ++i)    in >> avgUAlpha2[i];
 		in >> QIn;
 		in >> QOut;
 		in >> Dp;
 		in >> Dpc;
 		in >> pcAvg;
 		in >> ADarcy;
-		for (int i=0;i<slices.size();i++)    
+		for (int i=0; i<slices.size(); ++i)    
 		 forAll( slices[i].data(), j )    in >> slices[i].data()[j];
 	}
 	void write(std::ofstream& out)
@@ -193,15 +192,15 @@ class snapShot_t
 		out << aAvg<<",";
 		out << aAvgL<<",";
 		out << aAvgR<<",";
-		for (int i=0;i<3;i++)    out << avgUAlpha1[i]<<",";
-		for (int i=0;i<3;i++)    out << avgUAlpha2[i]<<",";
+		for (int i=0; i<3; ++i)    out << avgUAlpha1[i]<<",";
+		for (int i=0; i<3; ++i)    out << avgUAlpha2[i]<<",";
 		out << QIn<<",";
 		out << QOut<<",";
 		out << Dp<<",";
 		out << Dpc<<",";
 		out << pcAvg<<",";
 		out << ADarcy<<",";
-		for ( int i=0;i<slices.size();i++) 
+		for (int i=0; i<slices.size(); ++i) 
 		{
 		 forAll( slices[i].data(), j )   out << slices[i].data()[j]<<",";
 		}
@@ -223,8 +222,8 @@ class tzData
     void smoothData()
     {
 		Info<<"Smoothing over Time and z using Gaussian kernel";
-		for(label i=1;i<timeData.size()-1;i++)
-		for(label j=1;j<timeData[0].slices.size()-1;j++)
+		for(label i=1; i<timeData.size()-1; ++i)
+		for(label j=1; j<timeData[0].slices.size()-1; ++j)
 		{ 
 			timeData[i].slices[j].data()=0.125*
 				(
@@ -239,8 +238,8 @@ class tzData
     void smoothData_z()
     {
 		Info<<"Smoothing over Time and z using Gaussian kernel";
-		for(label i=1;i<timeData.size()-1;i++)
-		for(label j=1;j<timeData[0].slices.size()-1;j++)
+		for(label i=1; i<timeData.size()-1; ++i)
+		for(label j=1; j<timeData[0].slices.size()-1; ++j)
 		{ 
 			timeData[i].slices[j].data()=0.25*
 				(
@@ -253,8 +252,8 @@ class tzData
     void smoothData_t()
     {
 		Info<<"Smoothing over Time and z using Gaussian kernel";
-		for(label i=1;i<timeData.size()-1;i++)
-		for(label j=1;j<timeData[0].slices.size()-1;j++)
+		for(label i=1; i<timeData.size()-1; ++i)
+		for(label j=1; j<timeData[0].slices.size()-1; ++j)
 		{ 
 			timeData[i].slices[j].data()=0.25*
 				(
@@ -280,7 +279,7 @@ class tzData
 	{
 		writePostProcHeader(name+"_header",timeData[0].slices.size());
 		
-		std::ofstream myFile (name.c_str());
+		std::ofstream myFile (name);
 		forAll(timeData,i)
 		{
 			timeData[i].write(myFile);

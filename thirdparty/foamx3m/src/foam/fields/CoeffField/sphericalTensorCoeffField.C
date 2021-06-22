@@ -124,29 +124,32 @@ void Foam::CoeffField<Foam::sphericalTensor>::operator=
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<
-(
-	Ostream& os,
-	const CoeffField<sphericalTensor>& f
-)
+namespace Foam
 {
-	const DecoupledCoeffField<sphericalTensor>& df = f;
-	return operator<<(os, df);
+
+	Ostream& operator<<
+	(
+		Ostream& os,
+		const CoeffField<sphericalTensor>& f
+	)
+	{
+		const DecoupledCoeffField<sphericalTensor>& df = f;
+		return operator<<(os, df);
+	}
+
+
+	Ostream& operator<<
+	(
+		Ostream& os,
+		const tmp<CoeffField<sphericalTensor> >& tf
+	)
+	{
+		const DecoupledCoeffField<sphericalTensor>& df = tf();
+		os << df;
+		tf.clear();
+		return os;
+	}
 }
-
-
-Foam::Ostream& Foam::operator<<
-(
-	Ostream& os,
-	const tmp<CoeffField<sphericalTensor> >& tf
-)
-{
-	const DecoupledCoeffField<sphericalTensor>& df = tf();
-	os << df;
-	tf.clear();
-	return os;
-}
-
 
 /* * * * * * * * * * * * * * * * Global functions  * * * * * * * * * * * * * */
 

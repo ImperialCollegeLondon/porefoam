@@ -57,12 +57,12 @@ DynamicField<point> points;
 
 
 
-int  smoothSurf(InputFile& meshingDict, facePieceList& facezs, piece<point> points);
+int  smoothSurf(InputFile& inp, facePieceList& facezs, piece<point> points);
 void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAll, const std::string& fnams);
 void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> pointsAll, const std::string& fnams);
 
 dbl3s mapFacesGetPoints(std::vector<std::vector<face> >& facess, const piece<point> pointsAll);
-std::vector<std::vector<face> > getOrderedFaces(const facePieceList& facezsz, int vv);
+std::vector<std::vector<face> > getbsoleteOrderedFaces(const facePieceList& facezsz, int vv);
 
 inline int appendUnique(DynamicList<label>& dynList, label value)
 {
@@ -167,17 +167,17 @@ inline labelListList edgeFaces(const ints& myPPoints, const facePiece& faces, co
     return std::move(edgFacs);
 }
 inline dbl3 areax2(const face& f, const piece<point>& points) {
-	dbl3 diag = points[f[2]]- points[f[0]];	return (points[f[1]]- points[f[0]])^diag + diag^(points[f[3]]- points[f[0]]);
+	dbl3 diag = points[f[2]]- points[f[0]];	return ((points[f[1]]- points[f[0]])^diag) + (diag^(points[f[3]]- points[f[0]]));
 }
 inline dbl3 normal(const face& f, const piece<point>& points) {	dbl3 aa = areax2(f,points);	return aa/mag(aa); }
 inline dbl3 centre(const face& f, const piece<point>& points) {	return 0.25*(points[f[0]] + points[f[1]] + points[f[2]] + points[f[3]]); }
 inline dbl3s faceCentres(const facePiece& facez, const piece<point>& points) {
 	dbl3s res(facez.size());
-	for(int fi=0;fi<facez.size();++fi) res[fi]=centre(facez[fi],points);
+	for(size_t fi=0;fi<facez.size();++fi) res[fi]=centre(facez[fi],points);
 	return std::move(res);
 }
 inline vars<dbl3s> faceCentres(const std::vector<facePiece>& facezs, const piece<point>& points){
 	vars<dbl3s> res(facezs.size());
-	for(int iz=0;iz<facezs.size();++iz) res[iz]=faceCentres(facezs[iz],points);
+	for(size_t iz=0;iz<facezs.size();++iz) res[iz]=faceCentres(facezs[iz],points);
 	return std::move(res);
 }

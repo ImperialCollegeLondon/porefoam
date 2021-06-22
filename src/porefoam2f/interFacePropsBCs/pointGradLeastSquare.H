@@ -50,7 +50,7 @@ namespace Foam
 		const surfaceScalarField & magSf=msh.magSf();
 		//const surfaceScalarField & snGAlpha=fvc::snGrad(alpha1);
 		//const labelList& owners = msh.faceOwner();
-		//const labelList& neibors = msh.faceNeighbour();
+		//const labelList& neis = msh.faceNeighbour();
 		//  const pointField &  points=msh.points();
 		//  vectorField gradAlphaP(points.size(),vector::zero);
 
@@ -61,11 +61,11 @@ namespace Foam
 
 
 
-		symmTensorField GG(points.size(),symmTensor(1.0e-36,0.0,0.0,1.0e-36,0.0,1.0e-36));
+		symmTensorField GG(points.size(),symmTensor(1e-36,0.0,0.0,1e-36,0.0,1e-36));
 
 
 
-		forAll(Cf, fI) // if(magdS[fI]>1.0e-12)
+		forAll(Cf, fI) // if(magdS[fI]>1e-12)
 		{
 			vector Cpi = Cf[fI];
 			scalar weight=magSf[fI];  weight*=weight;// *magdS[fI]
@@ -87,7 +87,7 @@ namespace Foam
 			const vectorField & Cfp = Cf.boundaryField()[bI];
 			if (patches[bI].coupled())
 			{
-				forAll(Cfp, pfI) // if(pmagdS[pfI]>1.0e-12)
+				forAll(Cfp, pfI) // if(pmagdS[pfI]>1e-12)
 				{
 					vector Cpi = Cfp[pfI];
 					scalar weight=pmagSf[pfI];   weight*=weight*0.5; //*pmagdS[pfI]
@@ -101,7 +101,7 @@ namespace Foam
 			}
 			else
 			{
-				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
+				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1e-8)
 				{
 					vector Cpi = Cfp[pfI];
 					scalar weight=pmagSf[pfI];  weight*=weight;  //*pmagdS[pfI]
@@ -129,7 +129,7 @@ namespace Foam
 		  }
 
 
-		forAll(alphaf, fI) // if(magdS[fI]>1.0e-12)
+		forAll(alphaf, fI) // if(magdS[fI]>1e-12)
 		{
 			scalar weight=magSf[fI];  weight*=weight;// *magdS[fI]
 			vector Cfi = Cf[fI];
@@ -152,7 +152,7 @@ namespace Foam
 			const vectorField & Cfp = Cf.boundaryField()[bI];
 			if (patches[bI].coupled())
 			 {
-				forAll(Cfp, pfI) // if(pmagdS[pfI]>1.0e-12)
+				forAll(Cfp, pfI) // if(pmagdS[pfI]>1e-12)
 				{
 					scalar weight=pmagSf[pfI];weight*=weight*0.5;//*pmagdS[pfI]
 					scalar alphafi=alphafp[pfI] ;
@@ -167,7 +167,7 @@ namespace Foam
 			 }
 			 else
 			 {
-				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1.0e-8)
+				forAll(Cfp, pfI)  //if (pmagdS[pfI]>1e-8)
 				{
 					scalar weight=pmagSf[pfI]; weight*=weight;//*pmagdS[pfI]
 					scalar alphafi=alphafp[pfI] ;

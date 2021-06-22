@@ -1,11 +1,21 @@
-	surfaceScalarField muEff
-	(	IOobject
-		(	"muEff",  runTime.timeName(),  mesh,
-		IOobject::NO_READ,  IOobject::NO_WRITE
-		),  mesh,  rho*nu
-	);
+
+	surfaceScalarField muEff(IOobject("muEff", runTime.timeName(),  mesh),  mesh,  rho*nu);
 	#include  "correctmuEff.H"
 
+
+
+	//Aitken U correction
+	if(AitkenEvery){
+		scalar UAk = average(mag(U)).value();
+		ifMonitor(AitkenEvery) {
+			scalar delU = UAk-UAkOOld;  scalar del2U = delU-(UAkOOld-UAkOOOOld);
+			scalar dUAkF= mag(del2U)>1e-18 ? -delU*delU/del2U : 0.9*delU;  
+			dUAkF = min(max(-0.1,dUAkF/max(1e-16,UAk)),0.1);
+			U *= 1+dUAkF;
+			Info<<"\ndUAitkenF:"<<dUAkF<<nl<<endl; 
+		}
+		UAkOOOOld=UAkOOOld; UAkOOOld=UAkOOld;  UAkOOld=UAkOld;  UAkOld=UAk;
+	}
 
 
 	//explicit U correction
@@ -50,7 +60,7 @@
         //);
 	 U = 1.0/UEqn().A()*(UEqn().H()-fvc::grad(p));
 	 U.correctBoundaryConditions();
-	 ifMonitor	Info<< "ExeTime solve U = " << runTime.elapsedCpuTime()-tOld << " s"	<< endl;
+	 ifMonitor(10)	Info<< "ExeTime solve U = " << runTime.elapsedCpuTime()-tOld << " s"	<< endl;
 
 
 	  muEff.clear();

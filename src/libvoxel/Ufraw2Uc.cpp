@@ -21,10 +21,11 @@ Ali Q Raeini: a.q.raeini@imperial.ac.uk
 #include <assert.h>
 #include "voxelImage.h"
 
+#include "voxelImage.cpp"
+
 using namespace std;
 
-int usage()
-{
+int usage()  {
 	std::cout<<"Ufraw2Uc  "<<std::endl;
 		std::cout
 		<<" Converts face centred velocities (Uf*s) to cell centred velocities (Uc*s)\n"
@@ -38,8 +39,7 @@ int usage()
 	return 1;
 }
 
-int main(int argc, char** argv)
-{
+int main(int argc, char** argv)  {
 
 	if(argc<3)		return usage();
 	std::string outFormat(argv[1]);
@@ -68,9 +68,9 @@ int main(int argc, char** argv)
 		voxelImageT<float> fField(n[0]+1,n[1],n[2],0.0);
 		fField.readBin("Ufx"+imgExt());
 
-		for (int k = 0; k<int(fField.nz()) ; k++ )
-		 for ( int j = 0; j<int(fField.ny()) ; j++ )
-		  for ( int i = 0; i<int(fField.nx())-1 ; i++ )
+		for (int k=0; k<fField.nz(); ++k)
+		 for (int j=0; j<fField.ny(); ++j)
+		  for (int i=0; i<fField.nx()-1; ++i)
 				fField(i,j,k)=0.5*(fField(i,j,k)+fField(i+1,j,k));
 		if(wUmag!="UmagOnly")
 			fField.writeBin("Uccx"+imgExt(), 0,n[0],0,n[1],0,n[2]);
@@ -81,9 +81,9 @@ int main(int argc, char** argv)
 		voxelImageT<float> fField(n[0],n[1]+1,n[2],0.0);
 		fField.readBin("Ufy"+imgExt());
 
-		for (int k = 0; k<int(fField.nz()) ; k++ )
-		 for ( int j = 0; j<int(fField.ny())-1 ; j++ )
-		  for ( int i = 0; i<int(fField.nx()) ; i++ )
+		for (int k=0; k<fField.nz(); ++k)
+		 for (int j=0; j<fField.ny()-1; ++j)
+		  for (int i=0; i<fField.nx(); ++i)
 			fField(i,j,k)=0.5*(fField(i,j,k)+fField(i,j+1,k));
 		if(wUmag!="UmagOnly")
 			fField.writeBin("Uccy"+imgExt(), 0,n[0],0,n[1],0,n[2]);
@@ -93,17 +93,16 @@ int main(int argc, char** argv)
 	{
 		voxelImageT<float> fField(n[0],n[1],n[2]+1,0.0);
 		fField.readBin("Ufz"+imgExt());
-		for (int k = 0; k<int(fField.nz())-1 ; k++ )
-		 for ( int j = 0; j<int(fField.ny()) ; j++ )
-		  for ( int i = 0; i<int(fField.nx()) ; i++ )
+		for (int k=0; k<fField.nz()-1; ++k)
+		 for (int j=0; j<fField.ny(); ++j)
+		  for (int i=0; i<fField.nx(); ++i)
 			fField(i,j,k)=0.5*(fField(i,j,k)+fField(i,j,k+1));
 		if(wUmag!="UmagOnly")
 			fField.writeBin("Uccz"+imgExt(), 0,n[0],0,n[1],0,n[2]);
 		if(wUmag[0]=='U')
 			forAllkji(Umg) Umg(i,j,k) += fField(i,j,k)*fField(i,j,k);
 	}
-	if(wUmag[0]=='U')
-	{
+	if(wUmag[0]=='U')  {
 		forAlliii_(Umg) Umg(iii) = sqrt(Umg(iii));
 		Umg.writeBin("Umag"+imgExt());
 	}

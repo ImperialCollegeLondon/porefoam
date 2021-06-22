@@ -65,26 +65,29 @@ Foam::edgeMesh::edgeMesh(Istream& is)
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const edgeMesh& em)
+namespace Foam
 {
-	os  << em.points_ << nl << em.edges_ << endl;
 
-	// Check state of Ostream
-	os.check("Ostream& operator<<(Ostream&, const edgeMesh&)");
+	Ostream& operator<<(Ostream& os, const edgeMesh& em)
+	{
+		os  << em.points_ << nl << em.edges_ << endl;
 
-	return os;
+		// Check state of Ostream
+		os.check("Ostream& operator<<(Ostream&, const edgeMesh&)");
+
+		return os;
+	}
+
+
+	Istream& operator>>(Istream& is, edgeMesh& em)
+	{
+		is >> em.points_ >> em.edges_;
+
+		// Check state of Istream
+		is.check("Istream& operator>>(Istream&, edgeMesh&)");
+
+		return is;
+	}
 }
-
-
-Foam::Istream& Foam::operator>>(Istream& is, edgeMesh& em)
-{
-	is >> em.points_ >> em.edges_;
-
-	// Check state of Istream
-	is.check("Istream& operator>>(Istream&, edgeMesh&)");
-
-	return is;
-}
-
 
 // ************************************************************************* //

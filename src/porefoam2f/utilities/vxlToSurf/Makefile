@@ -16,6 +16,7 @@ msCFLAGS := ${msCFLAGS}   -O3   -DGCC_COMPILER
 
 
 srcs=$(shell find | grep -F .cpp | sed s:./::)
+srcs+=${msSrc}/libvoxel/voxelImage.cpp
 
 USE_CPP17=1
 USE_ZLIB=1

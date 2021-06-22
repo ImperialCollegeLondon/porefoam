@@ -38,7 +38,7 @@
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define curtailBADOFSET(a,b) (min (max(a,b),(1.0-(b)))    )
+#define curtailBADOFSET(a,b) ( min( max(a,b), (1.0-(b)) ) )
 
 
 
@@ -59,31 +59,14 @@ Foam::interfaceProperties::interfaceProperties
 :
 #ifndef interfaceProperties_interfaceProperties // folding hint
     alpha1_(alpha1), // mesh() requires this to be initialized first
-    alpha1S_
-    (
-		IOobject( "alpha1S",  timeName(),  mesh(), IOobject::NO_READ, IOobject::NO_WRITE   ),
-		alpha1
-    ),
+    alpha1S_(IOobject( "alpha1S",  timeName(),  mesh()), alpha1),
 
     U_(U),
 
-    pc_
-    (
-        IOobject( "pc",  timeName(),  mesh(),  IOobject::MUST_READ,  IOobject::AUTO_WRITE   ),
-        mesh()
-    ),
+    pc_(IOobject("pc", timeName(), mesh(),  IOobject::MUST_READ, IOobject::AUTO_WRITE), mesh() ),
 
-    deltaS_
-    (
-        IOobject( "deltaS",  timeName(),  mesh()   ), 
-        fvc::snGrad(alpha1, "uncorrected")
-    ),
-    alphaSh_
-    (
-        IOobject( "alphaSh",  timeName(),  mesh()   ),
-        mesh(),        dimensionedScalar("alphaSh", dimless, 0.0),
-        pc_.boundaryField().types()
-    ),    
+    deltaS_(IOobject( "deltaS", timeName(), mesh()), fvc::snGrad(alpha1, "uncorrected")),
+    alphaSh_(IOobject("alphaSh", timeName(), mesh()),  mesh(),  dimensionedScalar("alphaSh", dimless, 0.),  pc_.boundaryField().types()),    
 
     //K_
     //(
@@ -143,6 +126,7 @@ Foam::interfaceProperties::interfaceProperties
         IOobject( "AvgInternFaces1",  timeName(), mesh() ),
         mesh(),  dimensionedScalar("AvgInternFaces1", dimless, 1.0)
     ),
+    IsRefCandid_(mesh().cells().size(),1),
 
     sgPcErr_
     (  IOobject( "sgPce", timeName(), mesh(), IOobject::READ_IF_PRESENT ), //! NO_WRITE means restarting releases the filters
@@ -177,7 +161,7 @@ Foam::interfaceProperties::interfaceProperties
     smoothingRelaxFactor_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("smoothingRelaxFactor") ) ),
     wallSmoothingKernel_( readLabel( mesh().solutionDict().subDict("PIMPLE").lookup("wallSmoothingKernel") ) ),
     sigma_(dict.lookup("sigma")),
-    deltaN_  ("deltaN", 1.0e-12/pow(average(mesh().V()), 1.0/3.0) )
+    deltaN_  ("deltaN", 1e-12/pow(average(mesh().V()), 1.0/3.0) )
 #endif
 
 {
@@ -208,45 +192,42 @@ Foam::interfaceProperties::interfaceProperties
 
 	{ ///. nw
 
-		forAll(boundary, patchi)
+		forAll(boundary, bi)
 		{
-			if (isA<alphaContactAngleFvPatchScalarField>(alpha1_.boundaryField()[patchi]))
+			if (isA<alphaContactAngleFvPatchScalarField>(alpha1_.boundaryField()[bi]))
 			{
-				nw_.boundaryField()[patchi]=boundary[patchi].nf();
-				nw_.boundaryField()[patchi]==boundary[patchi].nf();//tomakesure
+				nw_.boundaryField()[bi]=boundary[bi].nf();
+				nw_.boundaryField()[bi]==boundary[bi].nf();//tomakesure
 			}
 		}	
 
 
-		forAll(boundary, patchi)
+		forAll(boundary, bi)
 		{
-			if (isA<alphaContactAngleFvPatchScalarField>(alpha1_.boundaryField()[patchi]))
+			if (isA<alphaContactAngleFvPatchScalarField>(alpha1_.boundaryField()[bi]))
 			{
-				primitivePatchInterpolation pinterpolator(msh.boundaryMesh()[patchi]);
+				primitivePatchInterpolation pinterpolator(msh.boundaryMesh()[bi]);
 				for (int i=0;i<wallSmoothingKernel_;i++)
 				{
-					nw_.boundaryField()[patchi]==
+					nw_.boundaryField()[bi]==
 					pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(
-					nw_.boundaryField()[patchi]));
+					nw_.boundaryField()[bi]));
 				}
 			}
-			if (isA<alphaContactAngleFvPatchScalarField>(alpha1S_.boundaryField()[patchi]))
+			if (isA<alphaContactAngleFvPatchScalarField>(alpha1S_.boundaryField()[bi]))
 					 const_cast<alphaContactAngleFvPatchScalarField&>
-					 ( refCast<const alphaContactAngleFvPatchScalarField>  (alpha1S_.boundaryField()[patchi]) ).noLimit();
-			//if (isA<sharpInOutAlphaFvPatchScalarField>(alpha1S_.boundaryField()[patchi]))
+					 ( refCast<const alphaContactAngleFvPatchScalarField>  (alpha1S_.boundaryField()[bi]) ).noLimit();
+			//if (isA<sharpInOutAlphaFvPatchScalarField>(alpha1S_.boundaryField()[bi]))
 			//{
 					 //(const_cast<sharpInOutAlphaFvPatchScalarField&>
-					 //( refCast<const sharpInOutAlphaFvPatchScalarField>  (alpha1S_.boundaryField()[patchi]) )).noLimit();
+					 //( refCast<const sharpInOutAlphaFvPatchScalarField>  (alpha1S_.boundaryField()[bi]) )).noLimit();
 					//Info<<"\n\n\n sdffdfdf\\n\n\n "<<endl;
 			//}
-
-				
 		}
 
-		nw_.internalField()*=0.0;
-		nw_.internalField()=
-		fvc::interpolate(fvc::average(nw_))->internalField();		
-		nw_ /=  mag(nw_) + 1.0e-15;
+		nw_.internalField() *= 0.;
+		nw_.internalField() = fvc::interpolate(fvc::average(nw_))->internalField();		
+		nw_ /=  mag(nw_) + 1e-15;
 
 
 
@@ -258,7 +239,7 @@ Foam::interfaceProperties::interfaceProperties
 
 
 
-{///. collect faces neibour to boundary patches boundaryInternalFaces_
+{// collect faces neighbour to boundary patches boundaryInternalFaces_
 	const labelListList & faceEdges=msh.faceEdges();
 	//const edgeList & edges=msh.edges();
 	const fvBoundaryMesh& patches = msh.boundary(); 
@@ -269,10 +250,7 @@ Foam::interfaceProperties::interfaceProperties
 		forAll(CApfs, pfI)
 		{
 			const labelList& fes = faceEdges[patches[bI].patch().start()+pfI];
-			forAll(fes, eI)
-			{
-				edgemarks_[fes[eI]] = 1.0;
-			}
+			forAll(fes, eI)  edgemarks_[fes[eI]] = 1.0; 
 		}
 	}
 	AvgInternFaces1_.internalField()=fvc::average(Internalfaces1_);
@@ -283,10 +261,23 @@ Foam::interfaceProperties::interfaceProperties
 		const labelList& fes = faceEdges[fI];	  
 		forAll(fes, eI)
 		{
-			BInternalfs_[fI] = max( BInternalfs_[fI], 1.0*edgemarks_[fes[eI]] );
+			BInternalfs_[fI] = max( BInternalfs_[fI], 1.*edgemarks_[fes[eI]] );
 		}
 	}
-	
+
+	forAll(patches, bI) 
+		for(auto cI:patches[bI].faceCells()) IsRefCandid_[cI]=0;
+	//const auto& neis=mesh().neighbour();
+	//const auto& owns=mesh().owner();
+	//forAll(neis,fI) {
+		//if     (!IsRefCandid_[owns[fI]]) IsRefCandid_[neis[fI]]=0;
+		//else if(!IsRefCandid_[neis[fI]]) IsRefCandid_[owns[fI]]=0;
+	//}
+	const auto& Vols=mesh().V();
+	scalar Vavg=average(mesh().V()).value();
+	forAll(Vols,cI) if(Vols[cI]<Vavg*0.99) IsRefCandid_[cI]=0;
+	Info<<"avg(IsRefCandid): "<<gSum(IsRefCandid_)<<" / "<<returnReduce<scalar>(scalar(IsRefCandid_.size()), sumOp<scalar>())<<endl;
+
 	label bIFssize=0;
 	forAll(BInternalfs_, fI)
 		if (BInternalfs_[fI]>0.5) ++bIFssize;
@@ -402,33 +393,32 @@ void Foam::interfaceProperties::correct(scalar relaxDelS)
 
 
 
-	alphaSh_ == curtailBADOFSET((1./pcThicknessFactor_)*alpha1_-(0.5/pcThicknessFactor_-0.5),0.0); alphaSh_.correctBoundaryConditions();
+	alphaSh_ == curtailBADOFSET((1./pcThicknessFactor_)*alpha1_-(0.5/pcThicknessFactor_-0.5),0.); alphaSh_.correctBoundaryConditions();
 	if (relaxDelS<0.0001) deltaS_= fvc::snGrad(alphaSh_);
 	else                  deltaS_= 0.5*(deltaS_+fvc::snGrad(alphaSh_));
 
 
 	if(alphafModel=="advect")
-		
-		alpha1f_ = linearInterpolate(alpha1_);
+		alpha1f_ = linearInterpolate(min( max(alpha1_,0.), 1. ));
 	else
-		alpha1f_ = linearInterpolate(alpha1_);
+		alpha1f_ = linearInterpolate(min( max(alpha1_,0.), 1. )); // minmax is added hoping to solve solver crash on non-orthogonal meshes
 
 
-	volScalarField alpha1Stmp=curtailBADOFSET(alpha1_*1.02-0.01,1.0e-3);
+	volScalarField alpha1Stmp=curtailBADOFSET(alpha1_*1.02-0.01,1e-3);
 
-	volScalarField a1a2 = 0.95+0.1*sqrt(alpha1Stmp*(1.0-alpha1Stmp));
-	alpha1Stmp = a1a2*alpha1Stmp+(1.0-a1a2)*fvc::average(alpha1f_*Internalfaces1_)/fvc::average(Internalfaces1_);
+	volScalarField a1a2 = 0.95+0.1*sqrt(alpha1Stmp*(1.-alpha1Stmp));
+	alpha1Stmp = a1a2*alpha1Stmp+(1.-a1a2)*fvc::average(alpha1f_*Internalfaces1_)/fvc::average(Internalfaces1_);
 	alpha1Stmp.correctBoundaryConditions();
 
-	a1a2 = 2.0*sqrt(alpha1Stmp*(1.0-alpha1Stmp));
+	a1a2 = 2.*sqrt(alpha1Stmp*(1.-alpha1Stmp));
 
-	alpha1Stmp = a1a2*alpha1Stmp+(1.0-a1a2)*fvc::average(fvc::interpolate(alpha1Stmp)*Internalfaces1_)/fvc::average(Internalfaces1_); 
+	alpha1Stmp = a1a2*alpha1Stmp + (1.-a1a2)*fvc::average(fvc::interpolate(alpha1Stmp)*Internalfaces1_)/fvc::average(Internalfaces1_); 
 	alpha1Stmp.correctBoundaryConditions();
 
-	alpha1Stmp = 0.99*alpha1Stmp+0.01*fvc::average(fvc::interpolate(alpha1Stmp)*Internalfaces1_)/fvc::average(Internalfaces1_);
+	alpha1Stmp = 0.99*alpha1Stmp + 0.01*fvc::average(fvc::interpolate(alpha1Stmp)*Internalfaces1_)/fvc::average(Internalfaces1_);
 
 
-	alpha1S_ = atanh(1.8*alpha1Stmp-0.9);
+	alpha1S_ = atanh(1.8*alpha1Stmp-0.9); //- SYN123433
 	alpha1S_.correctBoundaryConditions();
 
 
@@ -437,7 +427,7 @@ void Foam::interfaceProperties::correct(scalar relaxDelS)
 
 	surfaceScalarField  stf
 	(	IOobject( "stf", timeName(), msh ),
-		msh,  dimensionedScalar("stf", dimPressure/dimLength*dimArea, 0.0)
+		msh,  dimensionedScalar("stf", dimPressure/dimLength*dimArea, 0.)
 	);
 
 

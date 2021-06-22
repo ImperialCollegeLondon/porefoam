@@ -30,8 +30,10 @@ Description
 #include "IOstreams.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-Foam::keyType::keyType(Istream& is)
+namespace Foam
+{
+		
+keyType::keyType(Istream& is)
 :
 	word()
 {
@@ -39,7 +41,7 @@ Foam::keyType::keyType(Istream& is)
 }
 
 
-Foam::Istream& Foam::operator>>(Istream& is, keyType& w)
+Istream& operator>>(Istream& is, keyType& w)
 {
 	token t(is);
 
@@ -76,12 +78,12 @@ Foam::Istream& Foam::operator>>(Istream& is, keyType& w)
 }
 
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const keyType& w)
+Ostream& operator<<(Ostream& os, const keyType& w)
 {
 	os.write(w);
 	os.check("Ostream& operator<<(Ostream&, const keyType&)");
 	return os;
 }
 
-
+}
 // ************************************************************************* //

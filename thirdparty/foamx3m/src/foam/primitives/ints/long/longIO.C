@@ -37,45 +37,48 @@ Description
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-Foam::word Foam::name(long val)
+namespace Foam
 {
-	std::ostringstream buf;
-	buf << val;
-	return buf.str();
-}
 
-// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
-
-Foam::Istream& Foam::operator>>(Istream& is, long& l)
-{
-	token t(is);
-
-	if (!t.good())
+	word name(long val)
 	{
-		is.setBad();
+		std::ostringstream buf;
+		buf << val;
+		return buf.str();
+	}
+
+	// * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
+
+	Istream& operator>>(Istream& is, long& l)
+	{
+		token t(is);
+
+		if (!t.good())
+		{
+			is.setBad();
+			return is;
+		}
+
+		if (t.isLabel())
+		{
+			l = long(t.labelToken());
+		}
+		else
+		{
+			is.setBad();
+			FatalIOErrorIn("operator>>(Istream&, long&)", is)
+				<< "wrong token type - expected long found " << t.info()
+				<< exit(FatalIOError);
+
+			return is;
+		}
+
+		// Check state of Istream
+		is.check("Istream& operator>>(Istream&, long&)");
+
 		return is;
 	}
-
-	if (t.isLabel())
-	{
-		l = long(t.labelToken());
-	}
-	else
-	{
-		is.setBad();
-		FatalIOErrorIn("operator>>(Istream&, long&)", is)
-			<< "wrong token type - expected long found " << t.info()
-			<< exit(FatalIOError);
-
-		return is;
-	}
-
-	// Check state of Istream
-	is.check("Istream& operator>>(Istream&, long&)");
-
-	return is;
 }
-
 
 long Foam::readLong(Istream& is)
 {

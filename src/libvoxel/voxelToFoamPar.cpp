@@ -16,7 +16,7 @@ Ali Q Raeini: a.q.raeini@imperial.ac.uk
 
 //!\brief Converts 3D Image files into openfoam format for computing flow fields. 
 
-#include <sys/stat.h>
+
 
 #include <fstream>
 #include <assert.h>
@@ -34,9 +34,9 @@ using namespace std;
 #include "voxelImage.h"
 #include "voxelRegions.h"
 
+#include "voxelImage.cpp"
 
-int usage()
-{
+int usage()  {
 	cout<<"converts micro-CT images to OpenFOAM serial or simple parallel meshes"<<endl;
 	cout<<"usage:"<<endl;
 	cout<<"  voxelToFoamPar image-header nProcY nProcY nProcY  F/T:resetX0 F/T:keepBCs"<<endl;
@@ -50,8 +50,7 @@ int usage()
 
 void toFoam(voxelImage& vxlImg, int nVVs, const voxelField<int>& procIsijk, int iProc, int jProc, int kProc);
 
-int main(int argc, char** argv)
-{  //!- reads image, adds a boundary layers around it
+int main(int argc, char** argv)  {  //!- reads image, adds a boundary layers around it
 	int irg = 0;
 	if(argc<5)		return usage();
 	std::string hdr(argv[++irg]); // mhd header name
@@ -63,6 +62,7 @@ int main(int argc, char** argv)
 	//char unit = argc>1+irg ? argv[++irg][0] : 'u';
 	if (nPar.z*nPar.y*nPar.x<1) { cout<<"\nError: nPar.z*nPar.y*nPar.x<1\n"; return usage(); }
 
+	cout<<"voxelToFoamPar  header      nPar         resetX0   keepBCs "<<endl;
 	cout<<"voxelToFoamPar "<<hdr<<"  "<<nPar<<"  "<<resetX0<<"  "<<keepBCs<<endl;
 
 	voxelImage vimage;  readConvertFromHeader(vimage, hdr);
@@ -116,8 +116,7 @@ const int
 	voxelField<int> procIsijk(nPar.x+2,nPar.y+2,nPar.z+2,-1);
 	if (nPar.z*nPar.y*nPar.x==1)
 		toFoam(vimage,nVVs, procIsijk, 1, 1, 1);
-	else if (nPar.z*nPar.y*nPar.x>1)
-	{
+	else if (nPar.z*nPar.y*nPar.x>1)  {
 		voxelField<voxelImage>  vimages(nPar.x,nPar.y,nPar.z,voxelImage());
 
 		vector<int> iBs(nPar.x+1,n.x);
@@ -133,8 +132,7 @@ const int
 		cout<<"kBs: "<<*kBs.begin()<<" ... "<<*kBs.rbegin()<<endl;
 
 			OMPragma("omp parallel for")
-			for (int ixyz=0;ixyz<nPar.x*nPar.y*nPar.z;ixyz++)
-			{
+			for (int ixyz=0;ixyz<nPar.x*nPar.y*nPar.z;ixyz++)  {
 				int ix= ixyz%nPar.x;
 				int iz= ixyz/(nPar.x*nPar.y);
 				int iy=(ixyz/nPar.x)%nPar.y;
@@ -144,18 +142,16 @@ const int
 			};
 			int iProc=-1;
 			forAllkji(vimages)
-				if(vimages(i,j,k).volFraction(0,0)>1.0e-12)		procIsijk(i+1,j+1,k+1)=++iProc;
+				if(vimages(i,j,k).volFraction(0,0)>1e-12)		procIsijk(i+1,j+1,k+1)=++iProc;
 
 			cout<<"\n************** generating meshes ************"<<endl;
 			vimage.reset(0,0,0,0);
 			OMPragma("omp parallel for")
-			for (int ixyz=0;ixyz<nPar.x*nPar.y*nPar.z;ixyz++)
-			{
+			for (int ixyz=0;ixyz<nPar.x*nPar.y*nPar.z;ixyz++)  {
 			 int ix= ixyz%nPar.x;
 			 int iz= ixyz/(nPar.x*nPar.y);
 			 int iy=(ixyz/nPar.x)%nPar.y;
-			 if(procIsijk(ix+1,iy+1,iz+1)>=0)
-			 {
+			 if(procIsijk(ix+1,iy+1,iz+1)>=0)  {
 				(cout<<"************* processor: "+_s(ix)+_s(iy)+_s(iz)+", Phi="+_s(100*vimages(ix,iy,iz).volFraction(0,0))+" *************\n").flush();
 				toFoam(vimages(ix,iy,iz),nVVs, procIsijk, ix+1, iy+1, iz+1);
 				cout<<endl;
@@ -166,8 +162,7 @@ const int
    return 0;
 }
 
-void toFoam(voxelImage& vxlImg, int nVVs, const voxelField<int>& procIsijk, int iProc, int jProc, int kProc)
-{ //!- generate an openfaom (processor) mesh similar to voxelToFoamPar.cpp
+void toFoam(voxelImage& vxlImg, int nVVs, const voxelField<int>& procIsijk, int iProc, int jProc, int kProc)  { //!- generate an openfaom (processor) mesh similar to voxelToFoamPar.cpp
 	int myprocI=procIsijk(iProc,jProc,kProc);
 	int3 n=vxlImg.size3();n.x-=2;n.y-=2;n.z-=2;
 	dbl3 X0=vxlImg.X0();
@@ -178,10 +173,8 @@ void toFoam(voxelImage& vxlImg, int nVVs, const voxelField<int>& procIsijk, int 
 
 	string Folder = myprocI>=0 ?  "processor"+_s(myprocI)  :  ".";
 	(cout<<"procIs, size: "+_s(procIsijk.size3())+",   ijk: "+_s(int3(iProc,jProc,kProc))+"  >> "+Folder+"  N: "+_s(n)+"  X0: "+_s(X0)+"\n").flush();
-	::mkdir(Folder.c_str(),0777);
-	::mkdir((Folder+"/constant").c_str(),0777);
-	Folder=Folder+"/constant/polyMesh";
-	::mkdir((Folder).c_str(),0777);
+	mkdirs(Folder);	mkdirs(Folder+"/constant");
+	Folder=Folder+"/constant/polyMesh";  	cout<<"creating folder "+Folder+ _TRY_(mkdirs(Folder)) <<endl;
 
 
 //=======================================================================
@@ -195,8 +188,7 @@ void toFoam(voxelImage& vxlImg, int nVVs, const voxelField<int>& procIsijk, int 
 
 	int iPoints=-1;
 	forAllkji_1(vxlImg)
-		if (!vxlImg(i,j,k))
-		{
+		if (!vxlImg(i,j,k))  {
 				int*
 				dd=&point_mapper(i-1,j-1,k-1);
 				      if (*dd<0) *dd=++iPoints;
@@ -252,14 +244,10 @@ void toFoam(voxelImage& vxlImg, int nVVs, const voxelField<int>& procIsijk, int 
 	pointsf<<iPoints+1<<endl<<"("<<endl;
 	pointsf.precision(8);
 	iPoints=-1;
-	for (int iz=0;iz<point_mapper.nz();++iz)
-	{	double z=iz*dx[2]+X0[2];
-		for (int iy=0;iy<point_mapper.ny();iy++)
-		{	double y=iy*dx[1]+X0[1];
-			for (int ix=0;ix<point_mapper.nx();ix++)
-			{
-				if(point_mapper(ix,iy,iz)>=0)
-				{	point_mapper(ix,iy,iz)=++iPoints;//. sort point_mapper
+	for (int iz=0;iz<point_mapper.nz();++iz)  {	double z=iz*dx[2]+X0[2];
+		for (int iy=0;iy<point_mapper.ny();iy++)  {	double y=iy*dx[1]+X0[1];
+			for (int ix=0;ix<point_mapper.nx();ix++)  {
+				if(point_mapper(ix,iy,iz)>=0)  {	point_mapper(ix,iy,iz)=++iPoints;//. sort point_mapper
 					double x=ix*dx[0]+X0[0];
 					pointsf<< "("<<x<< ' '<<y<<' '<<z<<")\n";
 				}
@@ -333,40 +321,34 @@ const int
 
 	for (int iz=1;iz<=n.z;++iz)
 	 for (int iy=1;iy<=n.y;++iy)
-	  for (int ix=1;ix<=n.x;++ix)
-	  {
-			if (!vxlImg(ix,iy,iz))
-			{
+	  for (int ix=1;ix<=n.x;++ix)  {
+			if (!vxlImg(ix,iy,iz))  {
 				nCells++;
 
 				unsigned char
 				neiv=vxlImg(ix-1,iy,iz);
-				if (ix!=1)
-				{
+				if (ix!=1)  {
 				  if (neiv)     ++nFaces[neiv];
 				  //else         ++nFaces[Internal];
 				}else if (neiv) ++nFaces[neiv];
 				else            ++nFaces[Left];
 
 				neiv=vxlImg(ix+1,iy,iz);
-				if (ix!=n.x)
-				{
+				if (ix!=n.x)  {
 				  if (neiv)     ++nFaces[neiv];
 				  else          ++nFaces[Internal];
 				}else if (neiv) ++nFaces[neiv];
 				else            ++nFaces[Right];
 
 				neiv=vxlImg(ix,iy-1,iz);
-				if (iy!=1)
-				{
+				if (iy!=1)  {
 				  if (neiv)     ++nFaces[neiv];
 				  //else        ++nFaces[Internal];
 				}else if (neiv) ++nFaces[neiv];
 				else            ++nFaces[Bottom];
 
 				neiv=vxlImg(ix,iy+1,iz);
-				if (iy!=n.y)
-				{
+				if (iy!=n.y)  {
 				  if (neiv)     ++nFaces[neiv];
 				  else          ++nFaces[Internal];
 				}else if (neiv) ++nFaces[neiv];
@@ -374,16 +356,14 @@ const int
 
 
 				neiv=vxlImg(ix,iy,iz-1);
-				if (iz!=1)
-				{
+				if (iz!=1)  {
 				  if (neiv)     ++nFaces[neiv];
 				  //else        ++nFaces[Internal];
 				}else if (neiv) ++nFaces[neiv];
 				else            ++nFaces[Back];
 
 				neiv=vxlImg(ix,iy,iz+1);
-				if (iz!=n.z)
-				{
+				if (iz!=n.z)  {
 				  if (neiv)     ++nFaces[neiv];
 				  else          ++nFaces[Internal];
 				}else if (neiv) ++nFaces[neiv];
@@ -409,7 +389,7 @@ const int
 
 
 
-	{	ofstream boundary((Folder+"/boundary").c_str());
+	{	ofstream boundary((Folder+"/boundary"));
 		assert(boundary);
 		boundary<<
 		"FoamFile\n"
@@ -498,8 +478,7 @@ const int
 
 	array<std::vector<array<int,6> >,255> faces_bs;
 	size_t sumnFaces=0;
-	for(int ib=0;ib<255;++ib)  if(nFaces[ib])
-	{
+	for(int ib=0;ib<255;++ib)  if(nFaces[ib])  {
 		sumnFaces+=nFaces[ib];
 		faces_bs[ib].resize(nFaces[ib]);
 		fill(faces_bs[ib].begin(),faces_bs[ib].end(), array<int,6>{{-1,-1,-1,-1,-1,-1}});
@@ -544,26 +523,22 @@ const int
 
 	array<int,255> iFaces; iFaces.fill(-1);
 
-	for (int iz=1;iz<=n.z;iz++)
-	{  cout<<(iz%80 ? '.' : '\n');cout.flush();
+	for (int iz=1;iz<=n.z;iz++)  {  cout<<(iz%80 ? '.' : '\n');cout.flush();
 		for (int iy=1;iy<=n.y;iy++)
 		 for (int ix=1;ix<=n.x;ix++)
-		  if (!vxlImg(ix,iy,iz))
-		  {
+		  if (!vxlImg(ix,iy,iz))  {
 				iCells++;
 
 				unsigned char
 				neiv=vxlImg(ix-1,iy,iz);
-				if (ix!=1)
-				{
+				if (ix!=1)  {
 				  if (neiv)     {iclockwiserecordF(neiv) }
 				  else          {iclockwiserecordF(Internal) }
 				}else if (neiv) {iclockwiserecordF(neiv) }
 				else            {iclockwiserecordF(Left) }
 
 				neiv=vxlImg(ix+1,iy,iz);
-				if (ix!=n.x)
-				{
+				if (ix!=n.x)  {
 				  if (neiv)     {iuclockwiserecordF(neiv) }
 				  else          {iuclockwiserecordF(Internal) }
 				}else if (neiv) {iuclockwiserecordF(neiv) }
@@ -571,16 +546,14 @@ const int
 
 
 				neiv=vxlImg(ix,iy-1,iz);
-				if (iy!=1)
-				{
+				if (iy!=1)  {
 				  if (neiv)     {jclockwiserecordF(neiv) }
 				  else          {jclockwiserecordF(Internal) }
 				}else if (neiv) {jclockwiserecordF(neiv) }
 				else            {jclockwiserecordF(Bottom) }
 
 				neiv=vxlImg(ix,iy+1,iz);
-				if (iy!=n.y)
-				{
+				if (iy!=n.y)  {
 				  if (neiv)     {juclockwiserecordF(neiv) }
 				  else          {juclockwiserecordF(Internal) }
 				}else if (neiv) {juclockwiserecordF(neiv) }
@@ -588,16 +561,14 @@ const int
 				
 
 				neiv=vxlImg(ix,iy,iz-1);
-				if (iz!=1)
-				{
+				if (iz!=1)  {
 				  if (neiv)     {kclockwiserecordF(neiv) }
 				  else          {kclockwiserecordF(Internal) }
 				}else if (neiv) {kclockwiserecordF(neiv) }
 				else            {kclockwiserecordF(Back) }
 
 				neiv=vxlImg(ix,iy,iz+1);
-				if (iz!=n.z)
-				{
+				if (iz!=n.z)  {
 				  if (neiv)     {kuclockwiserecordF(neiv) }
 				  else          {kuclockwiserecordF(Internal) }
 				}else if (neiv) {kuclockwiserecordF(neiv) }
@@ -614,7 +585,7 @@ const int
 
 
 
-	ofstream faces((Folder+"/faces").c_str());
+	ofstream faces((Folder+"/faces"));
 	assert(faces);
 	faces<<
 	"FoamFile\n"
@@ -627,7 +598,7 @@ const int
 	"}\n\n";
 
 
-	ofstream owner((Folder+"/owner").c_str());
+	ofstream owner((Folder+"/owner"));
 	assert(owner);
 	owner<<
 	"FoamFile\n"
@@ -639,7 +610,7 @@ const int
 	"	object	  owner;\n"
 	"}\n\n";
 
-	ofstream neighbour((Folder+"/neighbour").c_str());
+	ofstream neighbour((Folder+"/neighbour"));
 	assert(neighbour);
 	neighbour<<
 	"FoamFile\n"
@@ -690,8 +661,7 @@ const int
 
 	neighbour<<nFaces[Internal]<<endl;
 	neighbour<<"("<<endl;
-	  for (std::vector<array<int,6> >::iterator ff=faces_bs[Internal].begin();ff<faces_bs[Internal].end();ff++)
-		{
+	  for (std::vector<array<int,6> >::iterator ff=faces_bs[Internal].begin();ff<faces_bs[Internal].end();ff++)  {
 			neighbour<<(*ff)[5]<<"\n";
 		}
 

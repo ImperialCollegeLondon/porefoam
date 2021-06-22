@@ -59,9 +59,9 @@ if(CVBounds1.size())
 
 	data.aAvg=average(alpha1).value();
 	data.aAvgL=gSum(alpha1.boundaryField()[iBack]*alpha1.boundaryField()[iBack].patch().magSf())
-				/(gSum(alpha1.boundaryField()[iBack].patch().magSf())+1.0e-24);
+				/(gSum(alpha1.boundaryField()[iBack].patch().magSf())+1e-24);
 	data.aAvgR=gSum(alpha1.boundaryField()[iFront]*alpha1.boundaryField()[iFront].patch().magSf())
-				/(gSum(alpha1.boundaryField()[iFront].patch().magSf())+1.0e-24);
+				/(gSum(alpha1.boundaryField()[iFront].patch().magSf())+1e-24);
 
 
 	data.pcAvg = (sum(alpha1Sh*pc)/(mag(sum(alpha1Sh))+1e-12)).value();
@@ -82,15 +82,15 @@ if(CVBounds1.size())
 	data.Dpc=(gAverage(pc.boundaryField()[iBack])-gAverage(pc.boundaryField()[iFront]));
 	Info <<"DPc"<< data.Dpc << endl;
 
+	const volVectorField & C =	mesh.C();
 
-	data.ADarcy=(max(mesh.C().component(2)).value()-min(mesh.C().component(2)).value())*(max(mesh.C().component(1)).value()-min(mesh.C().component(1)).value());
+	data.ADarcy=(max(C.component(2)).value()-min(C.component(2)).value())*(max(C.component(1)).value()-min(C.component(1)).value());
 
 
 
 
-	const vectorField & C =	mesh.C().internalField();
 
-	for (int iSam=0;iSam<regionVoxelValues.size();iSam++)   
+	for (int iSam=0;iSam<CVxlVals.size();iSam++)   
 	{ 
 		snapShot_zt & slice = data.slices[iSam];
 		double xSam1=CVBounds1[iSam];
@@ -102,7 +102,7 @@ if(CVBounds1.size())
 		clip=0.0;
 		forAll(Cx,c) 
 		{ 
-				if (PPRegions[c]==regionVoxelValues[iSam]&& 
+				if (PPRegions[c]==CVxlVals[iSam]&& 
 					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
 					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
 					 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
@@ -130,12 +130,12 @@ if(CVBounds1.size())
 		volScalarField clipVC=clip*VC;
 		const fvBoundaryMesh& boundary = mesh.boundary();
 
-		forAll(boundary, patchi)
+		forAll(boundary, bi)
 		{
-			clip.boundaryField()[patchi]=0.0;
-			clip.boundaryField()[patchi]==0.0;
-			clipAlpha.boundaryField()[patchi]=0.0;
-			clipAlpha.boundaryField()[patchi]==0.0;
+			clip.boundaryField()[bi]=0.0;
+			clip.boundaryField()[bi]==0.0;
+			clipAlpha.boundaryField()[bi]=0.0;
+			clipAlpha.boundaryField()[bi]==0.0;
 		}
 		surfaceScalarField BSurafce=fvcDelta(clip);
 		surfaceScalarField AlphaInternalBoundary=fvcDelta(clipAlpha);
@@ -146,15 +146,15 @@ if(CVBounds1.size())
 		scalar vol=sum(clipVC).value();
 
 		
-		if(mag(vol)<1.0e-31) 
+		if(mag(vol)<1e-31) 
 		{
-			Info<<"Error in post-processing: CV volume is zero: label "<<regionVoxelValues[iSam]<<endl;
-			vol=1.0e-31;
+			Info<<"Error in post-processing: CV volume is zero: label "<<CVxlVals[iSam]<<endl;
+			vol=1e-31;
 		}
 		slice.vol()=vol;
 
 		slice.alpha()=sum(clipAlphaVC).value()/vol;
-		slice.q()=sum(Uz *clipVC).value()/vol; if(mag(slice.q())<1.0e-32) slice.q()=1.0e-32;
+		slice.q()=sum(Uz *clipVC).value()/vol; if(mag(slice.q())<1e-32) slice.q()=1e-32;
 		slice.f_1()=sum(Uz*clipAlphaVC).value()/vol/slice.q();
 		slice.dpddz()=-sum(gradPz *clipVC).value()/vol;
 		slice.dpcdz()=sum(gPcz *clipVC).value()/vol;
@@ -194,8 +194,8 @@ if(CVBounds1.size())
 		slice.dpddz_1()=-sum(gradPz*clipAlphaVC).value()/vol;
 		slice.dpcdz_1()=sum(gPcz*clipAlphaVC).value()/vol;
 
-		slice.Pc()=sum(pc*alpha1Sh *clipVC).value()/max(sum(alpha1Sh *clipVC).value(),5.0e-32);
-		slice.Pc()-=sum(pc*alpha2Sh *clipVC).value()/max(sum(alpha2Sh *clipVC).value(),5.0e-32);
+		slice.Pc()=sum(pc*alpha1Sh *clipVC).value()/max(sum(alpha1Sh *clipVC).value(),5.e-32);
+		slice.Pc()-=sum(pc*alpha2Sh *clipVC).value()/max(sum(alpha2Sh *clipVC).value(),5.e-32);
 
 
 	}

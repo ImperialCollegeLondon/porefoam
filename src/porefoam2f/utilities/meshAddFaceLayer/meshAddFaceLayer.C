@@ -121,8 +121,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	Foam::labelList     owners = mesh.faceOwner();
-	Foam::labelList     neibrs = mesh.neighbour();
+	Foam::labelList     owns = mesh.faceOwner();
+	Foam::labelList     neis = mesh.neighbour();
 
 
 
@@ -186,23 +186,23 @@ int main(int argc, char *argv[])
 	forAll(BedgesNInternalFaces, ei)	if (BedgesNInternalFaces[ei]>1)
 	{
 		++iNewF;
-		label ownneib[2], iownnei(-1);  
+		label ownnei[2], iownnei(-1);  
 		const labelList efs = edgesFs[ei];
 		forAll(efs, efi)
 		{	label fI=efs[efi];
 			if (fI>=nInFaces)
 			{
-				ownneib[++iownnei]=owners[fI]; ++cellNBoundary[owners[fI]];
+				ownnei[++iownnei]=owns[fI]; ++cellNBoundary[owns[fI]];
 			}
-			//else {++cellNNeutral[owners[fI]] ; ++cellNNeutral[neibrs[fI]] ; };
+			//else {++cellNNeutral[owns[fI]] ; ++cellNNeutral[neis[fI]] ; };
 		}
 		const labelList ecs = edgesCs[ei];
 		Foam::vector CCmid = Foam::vector::zero;
-		Foam::scalar sumWeightCCMid = 1.0e-15;
+		Foam::scalar sumWeightCCMid = 1e-15;
 		forAll(ecs, eci)
 		{	label cI=ecs[eci];
 			double weight=0.5;
-			if (cI!=ownneib[0] && cI!=ownneib[1]) 
+			if (cI!=ownnei[0] && cI!=ownnei[1]) 
 			{
 				edgeNeutC[ei]=cI;
 				++cellNNeutral[cI];
@@ -228,11 +228,11 @@ int main(int argc, char *argv[])
 		else if (pointNiuFac1[eg[1]]<0) pointNiuFac1[eg[1]]=iNewF;
 		else {Info<<" 3Niu "; pointNiuFac2[eg[1]]=iNewF; }
 
-		if(ownneib[0]>ownneib[1]) {label tmp=ownneib[0]; ownneib[0]=ownneib[1]; ownneib[1]=tmp; }
-		newOwners[iNewF]=ownneib[0];
-		newNeibrs[iNewF]=ownneib[1];
-		//if(ownneib[0]<ownneib[1])
-		Foam::vector CC = CCntres[ownneib[1]]-CCntres[ownneib[0]];
+		if(ownnei[0]>ownnei[1]) {label tmp=ownnei[0]; ownnei[0]=ownnei[1]; ownnei[1]=tmp; }
+		newOwners[iNewF]=ownnei[0];
+		newNeibrs[iNewF]=ownnei[1];
+		//if(ownnei[0]<ownnei[1])
+		Foam::vector CC = CCntres[ownnei[1]]-CCntres[ownnei[0]];
 		Foam::vector PP = points[eg.end()]-points[eg.start()];
 		Foam::vector CPmid = CCmid - 0.5*(points[eg.end()]+points[eg.start()]);
 		if((CC&(PP^CPmid))>=0.0)
@@ -252,8 +252,8 @@ int main(int argc, char *argv[])
 			newFaces[iNewF][3]=pointNewPoints[eg.end()];
 			newFaces[iNewF][2]=pointNewPoints[eg.start()];
 
-			//newOwners[iNewF]=ownneib[1];
-			//newNeibrs[iNewF]=ownneib[0];
+			//newOwners[iNewF]=ownnei[1];
+			//newNeibrs[iNewF]=ownnei[0];
 
 		}
 
@@ -284,8 +284,8 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 			label niuF0 = pointNiuFac0[pI];
 			label niuF1 = pointNiuFac1[pI];
 			label niuF2 = pointNiuFac2[pI];
-			label ownr = owners[fI];
-			label nibr = fI<nInFaces ? neibrs[fI] : -7;
+			label ownr = owns[fI];
+			label nibr = fI<nInFaces ? neis[fI] : -7;
 
 			if ( !( ( newNeibrs[niuF1]==nibr ) || newNeibrs[niuF1]==ownr || newOwners[niuF1]==ownr  ) )
 			 if ( niuF2>=0 && ( ( newNeibrs[niuF2]==nibr ) || newNeibrs[niuF2]==ownr || newOwners[niuF2]==ownr  ) )
@@ -399,7 +399,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 					//if (newOwners[niuF0]<0)
 					//{  face ftmp2=ffnew;
 						//forAll(ffnew,pi)   ffnew[ffnew.size()-pi-1]=ftmp2[pi];
-						//label tmp = owners[fI];	owners[fI] = neibrs[fI]; neibrs[fI] = tmp;
+						//label tmp = owns[fI];	owns[fI] = neis[fI]; neis[fI] = tmp;
 					//}
 				}
 				//else if ( ( pointNNewFaces[pI]==3 ) && ( (pointNNewFaces[pINxt]==0)) )
@@ -429,12 +429,12 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 				for(int pii=ffnew.size()-1; pii>ipn;--pii)  ffnew[pii] = ffnew[pii-1];
 
 					//bool cond = ( fI<nInFaces &&            (newOwners[niuF0]==nibr  || newNeibrs[niuF0]==nibr || (niuF1<0 && newNeibrs[niuF1]==nibr) ) )
-				           //||  ( pointNNewFaces[pI]==1 && ( (newOwners[niuF0]==owners[fI] && dblIEdgeEnd[pI]) || (newNeibrs[niuF0]==owners[fI] && !dblIEdgeEnd[pI]) ) );
+				           //||  ( pointNNewFaces[pI]==1 && ( (newOwners[niuF0]==owns[fI] && dblIEdgeEnd[pI]) || (newNeibrs[niuF0]==owns[fI] && !dblIEdgeEnd[pI]) ) );
 					
 					bool cond =  ( fI<nInFaces && BedgesNInternalFaces[fEdges[fI][pi]]==0 )
 									//( fI<nInFaces && (( (newOwners[niuF0]==nibr && dblIEdgeEnd[pI])  || (newNeibrs[niuF0]==nibr&& !dblIEdgeEnd[pI] ) )
 									//|| ( niuF1>0 && ( (newOwners[niuF1]==nibr && !dblIEdgeEnd[pI]) || (newNeibrs[niuF1]==nibr&& dblIEdgeEnd[pI] ))  ) ))
-						        || ( fI>=nInFaces && BedgesNInternalFaces[fEdges[fI][pi]]==1 ) ; //( (newOwners[niuF0]==owners[fI] && dblIEdgeEnd[pI]) || (newNeibrs[niuF0]==owners[fI] && !dblIEdgeEnd[pI]) ) );
+						        || ( fI>=nInFaces && BedgesNInternalFaces[fEdges[fI][pi]]==1 ) ; //( (newOwners[niuF0]==owns[fI] && dblIEdgeEnd[pI]) || (newNeibrs[niuF0]==owns[fI] && !dblIEdgeEnd[pI]) ) );
 
 					if(cond)	ffnew[++ipn] = pointNewPoints[pI];
 					else		ffnew[ipn++] = pointNewPoints[pI];
@@ -450,10 +450,10 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 
 
 
-		//if (fI<nInFaces && owners[fI]>nibr)
+		//if (fI<nInFaces && owns[fI]>nibr)
 		//{  face ftmp2=ffnew;
 			//forAll(ffnew,pi)   ffnew[ffnew.size()-pi-1]=ftmp2[pi];
-			//label tmp = owners[fI];	owners[fI] = nibr; nibr = tmp;
+			//label tmp = owns[fI];	owns[fI] = nibr; nibr = tmp;
 		//}
 
 
@@ -508,13 +508,13 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 	boundary<<mesh.boundary().size()  <<"\n("<<std::endl;
 	forAll(mesh.boundary(), bpi)
 	{
-		const Foam::polyPatch&  patchi = mesh.boundary()[bpi].patch();
+		const Foam::polyPatch&  bi = mesh.boundary()[bpi].patch();
 		boundary<<
-		"	"<<  patchi.name()							<<std::endl<<		
+		"	"<<  bi.name()							<<std::endl<<		
 		"	{"													<<std::endl<<			
-		"		type			"<<"patch"/*patchi.physicalType()*/<<";\n"	<<	
-		"		nFaces		  "<<patchi.size()<<";\n"	  	<<		
-		"		startFace	   "<<patchi.start()+newFaces.size()<<";\n"<<	
+		"		type			"<<"patch"/*bi.physicalType()*/<<";\n"	<<	
+		"		nFaces		  "<<bi.size()<<";\n"	  	<<		
+		"		startFace	   "<<bi.start()+newFaces.size()<<";\n"<<	
 		"	}"												 <<std::endl;
 	}
 	boundary<<")"   <<std::endl;
@@ -561,31 +561,30 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 	facfile<<faces.size()+newOwners.size()<<"\n("<<std::endl;
 	for (int fI=0;fI<nInFaces;++fI)	
 	{  const face& ff = faces[fI];
-	   facfile<<'(';  forAll(ff,i)  
-											facfile<<ff[i]<<" ";  facfile<<")\n";  }
+	   facfile<<'(';  forAll(ff,i) { facfile<<ff[i]<<" "; }  facfile<<")\n";  }
 	for (unsigned int fI=0;fI<newFaces.size();++fI)	
 	{  const face& ff = newFaces[fI];
-	   facfile<<'(';  forAll(ff,i)   facfile<<ff[i]<<" ";  facfile<<")\n";  }
+	   facfile<<'(';  forAll(ff,i) { facfile<<ff[i]<<" "; }  facfile<<")\n";  }
 	for (int fI=nInFaces;fI<faces.size();++fI)	
 	{  const face& ff = faces[fI];
-	   facfile<<'(';  forAll(ff,i)  facfile<< ff[i]<<" ";  facfile<<")\n";  }
+	   facfile<<'(';  forAll(ff,i) { facfile<<ff[i]<<" "; }  facfile<<")\n";  }
 	facfile<<")"<<std::endl;
 	facfile.close();
 
 	owner<<faces.size()+newOwners.size()<<"\n("<<std::endl;	
 	for (int fI=0;fI<nInFaces;++fI)	
-		owner<<owners[fI]<<"\n"; 
+		owner<<owns[fI]<<"\n"; 
 	for (unsigned int fI=0;fI<newOwners.size();++fI)	
 		owner<<newOwners[fI]<<"\n"; 
 	for (int fI=nInFaces;fI<faces.size();++fI)	
-		owner<<owners[fI]<<"\n"; 
+		owner<<owns[fI]<<"\n"; 
 	owner<<")"<<std::endl;
 	owner.close();
 
 
 	neighbour<<nInFaces+newNeibrs.size()<<"\n("<<std::endl;
 	for (int fI=0;fI<nInFaces;++fI)	
-		neighbour<<neibrs[fI]<<"\n"; 
+		neighbour<<neis[fI]<<"\n"; 
 	for (unsigned int fI=0;fI<newNeibrs.size();++fI)	
 		neighbour<<newNeibrs[fI]<<"\n"; 
 	neighbour<<")"<<std::endl;

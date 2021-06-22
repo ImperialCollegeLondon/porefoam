@@ -90,14 +90,14 @@ int main(int argc, char *argv[])
 	for (int i=0; i<nIter;++i)
 	{
 
-		const labelList& 	owners = mesh.owner();
-		const labelList& 	neibrs = mesh.neighbour();
+		const labelList& 	owns = mesh.owner();
+		const labelList& 	neis = mesh.neighbour();
 		const labelListList& 	pointfaces = mesh.pointFaces ();
 		const labelListList& 	pointPoints = mesh.pointPoints ();
 		const pointField pointsOrig = points;
 		const vectorField& cellCentres = mesh.cellCentres();    
 		vectorField faceNormals = mesh.faceAreas();  
-		const scalarField magAfs = mag(faceNormals)+1.0e-32; 
+		const scalarField magAfs = mag(faceNormals)+1e-32; 
 		faceNormals/=magAfs;
 		vectorField pNorms(points.size(), vector::zero);
 
@@ -112,14 +112,14 @@ int main(int argc, char *argv[])
 		labelList pointOnBoundary(points.size(), 1);
 		vectorField avgPFCentres(points.size(), vector::zero);
 		{
-			scalarField nPointFaces(points.size(), 1.0e-64);
+			scalarField nPointFaces(points.size(), 1e-64);
 			forAll(Cfs, fI)
 			{
 				const face& 	f = mesh.faces()[fI];
 				vector CCSum(Cfs[fI]);
-				scalar wei = VavgInv*(fI<nInteFaces ?  //Warning 1.0e15 should be replaced by 1/AvgVolCell
-												(Vols[owners[fI]]+Vols[neibrs[fI]]) : 
-												6.0*Vols[owners[fI]]);//*(magAfs[fI])
+				scalar wei = VavgInv*(fI<nInteFaces ?  //Warning 1e15 should be replaced by 1/AvgVolCell
+												(Vols[owns[fI]]+Vols[neis[fI]]) : 
+												6.0*Vols[owns[fI]]);//*(magAfs[fI])
 				forAll(f, fpI)
 				{
 						label pI = f[fpI];
@@ -137,12 +137,12 @@ int main(int argc, char *argv[])
 		{
 			  const labelList& 	pointCells = mesh.pointCells(pI);
 			vector CCSum(vector::zero);
-			scalar WSum(1.0e-64);
+			scalar WSum(1e-64);
 			  forAll(pointCells, pcI)
 			  {
 					label cI = pointCells[pcI];
 					scalar w=(Vols[cI]);
-					//w*=1.0e15*w;
+					//w*=1e15*w;
 					CCSum += w*cellCentres[cI]; 
 					WSum+=w;
 			  }
@@ -174,13 +174,13 @@ int main(int argc, char *argv[])
 			{
 				const labelList& 	neiPoints = pointPoints[pI];
 				vector CCSum(vector::zero);
-				scalar WSum(1.0e-64);
+				scalar WSum(1e-64);
 				label  pIOnB=pointOnBoundary[pI];
 				forAll(neiPoints, ppI)
 				{
 					label pII = neiPoints[ppI];
 					scalar w=pointWeis[pII];//1.0;//(pointsOrig[pI]-pointsOrig[pII]);
-					if(pIOnB && pointOnBoundary[pII]!=pIOnB)  w = 1.0e-64;
+					if(pIOnB && pointOnBoundary[pII]!=pIOnB)  w = 1e-64;
 
 					CCSum += w*pointsOrig[pII]; 
 					WSum+=w;
@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
 						normbfs += faceNormals[pointfaces[pI][j]];
 					}
 				}
-				normbfs/=mag(normbfs)+1.0e-28;
+				normbfs/=mag(normbfs)+1e-28;
 				pNorms[pI] = normbfs;
 				disp=disp-(disp&normbfs)*normbfs;
 				

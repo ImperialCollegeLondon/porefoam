@@ -308,25 +308,27 @@ void Foam::CoeffField<Foam::scalar>::operator=(const tmp<scalarField>& tf)
 
 // * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const CoeffField<scalar>& f)
-{
-	os << static_cast<const scalarField&>(f);
+namespace Foam {
+	Ostream& operator<<(Ostream& os, const CoeffField<scalar>& f)
+	{
+		os << static_cast<const scalarField&>(f);
 
-	return os;
+		return os;
+	}
+
+
+	Ostream& operator<<
+	(
+		Ostream& os,
+		const tmp<CoeffField<scalar> >& tf
+	)
+	{
+		os << tf();
+		tf.clear();
+		return os;
+	}
+
 }
-
-
-Foam::Ostream& Foam::operator<<
-(
-	Ostream& os,
-	const tmp<CoeffField<scalar> >& tf
-)
-{
-	os << tf();
-	tf.clear();
-	return os;
-}
-
 
 /* * * * * * * * * * * * * * * * Global functions  * * * * * * * * * * * * * */
 

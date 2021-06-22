@@ -2,7 +2,7 @@
 
 all: msApp
 
-msSrc ?= $(abspath ../..)
+msSrc ?= $(abspath ../../..)
 
 USE_MINIFOAMX3=1
 OFCs=$(shell find | grep -F .C | sed s:./::)

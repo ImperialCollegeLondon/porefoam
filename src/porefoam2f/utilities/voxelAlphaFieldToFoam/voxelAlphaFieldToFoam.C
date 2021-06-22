@@ -81,8 +81,8 @@ int main(int argc, char *argv[])
 	voxelImage vximage(alpha1Header); //dummy
 
 	int3 n=vximage.size3();
-	dbl3 xmin=vximage.X0(); //xmin*=1.0e-6;
-	dbl3 dx=vximage.dx();   //dx*=1.0e-6;
+	dbl3 xmin=vximage.X0(); //xmin*=1e-6;
+	dbl3 dx=vximage.dx();   //dx*=1e-6;
 
 	if (!n[0]) Info<<"\nError: no image read\n"<<endl;
 	if (args.optionFound("invertAlpha"))	vximage.threshold101(1,255);
@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 		
 
 		const vectorField & C =	mesh.C().internalField();
-		double sumAlpha=0.0, sumWalpha=1.0e-64;
+		double sumAlpha=0.0, sumWalpha=1e-64;
 		if (vximage.nx())
 		{
 		  forAll(C,c)
@@ -131,8 +131,8 @@ int main(int argc, char *argv[])
 		}
 		Info<<" AvgAlpha: "<<sumAlpha/sumWalpha<<endl;
 
-		forAll(boundary, patchi)
-			alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+		forAll(boundary, bi)
+			alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 
 
 		if (args.optionFound("nGrowAlpha"))
@@ -142,25 +142,25 @@ int main(int argc, char *argv[])
 			Info<<" nGrowAlpha  "<<nGrowAlpha<<endl;
 			alpha1.correctBoundaryConditions();
 			alpha1=fvc::average(linearInterpolate(alpha1));
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-90.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-150.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-60.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-180.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-30.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-210.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-120.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-120.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-120.0,0.0),1.0);
-					forAll(boundary, patchi)	alpha1.boundaryFieldRef()[patchi]==alpha1.boundaryField()[patchi].patchInternalField();
+					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 
 			if(nGrowAlpha<0)
 			{

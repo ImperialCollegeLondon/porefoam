@@ -68,10 +68,10 @@ Foam::Ostream& Foam::OSstream::write(const string& str)
 {
 	os_ << token::BEGIN_STRING;
 
-	register int backslash = 0;
+	 int backslash = 0;
 	for (string::const_iterator iter = str.begin(); iter != str.end(); ++iter)
 	{
-		register char c = *iter;
+		 char c = *iter;
 
 		if (c == '\\')
 		{
@@ -119,7 +119,7 @@ Foam::Ostream& Foam::OSstream::writeQuoted
 	{
 		os_ << token::BEGIN_STRING;
 
-		register int backslash = 0;
+		 int backslash = 0;
 		for
 		(
 			string::const_iterator iter = str.begin();
@@ -127,7 +127,7 @@ Foam::Ostream& Foam::OSstream::writeQuoted
 			++iter
 		)
 		{
-			register char c = *iter;
+			 char c = *iter;
 
 			if (c == '\\')
 			{
@@ -224,7 +224,7 @@ Foam::Ostream& Foam::OSstream::write(const char* buf, std::streamsize count)
 
 void Foam::OSstream::indent()
 {
-	for (register unsigned short i = 0; i < indentLevel_*indentSize_; i++)
+	for ( unsigned short i = 0; i < indentLevel_*indentSize_; i++)
 	{
 		os_ << ' ';
 	}

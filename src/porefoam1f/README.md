@@ -49,13 +49,13 @@ In summary, you need to download a segmented micro-CT image (with a `image.mhd` 
 To report any problems, contact Ali Q. Raeini, email: a.q.raeini@imperial.ac.uk
 
 For more contacts and references please visit:  
-http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling  
+https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling  
 
 License:    
 [GPLv3](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 
-[Imperial College pore-scale modelling website]: http://www.imperial.ac.uk/earth-science/research/research-groups/perm/research/pore-scale-modelling/micro-ct-images-and-networks
+[Imperial College pore-scale modelling website]: https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling
 [libvoxel]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/src/libvoxel 
 [foamx3m]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/thirdparty/foamx3m    
 [libtiff]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/thirdparty/libtiff    

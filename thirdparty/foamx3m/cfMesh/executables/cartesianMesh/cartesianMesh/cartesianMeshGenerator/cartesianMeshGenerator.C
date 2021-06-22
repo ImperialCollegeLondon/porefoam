@@ -198,8 +198,7 @@ void cartesianMeshGenerator::optimiseFinalMesh()
         meshSurfaceEngine mse(mesh_);
         meshSurfaceOptimizer surfOpt(mse, *octreePtr_);
 
-        if( enforceConstraints )
-            surfOpt.enforceConstraints();
+        if( enforceConstraints ) surfOpt.enforceConstraints();
 
         surfOpt.optimizeSurface();
     }
@@ -208,8 +207,7 @@ void cartesianMeshGenerator::optimiseFinalMesh()
 
     //- final optimisation
     meshOptimizer optimizer(mesh_);
-    if( enforceConstraints )
-        optimizer.enforceConstraints();
+    if( enforceConstraints )     optimizer.enforceConstraints();
 
     optimizer.optimizeMeshFV();
     optimizer.optimizeLowQualityFaces();

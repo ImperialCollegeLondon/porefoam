@@ -89,13 +89,17 @@ void Foam::BlockCoeff<Foam::scalar>::operator=(const BlockCoeff<scalar>& f)
 }
 
 
+namespace Foam
+{
+
 // * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const BlockCoeff<scalar>& f)
-{
-	os << f.scalarCoeff_;
+	Ostream& operator<<(Ostream& os, const BlockCoeff<scalar>& f)
+	{
+		os << f.scalarCoeff_;
 
-	return os;
+		return os;
+	}
 }
 
 

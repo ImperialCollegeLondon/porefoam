@@ -11,7 +11,7 @@
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
+    You should have received a copy of the GNU General Public License
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
 
@@ -196,11 +196,11 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 
 
-	if (flowRate0_>1.0e-27)
+	if (flowRate0_>1e-27)
 	{
 	 scalarField alphapSharp=curtailBADOFSET(10*(1.0-alpha1p.patchInternalField())-7.0,0.0);
 	 scalar sumMagSa = gSum(magS*alphapSharp);
-	 if (sumMagSa>1.0e-32)
+	 if (sumMagSa>1e-32)
 	 {
 		//scalar sign=(flowRate0_/sumMagS>0.0)*2.0-1.0;
 		scalarField  phipn0=upif/(flowRate0_/sumMagSa);
@@ -208,7 +208,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		phipn0=phipn0*alphapSharp;
 		
 
-		phipn0=max(phipn0,1.0e-24);
+		phipn0=max(phipn0,1e-24);
 
 		scalarField _logPatchValues = 0.95*log(phipn0)-0.05;//////////////   --init--   //////////////////////////////////////////
 
@@ -221,9 +221,9 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		  <<"]  logU["<<int(gMin( _logPatchValues )*10.0)/10.0<<" "<<int(gMax(_logPatchValues)*10.0)/10.0<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
 
 		scalarField  pdpif = 0.9*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
-		scalarField alphaShSmooth = (pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphapSharp+1.0e-9) ));
-		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1.0e-9) )/alphaShSmooth-0.4*pdpif;
-		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1.0e-9) )/alphaShSmooth-0.4*pdpif;
+		scalarField alphaShSmooth = (pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphapSharp+1e-9) ));
+		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
+		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
 		pdpif += 0.1*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
 		pdpif = alphapSharp*pdpif + (1.0-alphapSharp)*gSum(pdpif*alphapSharp)/gSum(alphapSharp);
 		pdpif-= gMin(pdpif) - 10.0;//
@@ -231,7 +231,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 		_logPatchValues +=  pdFactor_*(curtailBADOFSET(pdpif,0.2)-pdpif);
 
-		scalar  uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa +1.0e-8;
+		scalar  uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa +1e-8;
 		Info<<"Pcor u="<<	 uAvg <<"; ";
 
 
@@ -242,7 +242,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa;
 		Info<<"Qcor u="<<	 uAvg <<"; ";
 		
-		_logPatchValues = min(log(10.0)+min(log(uAvg+1.0e-1),0.0) , _logPatchValues);
+		_logPatchValues = min(log(10.0)+min(log(uAvg+1e-1),0.0) , _logPatchValues);
 
 		Info<<"cut u="<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<"\n";
 
@@ -254,11 +254,11 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 
 
-	if (flowRate1_>1.0e-27)
+	if (flowRate1_>1e-27)
 	{
 	 scalarField alphapSharp=curtailBADOFSET(10.0*(alpha1p.patchInternalField())-7.0,0.0);
 	 scalar sumMagSa = gSum(magS*alphapSharp);
-	 if (sumMagSa>1.0e-32)
+	 if (sumMagSa>1e-32)
 	 {
 		//scalar sign=(flowRate1_/sumMagS>0.0)*2.0-1.0;
 		scalarField  phipn0=upif/(flowRate1_/sumMagSa);
@@ -266,7 +266,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		phipn0=phipn0*alphapSharp;
 		
 
-		phipn0=max(phipn0,1.0e-24);
+		phipn0=max(phipn0,1e-24);
 
 		scalarField _logPatchValues = 0.95*log(phipn0)-0.05;//////////////   --init--   //////////////////////////////////////////
 
@@ -280,9 +280,9 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		  <<"]  logU["<<int(gMin( _logPatchValues )*10.0)/10.0<<" "<<int(gMax(_logPatchValues)*10.0)/10.0<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
 
 		scalarField  pdpif = 0.9*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
-		scalarField alphaShSmooth = (pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphapSharp+1.0e-9) ));
-		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1.0e-9) )/alphaShSmooth-0.4*pdpif;
-		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1.0e-9) )/alphaShSmooth-0.4*pdpif;
+		scalarField alphaShSmooth = (pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphapSharp+1e-9) ));
+		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
+		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
 		pdpif += 0.1*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
 		pdpif = alphapSharp*pdpif + (1.0-alphapSharp)*gSum(pdpif*alphapSharp)/gSum(alphapSharp);
 		pdpif-= gMin(pdpif) - 10.0;//
@@ -290,7 +290,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 		_logPatchValues +=  pdFactor_*(curtailBADOFSET(pdpif,0.2)-pdpif);
 
-		scalar  uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa +1.0e-8;
+		scalar  uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa +1e-8;
 		Info<<"Pcor u="<<	 uAvg <<"; ";
 
 
@@ -301,7 +301,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa ;
 		Info<<"Qcor u="<<	 uAvg <<"; ";
 		
-		_logPatchValues = min(log(10.0)+min(log(uAvg+1.0e-1),0.0) , _logPatchValues);
+		_logPatchValues = min(log(10.0)+min(log(uAvg+1e-1),0.0) , _logPatchValues);
 
 		Info<<"cut u="<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<"\n";
 

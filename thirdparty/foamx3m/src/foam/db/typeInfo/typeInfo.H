@@ -135,6 +135,11 @@ inline bool isA(const Type& t)
 {
 	return dynamic_cast<const TestType*>(static_cast<const Type*>(&t));
 }
+template<class TestType, class Type>
+inline bool isAPtr(const Type* t)
+{
+	return dynamic_cast<const TestType*>(static_cast<const Type*>(t));
+}
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

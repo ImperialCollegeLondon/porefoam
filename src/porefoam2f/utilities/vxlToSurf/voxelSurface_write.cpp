@@ -25,8 +25,7 @@ using namespace std;
 
 
 //#include "yocto_utils.h"
-dbl3s mapFacesGetPoints(std::vector<std::vector<face> >& facess, const piece<point> pointsAll)
-{
+dbl3s mapFacesGetPoints(std::vector<std::vector<face> >& facess, const piece<point> pointsAll)  {
 	ints pValidIs(pointsAll.size(),-1); int pInd=-1;
 	for(auto&faces:facess) for(auto&fac:faces) for(auto& pi:fac) if(pValidIs[pi]==-1) pValidIs[pi]=++pInd;
 	dbl3s points(pInd+1);
@@ -35,8 +34,7 @@ dbl3s mapFacesGetPoints(std::vector<std::vector<face> >& facess, const piece<poi
 	return std::move(points);
 }
 
-std::vector<std::vector<face> > getOrderedFaces(const facePieceList& facezsz, int vv)
-{
+std::vector<std::vector<face> > getbsoleteOrderedFaces(const facePieceList& facezsz, int vv)  {
 	std::vector<std::vector<face> > facess(256);
 	{
 		ints nFacs(256,0);
@@ -59,18 +57,16 @@ std::vector<std::vector<face> > getOrderedFaces(const facePieceList& facezsz, in
 	return std::move(facess);
 }
 
-void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAll, const std::string& fileNames)
-{
+void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAll, const std::string& fileNames)  {
 
- for(int vv=0;vv<facezsz.size();++vv) if(facezsz[vv].size())
- {
+ for(size_t vv=0;vv<facezsz.size();++vv) if(facezsz[vv].size())  {
 	string ext = fileNames.substr(fileNames.size()-4);
 	string basNam = fileNames.substr(0,fileNames.size()-4)+_s(vv);
 
 	cout<<"writing surface "<<basNam+ext<<" for voxels values "<<vv<<endl;
 	/// beak each voxel value surface manifold into zones
 
-	std::vector<std::vector<face> > facess = getOrderedFaces(facezsz, vv);
+	std::vector<std::vector<face> > facess = getbsoleteOrderedFaces(facezsz, vv);
 
 	dbl3s points = mapFacesGetPoints(facess,pointsAll);
 	/// get rid of unused points
@@ -78,8 +74,7 @@ void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAl
 	int nFaces=0, nZones=0;
 	for(const auto& rg:facess) { nFaces+=rg.size(); nZones+=rg.size()>0; }
 
-	if(ext==".obj")
-	{
+	if(ext==".obj")  {
 		ofstream fil(basNam+ext);
 		ensure(fil.good());
 
@@ -95,26 +90,22 @@ void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAl
 				 << "  (nFaces: " << facess[zoneI].size() << ")" << "\n";
 
 		// Write vertex coords
-		for_(points, ptI)
-		{
+		for_(points, ptI)  {
 			const point& pt = points[ptI];
 			fil  << "v " << pt.x << ' '  << pt.y << ' '  << pt.z << "\n";
 		}
 
 		fil  << endl;
 
-		for_(facess, zoneI)
-		{
+		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
 			fil << "vt  " << zoneI/255.0 <<' '<< zoneI/255.0 << endl;
 
-			if (zone.size())
-			{
+			if (zone.size())  {
 				fil << "g  zone" << zoneI << endl;
 				fil << "#  zone"<<zoneI<<" size: " << zone.size() << endl;
 				{
-					for_(zone, zfI)
-					{
+					for_(zone, zfI)  {
 						const face& f = zone[zfI];
 
 						fil << 'f';
@@ -139,8 +130,7 @@ void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAl
 
 		// Write vertex coords
 		fil  << "POINTS " << points.size() << " float" << '\n';
-		for_(points, ptI)
-		{
+		for_(points, ptI)  {
 			const point& pt = points[ptI];
 
 			fil  << pt.x << ' ' << pt.y << ' ' << pt.z << '\n';
@@ -154,12 +144,10 @@ void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAl
 			<< "POLYGONS " << nFaces << ' ' << nFaces + nNodes << '\n';
 
 
-		for_(facess, zoneI)
-		{
+		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
 
-			for_(zone, zfI)
-			{
+			for_(zone, zfI)  {
 				const face& f = zone[zfI];
 				fil << f.size();
 				for_(f, fp)  fil << ' ' << f[fp];
@@ -173,12 +161,10 @@ void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAl
 			<< "FIELD attributes 1\n"
 			<< "zone 1 " << nFaces << " int\n" ;
 
-		for_(facess, zoneI)
-		{
+		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
 
-			for_(zone, zfI)
-			{
+			for_(zone, zfI)  {
 				fil << zoneI;//+1
 				fil << '\n';
 			}
@@ -199,8 +185,7 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 
 	std::vector<std::vector<face> > facess(256*256);
 
-	for(int vv=0;vv<facezsz.size();++vv) if(facezsz[vv].size())
-	{
+	for(size_t vv=0;vv<facezsz.size();++vv) if(facezsz[vv].size())  {
 		(cout<<" "<<vv).flush();
 		/// beak  each voxel value surfacce manifold into zones
 		const facePiece& facezs=facezsz[vv];
@@ -215,8 +200,7 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 	int nFaces=0, nZones=0;
 	for(const auto& rg:facess) { nFaces+=rg.size(); nZones+=rg.size()>0; }
 
-	if(ext==".obj")
-	{
+	if(ext==".obj")  {
 		ofstream fil(basNam+ext);
 		ensure(fil.good());
 
@@ -232,26 +216,22 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 				 << "  (nFaces: " << facess[zoneI].size() << ")" << "\n";
 
 		// Write vertex coords
-		for_(points, ptI)
-		{
+		for_(points, ptI)  {
 			const point& pt = points[ptI];
 			fil  << "v " << pt.x << ' '  << pt.y << ' '  << pt.z << "\n";
 		}
 
 		fil  << endl;
 
-		for_(facess, zoneI)
-		{
+		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
 			fil << "vt  " << zoneI/255.0 <<' '<< zoneI/255.0 << endl;
 
-			if (zone.size())
-			{
+			if (zone.size())  {
 				fil << "g  v" << zoneI/256<<"_to_v"<<zoneI%256<< endl;
 				fil << "#  v" << zoneI/256<<"_to_v"<<zoneI%256<<" size: " << zone.size() << endl;
 				{
-					for_(zone, zfI)
-					{
+					for_(zone, zfI)  {
 						const face& f = zone[zfI];
 						fil << 'f';
 						for_(f, fp)  fil << ' ' << f[fp] + 1<<'/'<<zoneI;//+1
@@ -284,12 +264,10 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 		fil << "\n""POLYGONS " << nFaces << ' ' << nFaces + nFaces*4 << '\n';
 
 
-		for_(facess, zoneI)
-		{
+		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
 
-			for_(zone, zfI)
-			{
+			for_(zone, zfI)  {
 				const face& f = zone[zfI];
 				fil << f.size();
 				for_(f, fp)  fil << ' ' << f[fp];
@@ -303,8 +281,7 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 			<< "FIELD attributes 1\n"
 			<< "zone 1 " << nFaces << " int\n" ;
 
-		for_(facess, zoneI)
-		{
+		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
 
 			for_(zone, zfI)   fil << zoneI*256+zone[zfI].zone << '\n';

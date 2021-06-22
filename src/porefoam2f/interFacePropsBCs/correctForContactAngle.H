@@ -34,25 +34,25 @@ namespace Foam
 
 		const polyBoundaryMesh& boundaryMesh = alpha1.mesh().boundaryMesh();
 		const fvBoundaryMesh& patches = alpha1.mesh().boundary();
-		forAll(boundaryMesh, patchi)
+		forAll(boundaryMesh, bi)
 		{
-			const labelList& patchPoints = boundaryMesh[patchi].meshPoints();
-			if (patches[patchi].coupled()) {}
-			else	if (isA<alphaContactAngleFvPatchScalarField>(alpha1.boundaryField()[patchi]))
+			const labelList& patchPoints = boundaryMesh[bi].meshPoints();
+			if (patches[bi].coupled()) {}
+			else	if (isA<alphaContactAngleFvPatchScalarField>(alpha1.boundaryField()[bi]))
 			{
-				primitivePatchInterpolation pinterpolator(boundaryMesh[patchi]);
+				primitivePatchInterpolation pinterpolator(boundaryMesh[bi]);
 				const Foam::scalar convertToRad =  Foam::mathematicalConstant::pi/180.0;
 
-				pointField nWp= pinterpolator.faceToPointInterpolate(nw_.boundaryField()[patchi]);
-				const  alphaContactAngleFvPatchScalarField& acap =  refCast<const alphaContactAngleFvPatchScalarField> ( alpha1.boundaryField()[patchi] );
-				vectorField Uprelative= pinterpolator.faceToPointInterpolate( U.internalField()[patchi]-U.boundaryField()[patchi] );
+				pointField nWp= pinterpolator.faceToPointInterpolate(nw_.boundaryField()[bi]);
+				const  alphaContactAngleFvPatchScalarField& acap =  refCast<const alphaContactAngleFvPatchScalarField> ( alpha1.boundaryField()[bi] );
+				vectorField Uprelative= pinterpolator.faceToPointInterpolate( U.internalField()[bi]-U.boundaryField()[bi] );
 				vectorField nHatp=0.0*nWp;
 				forAll(patchPoints, ppI) nHatp[ppI] = gradAlphaP[patchPoints[ppI]];
-				nHatp /= mag(nHatp) + 1.0e-37;
+				nHatp /= mag(nHatp) + 1e-37;
 				scalarField theta = convertToRad*acap.theta(Uprelative, nHatp, nWp);
 
 				vectorField ss=nHatp-(nHatp & nWp)*nWp;
-				ss/=mag(ss)+1.0e-37;
+				ss/=mag(ss)+1e-37;
 
 				forAll(patchPoints, ppI)
 				{

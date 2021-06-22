@@ -9,7 +9,7 @@ FoamFile
 
 //----------------------------------------------------------------------
 
-// Name of set to operate on
+// Name of set to work on
 name f0;
 
 // One of clear/new/invert/add/delete|subset/list

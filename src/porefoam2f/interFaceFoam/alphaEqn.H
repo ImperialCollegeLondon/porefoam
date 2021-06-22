@@ -15,13 +15,13 @@
 		//,"zeroGradient"
 	);
 	alphaSm=0.7*alphaSm+0.3*fvc::average(fvc::interpolate(alpha1));
-									forAll(boundary, bi)if(!boundary[bi].coupled()) { alphaSm.boundaryField()[bi]==alphaSm.boundaryField()[bi].patchInternalField();	}
+			forAll(boundary, bi)if(!boundary[bi].coupled()) { alphaSm.boundaryField()[bi]==alphaSm.boundaryField()[bi].patchInternalField();	}
 
 	surfaceVectorField gradAlphaf = fvc::interpolate(fvc::grad(alphaSm)); 
 									//forAll(boundary, bi)if(!boundary[bi].coupled()) { gradAlphaf.boundaryField()[bi]*=0.0;	}
 	gradAlphaf = gradAlphaf+0.1*fvc::interpolate(fvc::average(gradAlphaf)); 
 	gradAlphaf = gradAlphaf+0.1*fvc::interpolate(fvc::average(gradAlphaf)); 
-	surfaceScalarField nHatf = (gradAlphaf& mesh.Sf())/(mag(gradAlphaf)+interface.deltaN()); // nHatfv/=mag(nHatfv)+1.0e-12;
+	surfaceScalarField nHatf = (gradAlphaf& mesh.Sf())/(mag(gradAlphaf)+interface.deltaN()); // nHatfv/=mag(nHatfv)+1e-12;
 	
 
 	surfaceScalarField phic = mag(phi/mesh.magSf());
@@ -30,7 +30,7 @@
 	//phic = 0.5*phic+0.5*fvc::interpolate(fvc::average(phic),"localMax"); 
 	//phic =  cAlpha*phic*(1.0+interface.BInternalfs()) ;
 	//phic = min(cAlpha*phic*(1.0+interface.BInternalfs()), 1.01*max(phic));
-									forAll(boundary, bi)if(!boundary[bi].coupled()){  phic.boundaryField()[bi]*=0.0;	}
+				forAll(boundary, bi)if(!boundary[bi].coupled()){  phic.boundaryField()[bi]*=0.0;	}
 	surfaceScalarField isS = mag(fvc::snGrad(curtailBADOFSET(alphaSm,0.48)));
 	surfaceScalarField dNotInterf=1.0-0.9*isS/(isS+interface.deltaN());
 	surfaceScalarField phir = min(cAlpha*dNotInterf*phic, 1.0*max(phic))*nHatf;

@@ -8,7 +8,7 @@ FoamFile
 }
 //----------------------------------------------------------------------
 
-// Name of set to operate on
+// Name of set to work on
  name  Grainwalls; 
 
 // One of clear/new/invert/add/delete|subset/list

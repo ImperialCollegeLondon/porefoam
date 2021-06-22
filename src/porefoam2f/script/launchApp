@@ -1,23 +1,25 @@
 #!/bin/bash
 
 usage()
-{
+{	echo "usage:"
 	scriptName=`basename "${BASH_SOURCE[0]}"`
-	echo "usage:"
-	echo ;  echo "$scriptName interFaceFoam PathToCaseFolder " ;  echo
-	echo ;  echo "$scriptName calc_grads PathToCaseFolder " ;  echo
+	printf "$scriptName interFaceFoam PathToCaseFolder\n\n "
+	printf "$scriptName calc_grads PathToCaseFolder\n\n "
 	echo "Arguments (all optional):"
-	echo "  arg1: name of solver, default interFaceFoam" 
+	echo "  arg1: name of solver/app" 
 	echo "  arg2: name of openfoam case (folder) to continue its simulation, default is current directory"
 }
 if [ "$1" == "-h" ]; then usage; exit; fi
 if [ "$1" == "--help" ]; then usage; exit; fi
+if ! [ -n "$1" ]; then usage; exit; fi
 
 
 
-if [ -n "$1" ]; then  application=$1 ;  else  application="interFaceFoam"; fi
-if [ -n "$2" ] ; then  caseName=$2 ;  else  caseName="." ;  fi
-shift;shift;
+if [ -n "$1" ]; then  application=$1 ;  else  application="NO_APP_GIVEN"; fi
+if [ -n "$2" ] ; then  caseName=$2 ; shift; shift;  else  caseName="." ; shift;  fi
+
+myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
+: ${msSrc:=$myCurrentDIR} ; export msSrc
 . $msSrc/script/initbash
 
 
@@ -25,7 +27,7 @@ shift;shift;
 
 if [ -f $caseName/system/controlDict ]; then 
 	echo ".................. ......................."
-	echo "running $application on case $caseName in parallel"
+	echo "running $application on  $(dirname $caseName/) in parallel"
 
 	sleep 1
 

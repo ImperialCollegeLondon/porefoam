@@ -99,9 +99,10 @@ correctEdgesBetweenPatches::correctEdgesBetweenPatches(polyMeshGen& mesh)
         patchTypes_[patchI] = boundaries[patchI].patchType();
     }
 
+	Info<<"SKIPEDDDDDDD:  decomposeProblematicFaces decomposeConcaveFaces"<<endl;
     //decomposeProblematicFaces();
 
-    decomposeConcaveFaces();
+    //decomposeConcaveFaces();
 
     patchCorrection();
 

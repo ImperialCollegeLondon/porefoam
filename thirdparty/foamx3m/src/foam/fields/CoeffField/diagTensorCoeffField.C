@@ -123,26 +123,20 @@ void Foam::CoeffField<Foam::diagTensor>::operator=
 
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
+namespace Foam {
+	Ostream& operator<<(Ostream& os, const CoeffField<diagTensor>& f)  {
+		const DecoupledCoeffField<diagTensor>& df = f;
+		return operator<<(os, df);
+	}
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const CoeffField<diagTensor>& f)
-{
-	const DecoupledCoeffField<diagTensor>& df = f;
-	return operator<<(os, df);
+
+	Ostream& operator<< (Ostream& os, const tmp<CoeffField<diagTensor> >& tf)  {
+		const DecoupledCoeffField<diagTensor>& df = tf();
+		os << df;
+		tf.clear();
+		return os;
+	}
 }
-
-
-Foam::Ostream& Foam::operator<<
-(
-	Ostream& os,
-	const tmp<CoeffField<diagTensor> >& tf
-)
-{
-	const DecoupledCoeffField<diagTensor>& df = tf();
-	os << df;
-	tf.clear();
-	return os;
-}
-
 
 /* * * * * * * * * * * * * * * * Global functions  * * * * * * * * * * * * * */
 

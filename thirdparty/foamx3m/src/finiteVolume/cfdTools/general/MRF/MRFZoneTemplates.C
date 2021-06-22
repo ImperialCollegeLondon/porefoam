@@ -47,7 +47,7 @@ void Foam::MRFZone::relativeRhoFlux
 	const vectorField& CfIn = Cf.internalField();
 	const vectorField& SfIn = Sf.internalField();
 
-	register label faceI, patchFaceI;
+	 label faceI, patchFaceI;
 
 	forAll (internalFaces_, i)
 	{
@@ -102,7 +102,7 @@ void Foam::MRFZone::absoluteRhoFlux
 	const vectorField& CfIn = Cf.internalField();
 	const vectorField& SfIn = Sf.internalField();
 
-	register label faceI, patchFaceI;
+	 label faceI, patchFaceI;
 
 	forAll (internalFaces_, i)
 	{

@@ -1,11 +1,12 @@
 #!/bin/bash
 
-export scriptName=`basename "${BASH_SOURCE[0]}"`
 usage()
 {	echo "usage:"
-	echo ;  echo "$scriptName PathToCaseFolder " ;  echo
-	echo "Arguments (all optional):"
-	echo "  arg1: name of openfoam case (folder) to continue its simulation, default is current directory"
+ 	scriptName=`basename "${BASH_SOURCE[0]}"`
+	printf "$scriptName calc_distributionss PathToCaseFolder\n\n "
+	echo "Arguments:"
+	echo "  arg1: name of solver to run "
+	echo "  arg2: name of openfoam case (folder) to continue its simulation, default is current directory"
 }
 if [ "$1" == "-h" ]; then usage; exit; fi
 if [ "$1" == "--help" ]; then usage; exit; fi
@@ -42,7 +43,6 @@ if  [ -f $caseName/system/controlDict ]; then
 	destLogNomber=$(($destLogNomber + 1))
     (cd $caseName && mv log.$application log.$application-$destLogNomber)
 	
-	#source $iBashrcOF
 
     (cd $caseName && runMPI $application $nProc $@)
 

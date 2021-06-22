@@ -178,14 +178,17 @@ Foam::scalar Foam::octreeDataPoint::calcNearest
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<
-(
-	Foam::Ostream& os,
-	const Foam::octreeDataPoint& ocPts
-)
+namespace Foam
 {
-	return os << ocPts.points();
-}
 
+	Ostream& operator<<
+	(
+		Ostream& os,
+		const octreeDataPoint& ocPts
+	)
+	{
+		return os << ocPts.points();
+	}
+}
 
 // ************************************************************************* //

@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 {
 	fvScalarMatrix pEqn
 	(
-		fvm::laplacian(1.0e06/((fvc::grad(p)&fvc::grad(p))+0.001*average(fvc::grad(p)&fvc::grad(p))),p)
+		fvm::laplacian(1e6/((fvc::grad(p)&fvc::grad(p))+0.001*average(fvc::grad(p)&fvc::grad(p))),p)
 	);
 	pEqn.setReference(pRefCell, pRefValue);
 	pEqn.solve(mesh.solutionDict().solver(p.name() + "Final"));

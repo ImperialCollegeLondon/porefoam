@@ -174,7 +174,7 @@ void fixedRelaxedMeanValueFvPatchField<Type>::updateCoeffs()
     }
 		//Info<<" P BC relaxationFactor used is  "<< relaxationFactor_ ;
 	Field<Type>& patchField = *this;
-	const Field<scalar> pMagPhi = mag(this->patch().template lookupPatchField<surfaceScalarField, scalar>("phi"))+1.0e-24;
+	const Field<scalar> pMagPhi = mag(this->patch().template lookupPatchField<surfaceScalarField, scalar>("phi"))+1e-24;
 
 	const Field<scalar> alphap = curtailBADOFSET((1./thicknessFactor_)* (this->patch().template lookupPatchField<volScalarField, scalar>("alpha1")) -(0.5/thicknessFactor_-0.5),0.0); 
 

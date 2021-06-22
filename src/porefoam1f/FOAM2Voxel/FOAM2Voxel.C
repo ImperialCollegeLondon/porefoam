@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
 
 	Info<<"\nn: "<<n[0]<<" "<<n[1]<<" "<<n[2]<<endl<<endl;
 
-	//dx*=1.0e-6; 
-	//xmin*=1.0e-6; 
+	//dx*=1e-6; 
+	//xmin*=1e-6; 
 
 
   {std::ofstream  vxlResults("OpenMeInParaview.xmf");

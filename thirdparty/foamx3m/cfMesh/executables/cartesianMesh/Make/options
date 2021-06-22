@@ -19,7 +19,7 @@ ifeq ($(WM_PROJECT), foam)
 endif
 
 EXE_INC = \
-    $(CFMESH_MACROS) \
+    $(CFMESH_MACROS) -DDEBUGMesh\
     -I$(LIB_SRC)/triSurface/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \

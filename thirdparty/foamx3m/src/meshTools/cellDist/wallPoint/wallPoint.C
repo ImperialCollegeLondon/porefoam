@@ -34,14 +34,16 @@ Foam::point Foam::wallPoint::greatPoint(GREAT, GREAT, GREAT);
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Foam::Ostream& os, const Foam::wallPoint& wDist)
+namespace Foam
 {
-	return os << wDist.origin() << wDist.distSqr();
-}
+	Ostream& operator<<(Ostream& os, const wallPoint& wDist)
+	{
+		return os << wDist.origin() << wDist.distSqr();
+	}
 
-Foam::Istream& Foam::operator>>(Foam::Istream& is, Foam::wallPoint& wDist)
-{
-	return is >> wDist.origin() >> wDist.distSqr();
+	Istream& operator>>(Istream& is, wallPoint& wDist)
+	{
+		return is >> wDist.origin() >> wDist.distSqr();
+	}
 }
-
 // ************************************************************************* //

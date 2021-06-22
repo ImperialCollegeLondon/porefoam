@@ -14,10 +14,10 @@ if [ "$PWD" != "$WM_PROJECT_DIR" ] ; then
 fi
 
 
-echo "Warning Assuming ${msRoot} == ../.."
+echo "Warning Assuming msRoot == '${msRoot}' == ../.."
 
 mkdir -p ../../bin/foamx3m
 mkdir -p ../../lib
 
-cp  $FOAM_APPBIN/*  ../../bin/foamx3m
-cp  $FOAM_LIBBIN/*  ../../lib/
+cp  $FOAM_APPBIN/*  ../../bin/foamx3m   || echo "not built"
+cp  $FOAM_LIBBIN/*  ../../lib/          || echo "not built"

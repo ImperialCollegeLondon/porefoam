@@ -53,7 +53,7 @@ License
 #include "labelIOField.H"
 #include "scalarIOField.H"
 #include "vectorIOField.H"
-//#include "vtkUnstructuredReader.H"
+
 // * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
 
 template<class Face>
@@ -236,32 +236,21 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 	IFstream is(filename);
 	if (!is.good())
 	{
-		FatalErrorIn
-		(
-			"fileFormats::OFFsurfaceFormat::read(const fileName&)"
-		)
+        FatalErrorInFunction
 			<< "Cannot read file " << filename
 			<< exit(FatalError);
 	}
 
-
-
-
-
-
-
-
-
-
+    // assume that the groups are not intermixed
+    bool sorted = true;
 
 
 	//pointField points;
 	DynamicList<point>  dynPoints;
-	DynamicList<Face>  dynFaces;
+	DynamicList<Face>  faces;
 
-	dynamicLabelList dynZones;
-	DynamicList<word>  dynNames;
-	dynamicLabelList dynSizes;
+	//dynamicLabelList zones;
+	dynamicLabelList zoneSizes;
 
 
 	bool debug=true;
@@ -277,26 +266,17 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 
 
     is.getLine(header_);
-    if (debug)
-    {
-        Info<< "Header   : " << header_ << endl;
-    }
+										if (debug)  Info<< "Header   : " << header_ << endl; 
     is.getLine(title_);
-    if (debug)
-    {
-        Info<< "Title    : " << title_ << endl;
-    }
+									if (debug)  Info<< "Title    : " << title_ << endl; 
     is.getLine(dataType_);
-    if (debug)
-    {
-        Info<< "dataType : " << dataType_ << endl;
-    }
+									if (debug)  Info<< "dataType : " << dataType_ << endl; 
 
-    if (dataType_ == "BINARY")
-    {
-        FatalIOErrorInFunction(is)
-            << "Binary reading not supported " << exit(FatalIOError);
-    }
+										if (dataType_ == "BINARY")
+										{
+											FatalIOErrorInFunction(is)
+												<< "Binary reading not supported " << exit(FatalIOError);
+										}
 
     string readMode = "None";
     label wantedSize = -1;
@@ -423,15 +403,15 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
             labelList faceVerts;
             readBlock(is, nNumbers, faceVerts);
 
-            label facei = dynFaces.size();
-            dynFaces.setSize(facei+nFaces);
-            //faceMap_.setSize(dynFaces.size());
+            label facei = faces.size();
+            faces.setSize(facei+nFaces);
+            //faceMap_.setSize(faces.size());
 
             label elemI = 0;
             for (label i = 0; i < nFaces; i++)
             {
                 //faceMap_[facei] = facei;
-                Face& f = dynFaces[facei];
+                Face& f = faces[facei];
                 f.setSize(faceVerts[elemI++]);
                 forAll(f, fp)
                 {
@@ -443,7 +423,7 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
         else if (tag == "POINT_DATA")
         {
             // 'POINT_DATA 24'
-            readMode = "pointData";
+            readMode = "POINT_DATA";
             wantedSize = dynPoints.size();
 
             label nPoints(readLabel(is));
@@ -456,8 +436,8 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
         }
         else if (tag == "CELL_DATA")
         {
-            readMode = "cellData";
-            wantedSize = dynFaces.size();//+cells_.size()+lines_.size();
+            readMode = "CELL_DATA";
+            wantedSize = faces.size();//+cells_.size()+lines_.size();
 
             label nCells(readLabel(is));
 															if (nCells != wantedSize)
@@ -606,9 +586,9 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 
 
             // Store
-            label facei = dynFaces.size();
-            dynFaces.setSize(facei+nTris);
-            //faceMap_.setSize(dynFaces.size());
+            label facei = faces.size();
+            faces.setSize(facei+nTris);
+            //faceMap_.setSize(faces.size());
             elemI = 0;
             for (label i = 0; i < nStrips; i++)
             {
@@ -617,7 +597,7 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 
                 // Read first triangle
                 //faceMap_[facei] = facei;
-                Face& f = dynFaces[facei++];
+                Face& f = faces[facei++];
                 f.setSize(3);
                 f[0] = faceVerts[elemI++];
                 f[1] = faceVerts[elemI++];
@@ -625,7 +605,7 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
                 for (label triI = 1; triI < nTris; triI++)
                 {
                     //faceMap_[facei] = facei;
-                    Face& f = dynFaces[facei++];
+                    Face& f = faces[facei++];
                     f.setSize(3);
                     f[0] = faceVerts[elemI-1];
                     f[1] = faceVerts[elemI-2];
@@ -659,46 +639,68 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
         }
     }
 
+	//AQ copied from of-v1606+
+    // Assume all faces in zone0 unless a region field is present
+    labelList zones(faces.size(), 0); 
+    Info<<"\ncellData_: ";
+    for(auto&d:cellData_) Info<<d.first<<endl;
+    if (cellData_.find("zone")!=cellData_.end())
+    {
+        const labelField& region = *static_cast<labelField*>(dbget(cellData_,"zone"));
+        forAll(region, i)
+        {
+            zones[i] = label(region[i]);
+        }
+        Info<<"\n nZons: "<<max(zones)+1<<endl;
+    }
+    else if (cellData_.find("STLSolidLabeling")!=cellData_.end())
+    {
+        const labelField& region = *static_cast<labelField*>(dbget(cellData_,"STLSolidLabeling"));
+        forAll(region, i)
+        {
+            zones[i] = label(region[i]);
+        }
+    }
+
+    // Create zone names
+    const label nZones = max(zones)+1;
+    wordList zoneNames(nZones);
+    forAll(zoneNames, i)
+    {
+        zoneNames[i] = "zone" + Foam::name(i);
+    }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
- 
 
 
 	// Read faces - ignore optional zone information     OFF format
 	// use a DynamicList for possible on-the-fly triangulation
 
-
-	if(mustTriangulate)
-	{
+    label nTri = 0;
+    if (mustTriangulate)
+    {
+        forAll(faces, faceI)
+        {
+            nTri += faces[faceI].size()-2;
+        }
+ 
 	 DynamicList<Face>  dynTriFs;
-	 for (label faceI = 0; faceI < dynFaces.size(); ++faceI)
+        DynamicList<label> dynZones(nTri);
+        forAll(faces, faceI)
 	 {
 
 
-		Face& f = dynFaces[faceI];
+            const face& f = faces[faceI];
 
 		if (f.size() > 3)
 		{
-			// simple face triangulation about f[0]
-			// cannot use face::triangulation (dynPoints may be incomplete)
 			for (label fp1 = 1; fp1 < f.size() - 1; fp1++)
 			{
 				label fp2 = f.fcIndex(fp1);
 
 				dynTriFs.append(triFace(f[0], f[fp1], f[fp2]));
+                dynZones.append(zones[faceI]);
 			}
 		}
 		else
@@ -706,25 +708,34 @@ bool Foam::fileFormats::VTKsurfaceFormat<Face>::read
 			dynTriFs.append(Face(f));
 		}
 	 }
+        // Count
+        labelList zoneSizes(nZones, 0);
+        forAll(dynZones, triI)
+        {
+            zoneSizes[dynZones[triI]]++;
+        }
 	 
-	 
-		//this->storedPoints().transfer(dynPoints);		// transfer to normal lists
+		this->storedPoints().transfer(dynPoints);		// transfer to normal lists
 
 
 		//this->sortFacesAndStore(dynTriFs.xfer(), dynTriZones.xfer(), sorted);
 
-		//this->addZones(dynSizes, dynNames, true);			// add zones, culling empty ones
+		this->addZones(zoneSizes, zoneNames, true);			// add zones, culling empty ones
 	}
-
 	else
 	{
-		//this->storedPoints().transfer(dynPoints);		// transfer to normal lists
+		this->storedPoints().transfer(dynPoints);		// transfer to normal lists
 
+        // Count
+        labelList zoneSizes(nZones, 0);
+        forAll(zones, faceI)
+        {
+            zoneSizes[zones[faceI]]++;
+        }
 
-		//this->sortFacesAndStore(dynFaces.xfer(), dynZones.xfer(), sorted);
+		this->sortFacesAndStore(faces.xfer(), zones.xfer(), sorted);
 
-		//this->addZones(dynSizes, dynNames, true);		// add zones, culling empty ones
-
+		this->addZones(zoneSizes, zoneNames, true);		// add zones, culling empty ones
 	}
 
 
@@ -827,11 +838,7 @@ void Foam::fileFormats::VTKsurfaceFormat<Face>::write
 	OFstream os(filename);
 	if (!os.good())
 	{
-		FatalErrorIn
-		(
-			"fileFormats::VTKsurfaceFormat::write"
-			"(const fileName&, const UnsortedMeshedSurface<Face>&)"
-		)
+        FatalErrorInFunction
 			<< "Cannot open file for writing " << filename
 			<< exit(FatalError);
 	}

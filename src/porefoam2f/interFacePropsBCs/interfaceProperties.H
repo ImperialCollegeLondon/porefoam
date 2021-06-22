@@ -67,6 +67,7 @@ class interfaceProperties
 	surfaceScalarField Internalfaces1_;
 	surfaceScalarField BInternalfs_;
 	volScalarField AvgInternFaces1_;
+	labelList         IsRefCandid_;
 	surfaceScalarField sgPcErr_;
 	surfaceScalarField sgPcErrn_; // not needed here, only for debugging and visualization, in case
 
@@ -106,6 +107,8 @@ class interfaceProperties
 
 
 
+#ifdef _USE_ALPHAF_
+#endif
 
 	// Private Member Functions
 
@@ -181,7 +184,7 @@ public:
 
     // Member Functions
 
-	const fvMesh& mesh()    const { return alpha1_.mesh(); }
+	const fvMesh& mesh() const { return alpha1_.mesh(); }
 	word  timeName() const { return alpha1_.time().timeName(); }
 
 	scalar pcThicknessFactor() const          {  return pcThicknessFactor_;  }

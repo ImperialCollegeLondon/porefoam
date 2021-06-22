@@ -38,7 +38,7 @@ SourceFiles
 #ifndef singlePhaseTransportModel_H
 #define singlePhaseTransportModel_H
 
-#include "incompressible/transportModel/transportModel.H"
+#include "../transportModel/transportModel.H"
 #include "autoPtr.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -152,8 +152,8 @@ int main(int argc, char *argv[])
 		rock.dxCh()[0]=dxAvg;  rock.dxCh()[1]=dxAvg;  rock.dxCh()[2]=dxAvg;
 		Info<<"->dx:   "<<rock.dx()[0]<<"  "<<rock.dx()[1]<<"  "<<rock.dx()[2]<<endl;
 
-		//rock.X0Ch()*=1.0e6; 
-		//rock.dxCh()*=1.0e6; 
+		//rock.X0Ch()*=1e6; 
+		//rock.dxCh()*=1e6; 
 	}   
 	else
     {
@@ -176,8 +176,8 @@ int main(int argc, char *argv[])
 
 
 	xmin=rock.X0(); dx=rock.dx();
-	//dx*=1.0e-6; 
-	//xmin*=1.0e-6; 
+	//dx*=1e-6; 
+	//xmin*=1e-6; 
 
 	Info<<"xmin: "<<xmin[0]<<" "<<xmin[1]<<" "<<xmin[2]<<endl;
 	Info<<"dx:   "<<dx[0]<<" "<<dx[1]<<" "<<dx[2]<<endl;

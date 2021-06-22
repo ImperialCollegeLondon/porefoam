@@ -118,26 +118,29 @@ void Foam::CoeffField<Foam::tensor>::operator=
 
 // * * * * * * * * * * * * * * * IOstream Operators  * * * * * * * * * * * * //
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const CoeffField<tensor>& f)
+namespace Foam
 {
-	const DecoupledCoeffField<tensor>& df = f;
-	return operator<<(os, df);
+
+	Ostream& operator<<(Ostream& os, const CoeffField<tensor>& f)
+	{
+		const DecoupledCoeffField<tensor>& df = f;
+		return operator<<(os, df);
+	}
+
+
+	Ostream& operator<<
+	(
+		Ostream& os,
+		const tmp<CoeffField<tensor> >& tf
+	)
+	{
+		const DecoupledCoeffField<tensor>& df = tf();
+		os << df;
+		tf.clear();
+		return os;
+	}
+
 }
-
-
-Foam::Ostream& Foam::operator<<
-(
-	Ostream& os,
-	const tmp<CoeffField<tensor> >& tf
-)
-{
-	const DecoupledCoeffField<tensor>& df = tf();
-	os << df;
-	tf.clear();
-	return os;
-}
-
-
 /* * * * * * * * * * * * * * * * Global functions  * * * * * * * * * * * * * */
 
 template<>

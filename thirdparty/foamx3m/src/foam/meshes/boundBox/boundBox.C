@@ -110,8 +110,10 @@ Foam::boundBox::boundBox(Istream& is)
 
 
 // * * * * * * * * * * * * * * * Ostream Operator  * * * * * * * * * * * * * //
-
-Foam::Ostream& Foam::operator<<(Ostream& os, const boundBox& bb)
+namespace Foam
+{
+	
+Ostream& operator<<(Ostream& os, const boundBox& bb)
 {
 	if (os.format() == IOstream::ASCII)
 	{
@@ -132,7 +134,7 @@ Foam::Ostream& Foam::operator<<(Ostream& os, const boundBox& bb)
 }
 
 
-Foam::Istream& Foam::operator>>(Istream& is, boundBox& bb)
+Istream& operator>>(Istream& is, boundBox& bb)
 {
 	if (is.format() == IOstream::ASCII)
 	{
@@ -151,5 +153,5 @@ Foam::Istream& Foam::operator>>(Istream& is, boundBox& bb)
 	is.check("Istream& operator>>(Istream&, boundBox&)");
 	return is;
 }
-
+}
 // ************************************************************************* //

@@ -139,7 +139,7 @@ void Foam::MRFZone::setMRFFaces()
 	labelList nIncludedFaces(patches.size(), 0);
 	labelList nExcludedFaces(patches.size(), 0);
 
-	register label faceI;
+	 label faceI;
 
 	forAll (patches, patchi)
 	{
@@ -503,7 +503,7 @@ void Foam::MRFZone::meshPhi
 	const vectorField& CfIn = Cf.internalField();
 	const vectorField& SfIn = Sf.internalField();
 
-	register label faceI, patchFaceI;
+	 label faceI, patchFaceI;
 
 	forAll (internalFaces_, i)
 	{
@@ -544,7 +544,7 @@ void Foam::MRFZone::correctBoundaryVelocity(volVectorField& U) const
 	const vector& origin = origin_.value();
 	const vector rotVel = Omega();
 
-	register label patchFaceI;
+	 label patchFaceI;
 
 	// Included patches
 	forAll (includedFaces_, patchI)

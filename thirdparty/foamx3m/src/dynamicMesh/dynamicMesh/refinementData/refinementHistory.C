@@ -1131,7 +1131,10 @@ bool Foam::refinementHistory::writeData(Ostream& os) const
 
 // * * * * * * * * * * * * * * * Friend Operators  * * * * * * * * * * * * * //
 
-Foam::Istream& Foam::operator>>(Istream& is, refinementHistory& rh)
+namespace Foam
+{
+
+Istream& operator>>(Istream& is, refinementHistory& rh)
 {
     rh.freeSplitCells_.clear();
 
@@ -1144,7 +1147,7 @@ Foam::Istream& Foam::operator>>(Istream& is, refinementHistory& rh)
 }
 
 
-Foam::Ostream& Foam::operator<<(Ostream& os, const refinementHistory& rh)
+Ostream& operator<<(Ostream& os, const refinementHistory& rh)
 {
     const_cast<refinementHistory&>(rh).compact();
 
@@ -1154,5 +1157,7 @@ Foam::Ostream& Foam::operator<<(Ostream& os, const refinementHistory& rh)
                 << rh.visibleCells_;
 }
 
+
+}
 
 // ************************************************************************* //

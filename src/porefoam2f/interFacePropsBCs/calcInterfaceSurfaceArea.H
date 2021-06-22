@@ -156,6 +156,6 @@ forAll(magDelS,fI)
 	}
 
 	//interfaceSf=(interfaceSf&curvatureNSf)*curvatureNSf;
-	//interfaceSf=msh.magSf()/(curvatureNSf&msh.Sf()+1.0e-36)*msh.Sf();
+	//interfaceSf=msh.magSf()/(curvatureNSf&msh.Sf()+1e-36)*msh.Sf();
 
 

@@ -12,8 +12,21 @@ Ali Q Raeini: a.q.raeini@imperial.ac.uk
 
 \*-------------------------------------------------------------------------*/
 
+
+#ifndef voxelRegions_H
+#define voxelRegions_H
+
 using namespace std;
 
+#define min7Nei(_vxls, vp_) \
+		min(*vp_,min(min( \
+		min(_vxls.v_i(-1,vp_),_vxls.v_i( 1,vp_)),\
+		min(_vxls.v_j(-1,vp_),_vxls.v_j( 1,vp_))),\
+		min(_vxls.v_k(-1,vp_),_vxls.v_k( 1,vp_))))
+#define min5Nei(_vxls, vp_) \
+		min(*vp_, min( \
+		min(_vxls.v_i(-1,vp_),_vxls.v_i( 1,vp_)),\
+		min(_vxls.v_j(-1,vp_),_vxls.v_j( 1,vp_))))
 
 
 inline int recurseMin(const vector<int>& lblMap, int lbv)
@@ -32,7 +45,7 @@ voxelImageT<int> labelImage(const voxelImageT<T>& vImage, const T minvv=0, const
 
 	cout<<" labeling Image between "<<int(minvv)<<"  "<<int(maxvv)<<endl;
 
-	voxelImageT<int> lbls(n_2[0]+2,n_2[1]+2,n_2[2]+2, bigN);
+	voxelImageT<int> lbls(n_2[0]+2,n_2[1]+2,n_2[2]+2, bigN); //+2 is needed for min5Nei
 	lbls.X0Ch()=vImage.X0();
 	lbls.dxCh()=vImage.dx();
 	forAllkji_(vImage) if(minvv<=vImage(i,j,k) && vImage(i,j,k)<=maxvv) lbls(i+1,j+1,k+1)= i+j*n_2[0]+2; ///. int won't work for large images, go slice by slice
@@ -63,17 +76,17 @@ voxelImageT<int> labelImage(const voxelImageT<T>& vImage, const T minvv=0, const
 	}
 
 	//OMPragma("omp parallel for")
-	//for ( int k=1; k<(lbls).nz()-1 ; ++k )
+	//for (int k=1; k<(lbls).nz()-1; ++k)
 	//{	int mxl=lbls.nij_+1;
 		//vector<int> lblMap(lbls.nij_,mxl);
 		//vector<int> lblMapp(lbls.nij_,mxl);
-		//for(auto* vp=&lbls(0,0,k), *_ve_=&lbls(0,0,k+1); vp<_ve_; ++vp )
+		//for(auto* vp=&lbls(0,0,k), *_ve_=&lbls(0,0,k+1); vp<_ve_; ++vp)
 			 //if(*vp<bigN) { int lmin=recurseMin(lblMap,min5Nei(lbls,vp)); lblMap[*vp] = lmin;  *vp=lmin; }
 
 		//int nReg=1;
 		//for(auto& lbl: lblMap) if(lbl<mxl) { lbl=recurseMin(lblMap,lbl); if(lblMapp[lbl]>nReg) lblMapp[lbl]=++nReg; }
 
-		//for(auto* vp=&lbls(0,0,k), *_ve_=&lbls(0,0,k+1); vp<_ve_; ++vp )
+		//for(auto* vp=&lbls(0,0,k), *_ve_=&lbls(0,0,k+1); vp<_ve_; ++vp)
 			 //if(*vp<mxl) *vp=lblMapp[lblMap[*vp]];
 	//}
 
@@ -178,4 +191,4 @@ void keepLargest0(voxelImageT<T>& vImage, const T minvv=0, const T maxvv=0)
 }
 
 
-
+#endif

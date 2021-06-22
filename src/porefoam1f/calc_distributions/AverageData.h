@@ -36,7 +36,7 @@ class snapShot_zt
 	snapShot_zt();   
 };
 
-void writePostProcHeader(std::string fname, int nSlices)
+void writePostProcHeader(std::string fnam, int nSlices)
 {
 	std::string Names[12]={
 	"U", 
@@ -54,7 +54,7 @@ void writePostProcHeader(std::string fname, int nSlices)
 	}	;
 
 
-	std::ofstream out (fname.c_str());
+	std::ofstream out (fnam);
 
 	out << "t ";
 	out << "maxMagU ";
@@ -62,13 +62,13 @@ void writePostProcHeader(std::string fname, int nSlices)
 	out << "QOut ";
 	out << "Dp ";
 	out << "ADarcy ";
-	for ( int i=0;i<nSlices;i++) 
+	for (int i=0; i<nSlices; ++i) 
 	{
-	 for(int j=0; j<12 ; ++j )   out << "S"<<i+1<<"-"<<Names[j]<<" ";
+	 for(int j=0; j<12; ++j)   out << "S"<<i+1<<"-"<<Names[j]<<" ";
 	}
 	out << std::endl ;
 	out.close();
-	Info<<"wrote "<< fname <<endl;
+	Info<<"wrote "<< fnam <<endl;
 
 }
 
@@ -108,9 +108,9 @@ class snapShot_t
 		out << QOut<<",";
 		out << Dp<<",";
 		out << ADarcy<<",";
-		for ( int i=0;i<slices.size();i++) 
+		for (int i=0; i<slices.size(); ++i) 
 		{
-		 forAll( slices[i].data(), j )   out << slices[i].data()[j]<<",";
+		 forAll(slices[i].data(), j)   out << slices[i].data()[j]<<",";
 		}
 		out << std::endl ;
 		
@@ -120,9 +120,6 @@ class snapShot_t
 };
 
 
-
-
-#include <limits>       // std::numeric_limits
 
 
 
