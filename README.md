@@ -4,9 +4,9 @@
 
  ----------------------------------------------------------------    
 
-## See [doc](doc) and [src/porefoam2f](src/porefoam2f) folders for more specific details.
+## See [doc](doc) and [src/porefoam2f](src/porefoam2f) for specific details on two-phase flow codes.
 
-## See [src/script/README.md](src/script/README.md) for compilation/build instructions.
+## See [src/script/README.md](src/script/README.md) for compile/build instructions.
 
 See also README files for other modules which are located in their own directories:    
 [src/porefoam1f](src/porefoam1f), [src/libvoxel](src/libvoxel), [src/script](src/script) and in [thirdparty](thirdparty).
