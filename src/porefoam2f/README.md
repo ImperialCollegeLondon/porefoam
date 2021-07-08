@@ -15,8 +15,12 @@ If you are interested in further developing the code, please see the contact det
 
 # Instructions
 
+Simulations can be launched using a script called AllRunImageTwoPhase. 
+See [porefoam_twoPhase.pdf](../../doc/porefoam_twoPhase.pdf) for more details.
+
 You can follow the series of commands run by `make test` in a copy of folder src/porefoam2f/test2f to run a simulation.
-The sample simulation run with the command `make test` shows a significant level of stick-slip behaviour. This test case shall be updated to minimize these artefacts.
+The sample simulation run with the command `make test` shows a significant level of stick-slip behaviour. 
+This test case shall be updated to minimize these artefacts.
 
 TODO: add another test case based on the star-shaped geometry used in  Raeini et al (2014). 
 
