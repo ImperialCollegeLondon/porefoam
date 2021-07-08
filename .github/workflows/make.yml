@@ -22,9 +22,8 @@ jobs:
     - name: install prerequisites
       run: sudo apt install mpi-default-dev flex libscotch-dev
     - name: clean
-      run: echo skip make distclean 
+      run: echo skip make distclean, NOTE parallel make may fail due to RAM limit
     - name: make
-      run: echo parallel make may fail due to RAM limit
       run: make 
     - name: test
       run: make test
