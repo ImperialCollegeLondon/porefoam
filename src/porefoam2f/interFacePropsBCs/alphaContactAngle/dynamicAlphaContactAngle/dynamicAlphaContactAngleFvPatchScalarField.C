@@ -40,10 +40,10 @@ dynamicAlphaContactAngleFvPatchScalarField
 )
 :
     alphaContactAngleFvPatchScalarField(p, iF),
-    theta0_(0.0),
-    uTheta_(0.0),
-    thetaA_(0.0),
-    thetaR_(0.0)
+    theta0_(0.),
+    uTheta_(0.),
+    thetaA_(0.),
+    thetaR_(0.)
 {}
 
 

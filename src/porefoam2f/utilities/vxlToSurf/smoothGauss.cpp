@@ -59,7 +59,7 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 		//const labelListList pFaces  = pointFaces(newPoints.size(),faces);
 		//const labelListList pNeips = getPointPoints(newPoints.size(),facezs);
 
-		//dbls pWeights(pNeips.size(),1.0);
+		//dbls pWeights(pNeips.size(),1.);
 		vectorField pNw(pointsAll.size(),dbl3(0,0,0));
 		dbls pAreas;
 		{// weits
@@ -87,7 +87,7 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 				  pNw[e1] -= pNE; 
 				 //if( pMarks[e1]==fac.zone ) {    pNw[e1] -= pNE;    } // pNs[e1] -= pNE;  
 				 //else if( fac.zone != OWInd )        pNw[e1] -= pNE;
-				 //else                                pNs[e1] -= pNE;//2.0*pNE-mag(pNE)*fNorms[faceI];
+				 //else                                pNs[e1] -= pNE;//2.*pNE-mag(pNE)*fNorms[faceI];
 			}
 		 }
 		 pAreas=(mag(pNw));
@@ -142,8 +142,8 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 					wt=0.5;  displac[e0]+=wt*((delp&CL)*CL);	sumWeis[e0]+=wt*0.3;
 					wt=0.9;       displac[e1]-=wt*delp;   sumWeis[e1]+=wt;
 				} else {
-					wt=1.0;       displac[e0]+=wt*delp;	sumWeis[e0]+=wt*(1.0-0.5*(pMarks[e0]!=fac.zone+1));
-					wt=1.0;       displac[e1]-=wt*delp;	sumWeis[e1]+=wt*(1.0-0.5*(pMarks[e1]!=fac.zone+1));;
+					wt=1.;       displac[e0]+=wt*delp;	sumWeis[e0]+=wt*(1.-0.5*(pMarks[e0]!=fac.zone+1));
+					wt=1.;       displac[e1]-=wt*delp;	sumWeis[e1]+=wt*(1.-0.5*(pMarks[e1]!=fac.zone+1));;
 				}
 			}
 		 }

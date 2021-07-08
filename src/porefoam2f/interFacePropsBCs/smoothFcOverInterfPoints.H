@@ -31,7 +31,7 @@
 	);
 	pointScalarField interfPointArea
 	(	IOobject( "interfPointArea",  timeName(),  msh ),
-		pMesh_,  dimensionedScalar("interfPointArea", magSf.dimensions(), 0.0)
+		pMesh_,  dimensionedScalar("interfPointArea", magSf.dimensions(), 0.)
 	);
 
 //Info<<endl<< sum( mag(curvatureForcef*magDelS) ).value()<<" sfpfs ";;
@@ -40,8 +40,8 @@
 	for(int i=0;i<smoothingKernel_;++i)
 	{
 
-		pointForce*=0.0;
-		interfPointArea*=0.0;
+		pointForce*=0.;
+		interfPointArea*=0.;
 
 
 		forAll(magDelS,fI) if (magDelS[fI] > CONTRAST_FACTOR)
@@ -50,7 +50,7 @@
 			forAll(ff, ip)
 			{
 				label pI = ff[ip];
-				pointForce[pI]+=(1.0/ff.size())*magDelS[fI]*curvatureForcef[fI];
+				pointForce[pI]+=(1./ff.size())*magDelS[fI]*curvatureForcef[fI];
 				interfPointArea[pI]+=magDelS[fI]*magInterfaceSf[fI];
 			}
 		}
@@ -86,7 +86,7 @@
 
 		forAll(magDelS,fI) if (magDelS[fI] > CONTRAST_FACTOR)
 		{
-			curvatureForcef[fI] *= 1.0-smoothingRelaxFactor_;
+			curvatureForcef[fI] *= 1.-smoothingRelaxFactor_;
 			const face& ff = faces[fI];
 			forAll(ff, ip)
 			{
@@ -105,13 +105,13 @@
 				vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[bI];
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
-					pCurvatureForcef[pfI] *= 1.0-smoothingRelaxFactor_;
+					pCurvatureForcef[pfI] *= 1.-smoothingRelaxFactor_;
 					const face& ff = faces[pStart+pfI];
 					forAll(ff, ip)
 					{
 						label pI = ff[ip];
 						pCurvatureForcef[pfI] += smoothingRelaxFactor_*pointForce[pI]*pMagInterfaceSf[pfI]/(mag(interfPointArea[pI])+1e-36);
-						//pCurvatureForcef[pfI] += 1.0*pCellNybrForce[pfI]*pMagInterfaceSf[pfI]/(pCellNybrArea[pfI]);
+						//pCurvatureForcef[pfI] += 1.*pCellNybrForce[pfI]*pMagInterfaceSf[pfI]/(pCellNybrArea[pfI]);
 					}
 				}
 

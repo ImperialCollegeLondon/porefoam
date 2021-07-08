@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 	scalar K[3];
 	vector dp;
 	vector VDarcy;
-	scalar dx=pow(average(mesh.V()), 1.0/3.0).value();
+	scalar dx=pow(average(mesh.V()), 1./3.).value();
 	L[x_]=(gMax(mesh.points().component(0))-gMin(mesh.points().component(0)));
 	L[y_]=(gMax(mesh.points().component(1))-gMin(mesh.points().component(1)));
 	L[z_]=(gMax(mesh.points().component(2))-gMin(mesh.points().component(2)));

@@ -7,13 +7,13 @@
 
 if (adjustTimeStep)
 {
-	if(!(CoNum<10000.0)){Info<<"Error CoNum="<<CoNum<<endl;  exit(-1);}
+	if(!(CoNum<10000.)){Info<<"Error CoNum="<<CoNum<<endl;  exit(-1);}
 
     deltaTFact =  min(maxCo/(CoNum + SMALL),1.2);
 
 
 
-    if(( (deltaTFact-1.0)>0.05 )||( (1.0-deltaTFact)>0.02 ))
+    if(( (deltaTFact-1.)>0.05 )||( (1.-deltaTFact)>0.02 ))
     {
         runTime.setDeltaT
         (

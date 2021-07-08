@@ -1,29 +1,29 @@
 
-vector viscF(0.0,0.0,0.0);
-vector viscF1(0.0,0.0,0.0);
-vector gPd(0.0,0.0,0.0);
-vector gPd1(0.0,0.0,0.0);    
-vector GPc(0.0,0.0,0.0);
-vector GPc1(0.0,0.0,0.0);    
-vector rhoPhiU(0.0,0.0,0.0);
-vector rhoPhiU1(0.0,0.0,0.0);
-vector viscInterf_1(0.0,0.0,0.0);
+vector viscF(0.,0.,0.);
+vector viscF1(0.,0.,0.);
+vector gPd(0.,0.,0.);
+vector gPd1(0.,0.,0.);    
+vector GPc(0.,0.,0.);
+vector GPc1(0.,0.,0.);    
+vector rhoPhiU(0.,0.,0.);
+vector rhoPhiU1(0.,0.,0.);
+vector viscInterf_1(0.,0.,0.);
 
 
     
 {
-//scalar viscE(0.0);
-//scalar viscE_1(0.0);
+//scalar viscE(0.);
+//scalar viscE_1(0.);
 
     const fvBoundaryMesh& boundary = mesh.boundary();
 
 	//volScalarField clipAlpha=alphaSh*clip;
     //forAll(boundary, bi)
     //{//if (isA<fixedValueFvPatchVectorField>(Ubf[bi]))
-			//clip.boundaryField()[bi]=0.0;
-			//clip.boundaryField()[bi]==0.0;
-			//clipAlpha.boundaryField()[bi]=0.0;
-			//clipAlpha.boundaryField()[bi]==0.0;
+			//clip.boundaryField()[bi]=0.;
+			//clip.boundaryField()[bi]==0.;
+			//clipAlpha.boundaryField()[bi]=0.;
+			//clipAlpha.boundaryField()[bi]==0.;
 	//}
 
 	surfaceScalarField BSurafce=fvcDelta(clip);

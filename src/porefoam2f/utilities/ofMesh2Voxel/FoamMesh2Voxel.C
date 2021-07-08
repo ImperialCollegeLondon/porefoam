@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 		if(headerName.size()) Info<<"\n\nWarning: ignoring header file from system/meshingDict:"<<headerName<<endl<<endl;
 		headerName="";
 		Info <<"computing mesh extents"<<endl;
-		dx[0]=std::pow(gAverage(mesh.V()),1.0/3.0); dx[1]=dx[0]; dx[2]=dx[1];
+		dx[0]=std::pow(gAverage(mesh.V()),1./3.); dx[1]=dx[0]; dx[2]=dx[1];
 		rock.dxCh()=dx;
 
 		boundBox box(mesh.points());
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 
 		Info<<"->X0:   "<<rock.X0()[0]<<"  "<<rock.X0()[1]<<"  "<<rock.X0()[2]<<endl;
 		Info<<"->dx:   "<<rock.dx()[0]<<"  "<<rock.dx()[1]<<"  "<<rock.dx()[2]<<endl;
-		double dxAvg = (rock.dxCh()[0]+rock.dxCh()[1]+rock.dxCh()[2])/3.0;
+		double dxAvg = (rock.dxCh()[0]+rock.dxCh()[1]+rock.dxCh()[2])/3.;
 
 		rock.dxCh()[0]=dxAvg;  rock.dxCh()[1]=dxAvg;  rock.dxCh()[2]=dxAvg;
 		Info<<"->dx:   "<<rock.dx()[0]<<"  "<<rock.dx()[1]<<"  "<<rock.dx()[2]<<endl;
@@ -190,7 +190,7 @@ int main(int argc, char *argv[])
 
 
 
-	//voxelField<double> pVoxel(nnn[0],nnn[1],nnn[2],0.0);
+	//voxelField<double> pVoxel(nnn[0],nnn[1],nnn[2],0.);
 	rock.reset(nnn[0],nnn[1],nnn[2],1);
 
 
@@ -213,64 +213,64 @@ int main(int argc, char *argv[])
 	{
 		forAll(C,c)
 		{
-			double dxi = std::pow(V[c],1.0/3.0);
-			int i=(C[c][0]-xmin[0]+dxi/4.0)/dx[0];
-			int j=(C[c][1]-xmin[1]-dxi/4.0)/dx[1];
-			int k=(C[c][2]-xmin[2]-dxi/4.0)/dx[2];
+			double dxi = std::pow(V[c],1./3.);
+			int i=(C[c][0]-xmin[0]+dxi/4.)/dx[0];
+			int j=(C[c][1]-xmin[1]-dxi/4.)/dx[1];
+			int k=(C[c][2]-xmin[2]-dxi/4.)/dx[2];
 			if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 			//else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 		}
 		forAll(C,c)
 		{
-			double dxi = std::pow(V[c],1.0/3.0);
-			int i=(C[c][0]-xmin[0]-dxi/4.0)/dx[0];
-			int j=(C[c][1]-xmin[1]+dxi/4.0)/dx[1];
-			int k=(C[c][2]-xmin[2]-dxi/4.0)/dx[2];
+			double dxi = std::pow(V[c],1./3.);
+			int i=(C[c][0]-xmin[0]-dxi/4.)/dx[0];
+			int j=(C[c][1]-xmin[1]+dxi/4.)/dx[1];
+			int k=(C[c][2]-xmin[2]-dxi/4.)/dx[2];
 			if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 			//else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 		}
 		forAll(C,c)
 		{
-			double dxi = std::pow(V[c],1.0/3.0);
-			int i=(C[c][0]-xmin[0]-dxi/4.0)/dx[0];
-			int j=(C[c][1]-xmin[1]-dxi/4.0)/dx[1];
-			int k=(C[c][2]-xmin[2]+dxi/4.0)/dx[2];
+			double dxi = std::pow(V[c],1./3.);
+			int i=(C[c][0]-xmin[0]-dxi/4.)/dx[0];
+			int j=(C[c][1]-xmin[1]-dxi/4.)/dx[1];
+			int k=(C[c][2]-xmin[2]+dxi/4.)/dx[2];
 			if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 			//else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 		}
 		forAll(C,c)
 		{
-			double dxi = std::pow(V[c],1.0/3.0);
-			int i=(C[c][0]-xmin[0]-dxi/4.0)/dx[0];
-			int j=(C[c][1]-xmin[1]+dxi/4.0)/dx[1];
-			int k=(C[c][2]-xmin[2]+dxi/4.0)/dx[2];
+			double dxi = std::pow(V[c],1./3.);
+			int i=(C[c][0]-xmin[0]-dxi/4.)/dx[0];
+			int j=(C[c][1]-xmin[1]+dxi/4.)/dx[1];
+			int k=(C[c][2]-xmin[2]+dxi/4.)/dx[2];
 			if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 			//else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 		}
 		forAll(C,c)
 		{
-			double dxi = std::pow(V[c],1.0/3.0);
-			int i=(C[c][0]-xmin[0]+dxi/4.0)/dx[0];
-			int j=(C[c][1]-xmin[1]-dxi/4.0)/dx[1];
-			int k=(C[c][2]-xmin[2]+dxi/4.0)/dx[2];
+			double dxi = std::pow(V[c],1./3.);
+			int i=(C[c][0]-xmin[0]+dxi/4.)/dx[0];
+			int j=(C[c][1]-xmin[1]-dxi/4.)/dx[1];
+			int k=(C[c][2]-xmin[2]+dxi/4.)/dx[2];
 			if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 			//else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 		}
 		forAll(C,c)
 		{
-			double dxi = std::pow(V[c],1.0/3.0);
-			int i=(C[c][0]-xmin[0]+dxi/4.0)/dx[0];
-			int j=(C[c][1]-xmin[1]+dxi/4.0)/dx[1];
-			int k=(C[c][2]-xmin[2]-dxi/4.0)/dx[2];
+			double dxi = std::pow(V[c],1./3.);
+			int i=(C[c][0]-xmin[0]+dxi/4.)/dx[0];
+			int j=(C[c][1]-xmin[1]+dxi/4.)/dx[1];
+			int k=(C[c][2]-xmin[2]-dxi/4.)/dx[2];
 			if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 			//else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 		}
 		forAll(C,c)
 		{
-			double dxi = std::pow(V[c],1.0/3.0);
-			int i=(C[c][0]-xmin[0]+dxi/4.0)/dx[0];
-			int j=(C[c][1]-xmin[1]+dxi/4.0)/dx[1];
-			int k=(C[c][2]-xmin[2]+dxi/4.0)/dx[2];
+			double dxi = std::pow(V[c],1./3.);
+			int i=(C[c][0]-xmin[0]+dxi/4.)/dx[0];
+			int j=(C[c][1]-xmin[1]+dxi/4.)/dx[1];
+			int k=(C[c][2]-xmin[2]+dxi/4.)/dx[2];
 			if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 			//else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 		}

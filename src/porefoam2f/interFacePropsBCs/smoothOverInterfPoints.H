@@ -50,7 +50,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 	);
 	pointScalarField interfPointArea
 	(	IOobject( "interfPointArea",  timeName(),  msh ),
-		pMesh_,  dimensionedScalar("interfPointArea", magSf.dimensions(), 0.0)
+		pMesh_,  dimensionedScalar("interfPointArea", magSf.dimensions(), 0.)
 	);
 
 
@@ -58,8 +58,8 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 	for(int i=0;i<smoothingKernel;++i)
 	{
 
-		pointForce*=0.0;
-		interfPointArea*=0.0;
+		pointForce*=0.;
+		interfPointArea*=0.;
 
 
 		forAll(magDelS,fI) if (magDelS[fI] > CONTRAST_FACTOR)
@@ -68,7 +68,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 			forAll(ff, ip)
 			{
 				label pI = ff[ip];
-				pointForce[pI]+=(1.0/ff.size())*curvatureForcefDiff[fI];
+				pointForce[pI]+=(1./ff.size())*curvatureForcefDiff[fI];
 				interfPointArea[pI]+=magInterfaceSf[fI];
 			}
 		}
@@ -105,7 +105,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 
 		forAll(magDelS,fI) if (magDelS[fI] > CONTRAST_FACTOR)
 		{
-			curvatureForcefDiff[fI] *= 1.0-smoothingRelaxFactor;
+			curvatureForcefDiff[fI] *= 1.-smoothingRelaxFactor;
 			const face& ff = faces[fI];
 			forAll(ff, ip)
 			{
@@ -124,13 +124,13 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 				vectorField & pCurvatureForcef = curvatureForcefDiff.boundaryField()[bI];
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
-					pCurvatureForcef[pfI] *= 1.0-smoothingRelaxFactor;
+					pCurvatureForcef[pfI] *= 1.-smoothingRelaxFactor;
 					const face& ff = faces[pStart+pfI];
 					forAll(ff, ip)
 					{
 						label pI = ff[ip];
 						pCurvatureForcef[pfI] += smoothingRelaxFactor*pointForce[pI]*pMagInterfaceSf[pfI]/(mag(interfPointArea[pI])+1e-36);
-						//pCurvatureForcef[pfI] += 1.0*pCellNybrForce[pfI]*pMagInterfaceSf[pfI]/(pCellNybrArea[pfI]);
+						//pCurvatureForcef[pfI] += 1.*pCellNybrForce[pfI]*pMagInterfaceSf[pfI]/(pCellNybrArea[pfI]);
 					}
 				}
 
@@ -188,7 +188,7 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 	);
 	//pointScalarField interfFaceArea
 	//(	IOobject( "interfFaceArea",  timeName(),  msh ),
-		//pMesh_,  dimensionedScalar("interfFaceArea", magSf.dimensions(), 0.0),"calculated"
+		//pMesh_,  dimensionedScalar("interfFaceArea", magSf.dimensions(), 0.),"calculated"
 	//);
 
 
@@ -216,7 +216,7 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 					label bp1(edgemarks_[fes[(-1+pI+ff.size())%ff.size()]]);
 					label bp2(edgemarks_[fes[(pI+1)%ff.size()]]);
 
-					vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.0+2.0*bp2) + nHatSp[ip1]*(1.0+2.0*bp1));
+					vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.+2.*bp2) + nHatSp[ip1]*(1.+2.*bp1));
 
 					nHatpEdge /= mag(nHatpEdge) + 1e-35;
 					
@@ -258,7 +258,7 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
 						label bp1(edgemarks_[fes[(-1+pI+ff.size())%ff.size()]]);
 						label bp2(edgemarks_[fes[(pI+1)%ff.size()]]);
 
-						vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.0+2.0*bp2) + nHatSp[ip1]*(1.0+2.0*bp1));
+						vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.+2.*bp2) + nHatSp[ip1]*(1.+2.*bp1));
 
 						nHatpEdge /= mag(nHatpEdge)+1e-35;
 					

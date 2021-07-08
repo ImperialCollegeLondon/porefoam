@@ -4,7 +4,7 @@
 
     //surfaceScalarField phic = mag(phi/mesh.magSf());
     //phic = min(interface.cAlpha()*phic+0.25*max(phic), max(phic));
-    //surfaceScalarField phir = phic*interface.nHatf()*(1.0-mag(deltaSs)/(mag(deltaSs)+deltaN));
+    //surfaceScalarField phir = phic*interface.nHatf()*(1.-mag(deltaSs)/(mag(deltaSs)+deltaN));
     
    scalar cAlpha( readScalar ( mesh.solutionDict().subDict("PIMPLE").lookup("cAlpha") ) );
 

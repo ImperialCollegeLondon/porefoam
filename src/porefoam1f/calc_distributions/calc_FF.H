@@ -1,5 +1,5 @@
 
-//vector FF(0.0, 0.0, 0.0);
+//vector FF(0., 0., 0.);
 {
 	Info<< "Reading field p\n" << endl;
 
@@ -13,14 +13,14 @@
 
 
 
-	//dimensionedScalar fFact = transportProperties.lookupOrDefault("fF",dimensionedScalar("fF", dimless, 1.0));
+	//dimensionedScalar fFact = transportProperties.lookupOrDefault("fF",dimensionedScalar("fF", dimless, 1.));
 
 	volScalarField kEf
 	(	IOobject
 		(	"kEf",	"0",	mesh,
 			IOobject::READ_IF_PRESENT,	IOobject::NO_WRITE
 		),
-		1.0/porosity/porosity,"zeroGradient"
+		1./porosity/porosity,"zeroGradient"
 	);
 	kEf.correctBoundaryConditions();
 	p.correctBoundaryConditions();
@@ -58,7 +58,7 @@
 	}
 	
 	
-	phi=fvc::interpolate(kEf*dimensionedScalar("one", dimLength*dimLength, 1.0)/(mu))*fvc::snGrad(p)*mesh.magSf();
+	phi=fvc::interpolate(kEf*dimensionedScalar("one", dimLength*dimLength, 1.)/(mu))*fvc::snGrad(p)*mesh.magSf();
 	Info<<"avg phi psi: "<<average(phi).value()<<",  ["<<min(phi).value()<<" - "<<max(phi).value()<<"]"<<endl;
 
 	Info<< ".\n" << endl;

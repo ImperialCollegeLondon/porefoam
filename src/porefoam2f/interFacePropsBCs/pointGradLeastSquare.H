@@ -61,7 +61,7 @@ namespace Foam
 
 
 
-		symmTensorField GG(points.size(),symmTensor(1e-36,0.0,0.0,1e-36,0.0,1e-36));
+		symmTensorField GG(points.size(),symmTensor(1e-36,0.,0.,1e-36,0.,1e-36));
 
 
 

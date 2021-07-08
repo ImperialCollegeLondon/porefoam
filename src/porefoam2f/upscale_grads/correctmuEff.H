@@ -22,8 +22,8 @@
 			 (mag(Ubf[bi].patchInternalField())+1e-16)/(1000.*muEff.boundaryField()[bi]);
 
 //				Info<<bndrys[bi].name()<<" "<<gAverage(muEff.boundaryField()[bi])<<  " ,       ";
-			 muEff.boundaryField()[bi]*=1.0/bndrys[bi].deltaCoeffs()/
-						(1.0/bndrys[bi].deltaCoeffs()+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
+			 muEff.boundaryField()[bi]*=1./bndrys[bi].deltaCoeffs()/
+						(1./bndrys[bi].deltaCoeffs()+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
 
 						
 		}
@@ -44,8 +44,8 @@
 			{
 				apS = pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(apS) );//+0.5*alpha2sqrtp*gradAlphab[bi];
 				apS-=min(max(apS,cSSlip),(1.-cSSlip))-cSSlip;
-				apS*=1./(2.0*cSSlip);
-				apS =min(max(apS,0.0),1.0);
+				apS*=1./(2.*cSSlip);
+				apS =min(max(apS,0.),1.);
 				//Info<<intNSlip<<" - "<<nSlip<<" "<<0<<endl;
 			}
 			a12S=apS*(1-apS);
@@ -53,7 +53,7 @@
 			{
 			scalarField apSTmp=pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(apS) );//+0.5*alpha2sqrtp*gradAlphab[bi];
 			apSTmp-=min(max(apSTmp,cSSlip),(1.-cSSlip))-cSSlip;
-			apSTmp*=1./(2.0*cSSlip);
+			apSTmp*=1./(2.*cSSlip);
 			a12S=(nSlip-intNSlip)*apSTmp*(1-apSTmp) + (1-(nSlip-intNSlip))*a12S;
 
 			}

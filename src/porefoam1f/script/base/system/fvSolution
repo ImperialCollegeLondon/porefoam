@@ -143,7 +143,7 @@ PIMPLE
     lambda   0;
     //lambdaS  0;
     //cSSlip   0.05;
-    //nSlip    1.0;
+    //nSlip    1.;
 
     AitkenEvery    7;
     nUCorr    0;

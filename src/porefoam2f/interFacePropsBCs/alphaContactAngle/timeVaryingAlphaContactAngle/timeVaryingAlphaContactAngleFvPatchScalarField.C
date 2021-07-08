@@ -40,10 +40,10 @@ timeVaryingAlphaContactAngleFvPatchScalarField
 )
 :
 	alphaContactAngleFvPatchScalarField(p, iF),
-	t0_(0.0),
-	thetaT0_(0.0),
-	te_(0.0),
-	thetaTe_(0.0)
+	t0_(0.),
+	thetaT0_(0.),
+	te_(0.),
+	thetaTe_(0.)
 {}
 
 

@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
 			{
 				edgeNeutC[ei]=cI;
 				++cellNNeutral[cI];
-				weight=2.0;
+				weight=2.;
 				
 			}
 			//else
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
 		Foam::vector CC = CCntres[ownnei[1]]-CCntres[ownnei[0]];
 		Foam::vector PP = points[eg.end()]-points[eg.start()];
 		Foam::vector CPmid = CCmid - 0.5*(points[eg.end()]+points[eg.start()]);
-		if((CC&(PP^CPmid))>=0.0)
+		if((CC&(PP^CPmid))>=0.)
 		{
 			newFaces[iNewF][0]=eg.start();
 			newFaces[iNewF][1]=eg.end();

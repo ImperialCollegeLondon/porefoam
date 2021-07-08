@@ -162,7 +162,7 @@ void fixedRelaxedMeanValueFvPatchField<Type>::rmap
     fixedValueFvPatchField<Type>::rmap(ptf, addr);
 }
 
-#define curtailBADOFSET(a,b) (min (max(a,b),(1.0-(b)))    )
+#define curtailBADOFSET(a,b) (min (max(a,b),(1.-(b)))    )
 
 // Update the coefficients associated with the patch field
 template<class Type>
@@ -176,7 +176,7 @@ void fixedRelaxedMeanValueFvPatchField<Type>::updateCoeffs()
 	Field<Type>& patchField = *this;
 	const Field<scalar> pMagPhi = mag(this->patch().template lookupPatchField<surfaceScalarField, scalar>("phi"))+1e-24;
 
-	const Field<scalar> alphap = curtailBADOFSET((1./thicknessFactor_)* (this->patch().template lookupPatchField<volScalarField, scalar>("alpha1")) -(0.5/thicknessFactor_-0.5),0.0); 
+	const Field<scalar> alphap = curtailBADOFSET((1./thicknessFactor_)* (this->patch().template lookupPatchField<volScalarField, scalar>("alpha1")) -(0.5/thicknessFactor_-0.5),0.); 
 
 	//primitivePatchInterpolation pinterpolator(patch().patch());
 	//alphap = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphap) )-0.4*alphap;
@@ -185,8 +185,8 @@ void fixedRelaxedMeanValueFvPatchField<Type>::updateCoeffs()
     {
         Field<Type> pif = this->patchInternalField();
 
-        patchField =  (alphap*meanValue1_+(1.0-alphap)*meanValue2_)  + relaxationFactor_*(pif-gSum(pif*pMagPhi)/(gSum(pMagPhi))) ;
-        patchField == (alphap*meanValue1_+(1.0-alphap)*meanValue2_)  + relaxationFactor_*(pif-gSum(pif*pMagPhi)/(gSum(pMagPhi))) ;
+        patchField =  (alphap*meanValue1_+(1.-alphap)*meanValue2_)  + relaxationFactor_*(pif-gSum(pif*pMagPhi)/(gSum(pMagPhi))) ;
+        patchField == (alphap*meanValue1_+(1.-alphap)*meanValue2_)  + relaxationFactor_*(pif-gSum(pif*pMagPhi)/(gSum(pMagPhi))) ;
         //patchField = pif  + relaxationFactor_*(meanValue_-gSum(pif*pMagPhi)/(gSum(pMagPhi))) ;
         //patchField == pif  + relaxationFactor_*(meanValue_-gSum(pif*pMagPhi)/(gSum(pMagPhi))) ;
 

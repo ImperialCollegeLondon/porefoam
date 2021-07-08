@@ -50,7 +50,7 @@ if(CVBounds1.size())
 
 
 
-	scalar cPc2=max(0.5*(1.0-interface.pcThicknessFactor()),.45);
+	scalar cPc2=max(0.5*(1.-interface.pcThicknessFactor()),.45);
 	volScalarField alpha1Sh=(1/(cPc2))*(max(alpha1,(1-cPc2))-(1-cPc2));
 	volScalarField alpha2Sh=1-(1/(cPc2))*min(alpha1,(cPc2));
 	volScalarField alphaSh=(1./(1-2*0.20))*(curtailBADOFSET(alpha1,0.20)-0.20);
@@ -72,7 +72,7 @@ if(CVBounds1.size())
 	data.maxMagU= max(mag(U)).value();
 	data.avgUAlpha1=(sum(alpha1Sh*U)/(mag(sum(alpha1Sh))+1e-12)).value();
 	data.avgUAlpha2=(sum(alpha2Sh*U)/(mag(sum(alpha2Sh))+1e-12)).value();
-	Info <<"___________  Sw:"<<1.0-data.aAvg <<"   Pc:"<<data.pcAvg <<"   U1:"<<data.avgUAlpha1<<"   U2:"<<data.avgUAlpha2<<"   ____________"<< endl;
+	Info <<"___________  Sw:"<<1.-data.aAvg <<"   Pc:"<<data.pcAvg <<"   U1:"<<data.avgUAlpha1<<"   U2:"<<data.avgUAlpha2<<"   ____________"<< endl;
 
 	data.QIn=gSum(U.boundaryField()[iBack]&U.boundaryField()[iBack].patch().Sf());
 	data.QOut=gSum(U.boundaryField()[iFront]&U.boundaryField()[iFront].patch().Sf());
@@ -98,15 +98,15 @@ if(CVBounds1.size())
 
 		Info<<iSam<< "   Del x :"<< xSam1 <<" to "<< xSam2<< "   ";		
 
-		//clip1=0.0;
-		clip=0.0;
+		//clip1=0.;
+		clip=0.;
 		forAll(Cx,c) 
 		{ 
 				if (PPRegions[c]==CVxlVals[iSam]&& 
 					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
 					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
 					 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
-				   clip[c]=1.0;
+				   clip[c]=1.;
 		}
 
 
@@ -132,10 +132,10 @@ if(CVBounds1.size())
 
 		forAll(boundary, bi)
 		{
-			clip.boundaryField()[bi]=0.0;
-			clip.boundaryField()[bi]==0.0;
-			clipAlpha.boundaryField()[bi]=0.0;
-			clipAlpha.boundaryField()[bi]==0.0;
+			clip.boundaryField()[bi]=0.;
+			clip.boundaryField()[bi]==0.;
+			clipAlpha.boundaryField()[bi]=0.;
+			clipAlpha.boundaryField()[bi]==0.;
 		}
 		surfaceScalarField BSurafce=fvcDelta(clip);
 		surfaceScalarField AlphaInternalBoundary=fvcDelta(clipAlpha);

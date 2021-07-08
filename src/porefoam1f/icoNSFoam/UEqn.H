@@ -22,7 +22,7 @@
 
 	scalar tOld= runTime.elapsedCpuTime() ;
 
-	pRelaxF=pRelaxF+0.2*(1.0-pRelaxF);
+	pRelaxF=pRelaxF+0.2*(1.-pRelaxF);
 	//p.relax(pRelaxF);
 	for (int corr=0; corr<nUCorr; corr++)
 	{
@@ -34,7 +34,7 @@
 		);
 		UEqn().relax(pRelaxF*((corr+0.5)/(nUCorr+1)));
 
-		volScalarField rAU = 1.0/UEqn().A();
+		volScalarField rAU = 1./UEqn().A();
 		//U = rAU*UEqn().H()- rAU*fvc::grad(p-beta*fvc::div(phi));
 		U = (1-0.5/(nUCorr+1))*U + (0.5/(nUCorr+1))*(rAU*UEqn().H()- rAU*fvc::grad(p-beta*fvc::div(phi)));
 		U.correctBoundaryConditions();
@@ -58,7 +58,7 @@
             //// UEqn.ref()==fvc::reconstruct(fvc::snGrad( p-beta*fvc::div(phi) )* mesh.magSf())
             //UEqn()==-fvc::grad(p)
         //);
-	 U = 1.0/UEqn().A()*(UEqn().H()-fvc::grad(p));
+	 U = 1./UEqn().A()*(UEqn().H()-fvc::grad(p));
 	 U.correctBoundaryConditions();
 	 ifMonitor(10)	Info<< "ExeTime solve U = " << runTime.elapsedCpuTime()-tOld << " s"	<< endl;
 

@@ -1,7 +1,7 @@
 
 	volScalarField VC
 	(	IOobject("VC",  runTime.timeName(),  mesh)
-		,  mesh,  dimensionedScalar("VC",dimVolume,0.0),  "fixedValue"
+		,  mesh,  dimensionedScalar("VC",dimVolume,0.),  "fixedValue"
 	);	
 	VC.internalField()=mesh.V();
 
@@ -72,7 +72,7 @@
 			IOobject::AUTO_WRITE
 		),
 		mesh,
-		dimensionedScalar("PPRegions",dimless,0.0),
+		dimensionedScalar("PPRegions",dimless,0.),
 		"zeroGradient"
 	);
 
@@ -107,7 +107,7 @@
 
 	fileName imageName( postProcDict.lookupOrDefault("labelImage", fileName("")) );
 	Info << "labelImage:" << imageName<<endl;
-	voxelImageT<int> CV_img(1,1,1,1); CV_img.X0Ch()-=dbl3(100000000.0,100000000.0,100000000.0);CV_img.dxCh()*=1000000000.0;
+	voxelImageT<int> CV_img(1,1,1,1); CV_img.X0Ch()-=dbl3(100000000.,100000000.,100000000.);CV_img.dxCh()*=1000000000.;
 
 
 
@@ -153,9 +153,9 @@
 	const vectorField & C =	mesh.C().internalField();
 	forAll(C,c)
 	{
-		int i=(C[c][0]-xmin[0])/dx[0];//+0.0
-		int j=(C[c][1]-xmin[1])/dx[1];//+0.0
-		int k=(C[c][2]-xmin[2])/dx[2];//+0.0
+		int i=(C[c][0]-xmin[0])/dx[0];//+0.
+		int j=(C[c][1]-xmin[1])/dx[1];//+0.
+		int k=(C[c][2]-xmin[2])/dx[2];//+0.
 		if (k>=0 && k<nnn[2] && j>=0 && j<nnn[1] && i>=0 && i<nnn[0] )
 		{
 			label CV_ind=CV_img(i,j,k);
@@ -204,7 +204,7 @@
 	(	IOobject
 		(	"clip",	runTime.timeName(),	mesh,
 			IOobject::NO_READ,	IOobject::NO_WRITE
-		),	mesh,	dimensionedScalar("clip",dimless,0.0),	"fixedValue"
+		),	mesh,	dimensionedScalar("clip",dimless,0.),	"fixedValue"
 	);
 
 	std::ofstream data_out_for_plot;
@@ -218,13 +218,13 @@
 		const vectorField & C =	mesh.C().internalField();
 
 		label iSam=0;
-		clip==0.0;
+		clip==0.;
 		forAll(C,c) 
 		{
 				if (PPRegions[c]==CVxlVals[iSam]&& 
 					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
 					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
 					 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
-					clip[c]=1.0;
+					clip[c]=1.;
 		}
 	}

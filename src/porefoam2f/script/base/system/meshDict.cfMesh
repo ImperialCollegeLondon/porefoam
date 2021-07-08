@@ -14,7 +14,7 @@ surfaceFile "solidwalls.stl";
 
 maxCellSize 0.4;
 
-//boundaryCellSize 2.0;
+//boundaryCellSize 2.;
 //additionalRefinementLevels 2;
 //keepCellsIntersectingBoundary 0;
 

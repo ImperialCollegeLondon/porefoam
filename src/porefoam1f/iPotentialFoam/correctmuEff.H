@@ -18,7 +18,7 @@
 			 ( boundary[bi].deltaCoeffs()*boundary[bi].deltaCoeffs()*( mag(Ubf[bi].patchInternalField())+(0.001*gAverage(mag(Ubf[bi].patchInternalField()))+1e-15)));
 
 			 muEff.boundaryFieldRef()[bi]*=1./boundary[bi].deltaCoeffs()/
-						(1.0/boundary[bi].deltaCoeffs()+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
+						(1./boundary[bi].deltaCoeffs()+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
 
 		}
 	}

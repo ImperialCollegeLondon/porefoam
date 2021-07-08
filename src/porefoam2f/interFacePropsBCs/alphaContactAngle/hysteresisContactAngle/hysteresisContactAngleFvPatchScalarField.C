@@ -39,11 +39,11 @@ hysteresisContactAngleFvPatchScalarField
 )
 :
     alphaContactAngleFvPatchScalarField(p, iF),
-    thetaA_(0.0),
-    //uTheta_(0.0),
-    thetaR_(0.0),
-    thetaAOW_(0.0),
-    thetaROW_(0.0),
+    thetaA_(0.),
+    //uTheta_(0.),
+    thetaR_(0.),
+    thetaAOW_(0.),
+    thetaROW_(0.),
     maxAlphaHist(iF)
 {}
 
@@ -138,7 +138,7 @@ Foam::hysteresisContactAngleFvPatchScalarField::theta
     //{
         //return tmp<scalarField>(new scalarField(size(), thetaA_));
     //}
-    return maxAlphaHist*(0.5*(thetaROW_+thetaAOW_))+(1.0-maxAlphaHist)*(0.5*(thetaR_+thetaA_));
+    return maxAlphaHist*(0.5*(thetaROW_+thetaAOW_))+(1.-maxAlphaHist)*(0.5*(thetaR_+thetaA_));
 
     //vectorField nf = patch().nf();
 

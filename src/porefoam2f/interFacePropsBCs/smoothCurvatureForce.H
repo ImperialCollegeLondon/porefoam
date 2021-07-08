@@ -30,19 +30,19 @@
 	const labelList& owners = msh.owner();
 	const labelList& nybors = msh.neighbour();
 
-	volScalarField cellWeight=0.0*alpha1_+1.0;
+	volScalarField cellWeight=0.*alpha1_+1.;
 	forAll(nybors,fI) if (magDelS[fI] > CONTRAST_FACTOR)
 	{
-		cellWeight[owners[fI]]+=100.0*min(1.0, cellWeight[owners[fI]]);
-		cellWeight[nybors[fI]]+=100.0*min(1.0, cellWeight[nybors[fI]]);
+		cellWeight[owners[fI]]+=100.*min(1., cellWeight[owners[fI]]);
+		cellWeight[nybors[fI]]+=100.*min(1., cellWeight[nybors[fI]]);
 	}
 	
 	for(int i=0;i<2;++i)
 	{
 
-		//scalar SumForces = 0.0;
-		cellForce*=0.0;
-		volScalarField interfCellArea=0.0*fvc::average(magSf);
+		//scalar SumForces = 0.;
+		cellForce*=0.;
+		volScalarField interfCellArea=0.*fvc::average(magSf);
 
 
 

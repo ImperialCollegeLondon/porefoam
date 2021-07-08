@@ -69,7 +69,7 @@ runMPI()
         nice  $APP_RUN "$@" > $LOG_NAME 2>&1		
     else
         echo "Running $APP_NAME $@  >  $PWD/$LOG_NAME , using $np processes"
-        # --bind-to none ( mpirun -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x WM_PROJECT_INST_DIR -x MPI_BUFFER_SIZE         --mca btl_tcp_if_exclude lo --mca btl_tcp_if_exclude eth0:avahi  --hostfile  machines.txt -np $np $APP_RUN  -parallel "$@" < /dev/null > $LOG_NAME 2>&1 )
+        # --bind to none ( mpirun -x LD_LIBRARY_PATH -x PATH -x WM_PROJECT_DIR -x WM_PROJECT_INST_DIR -x MPI_BUFFER_SIZE         --mca btl_tcp_if_exclude lo --mca btl_tcp_if_exclude eth0:avahi  --hostfile  machines.txt -np $np $APP_RUN  -parallel "$@" < /dev/null > $LOG_NAME 2>&1 )
         nice mpirun.openmpi  -np $np $APP_RUN -parallel "$@" < /dev/null > $LOG_NAME 2>&1
         [[ $? == 0 ]] || echo "Error: $APP_RUN -parallel $@,  exit status: $?, see $(pwd)/$LOG_NAME" >&2
     fi
@@ -282,9 +282,9 @@ RunUpdateBlockMeshDict()
    printf "  [X0+N]*dx:    ${Offset[*]}   +  ${DimSize[*]}   *  ${dx[*]}\n"
 
 
-   N[0]=`echo "scale=0; (${DimSize[0]}*$nRefin/$SHMRefine-2*$nSkip/$SHMRefine+0.001)/1.0" | bc`
-   N[1]=`echo "scale=0; (${DimSize[1]}*$nRefin/$SHMRefine-2*$nSkip/$SHMRefine+0.001)/1.0" | bc`
-   N[2]=`echo "scale=0; (${DimSize[2]}*$nRefin/$SHMRefine-2*$nSkip/$SHMRefine+0.001)/1.0" | bc`
+   N[0]=`echo "scale=0; (${DimSize[0]}*$nRefin/$SHMRefine-2*$nSkip/$SHMRefine+0.001)/1." | bc`
+   N[1]=`echo "scale=0; (${DimSize[1]}*$nRefin/$SHMRefine-2*$nSkip/$SHMRefine+0.001)/1." | bc`
+   N[2]=`echo "scale=0; (${DimSize[2]}*$nRefin/$SHMRefine-2*$nSkip/$SHMRefine+0.001)/1." | bc`
 
 
    printf "  mesh size ?= $SHMRefine * backgound mesh size (${N[*]})\n" 

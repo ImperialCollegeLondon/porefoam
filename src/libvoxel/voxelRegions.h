@@ -37,8 +37,8 @@ inline int recurseMin(const vector<int>& lblMap, int lbv)
 
 
 template<typename T>
-voxelImageT<int> labelImage(const voxelImageT<T>& vImage, const T minvv=0, const T maxvv=std::numeric_limits<T>::max())//  TODO to be tested
-{
+voxelImageT<int> labelImage(const voxelImageT<T>& vImage, const T minvv=0, const T maxvv=std::numeric_limits<T>::max())  {//  TODO to be tested
+
 	//voxels.write("dump1.mhd");
 	int3 n_2 = vImage.size3();
 	static const int bigN=255*255*255*126;
@@ -173,12 +173,11 @@ voxelImageT<int> labelImage(const voxelImageT<T>& vImage, const T minvv=0, const
 
 
 template<typename T>
-void keepLargest0(voxelImageT<T>& vImage, const T minvv=0, const T maxvv=0)
-{
+void keepLargest0(voxelImageT<T>& vImage, const T minvv=0, const T maxvv=0)  {
 	const voxelImageT<int> lbls = labelImage(vImage,minvv,maxvv);
 	const auto* lbl0=&lbls(0);
 	int mxl = 0;
-	OMPragma("omp parallel for reduction(max:mxl)") 		
+	OMPragma("omp parallel for reduction(max:mxl)")
 	forAllcp(lbls) if(*cp>=0) mxl = max(mxl,*cp);
 	vector<long long> lblsN(mxl+1,0);
 	forAllcp_seq_(lbls)  if(*cp>=0)  { const T vv=vImage(cp-lbl0);   if(minvv<=vv&& vv<=maxvv) ++lblsN[*cp]; }
@@ -187,7 +186,7 @@ void keepLargest0(voxelImageT<T>& vImage, const T minvv=0, const T maxvv=0)
 	//lbls.write("dumplbls.raw");
 	int3 n = vImage.size3();
 	cout<<" connected fraction: "<<double(lblsN[lrglbl])/(n[0]*n[1]*n[2])<<endl;
-	forAllvp_(lbls) if(*vp!=lrglbl)	{ const T vv=vImage(vp-lbl0);   if(minvv<=vv&& vv<=maxvv) vImage(vp-lbl0) = 254;	}//! isolated=254
+	forAllvp_(lbls) if(*vp!=lrglbl)	{ const T vv=vImage(vp-lbl0);   if(minvv<=vv&& vv<=maxvv) vImage(vp-lbl0) = maxT(T)-1;	}//! isolated=254
 }
 
 

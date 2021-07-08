@@ -85,7 +85,7 @@ void convertToFoamWrite
 		int k=(C[c][2]-xmin[2])/dx[2]*0.999999999999;
 		setEq(Vfield[c],vximage(i,j,k));
 		sumAlpha += Vfield[c];
-		sumWalpha += 1.0;
+		sumWalpha += 1.;
 	  }
 	}
 	Info<<" AvgAlpha: "<<sumAlpha/sumWalpha<<endl;
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 
 	#include "createMesh.H"
 
-	std::string dummy; double tim=0.0;
+	std::string dummy; double tim=0.;
 	scalar timO=tim;
 	forAll(fileList,ii)
 	{

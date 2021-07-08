@@ -20,7 +20,7 @@ Ali Q Raeini: a.q.raeini@imperial.ac.uk
 #include "shapeToVoxel.h"
 #include "voxelEndian.h"
 #include "globals.h"  // ensure...
-//#include "voxelNoise.h"
+#include "voxelRegions.h"
 #include "InputFile.h"
 
 using namespace std; //cin cout endl string stringstream  istream istringstream regex*
@@ -205,7 +205,7 @@ template<typename T> bool cropf( stringstream& ins, voxelImageT<T>& vImg)  {
 
 template<typename T> bool write( stringstream& ins, voxelImageT<T>& vImg)  {
 	KeyHint("outputImageName.raw/mhd/tif/am/.raw.gz");
-	string outName("dump.tif");	ins >> outName;
+	string outName("dump.tif");    ins >> outName;
 	vImg.write(outName);
 	(cout<<".").flush();
 	return 0;
@@ -213,7 +213,7 @@ template<typename T> bool write( stringstream& ins, voxelImageT<T>& vImg)  {
 
 template<typename T> bool write8bit( stringstream& ins, voxelImageT<T>& vImg)  {
 	KeyHint("outputImageName_8bit.raw/mhd/tif/am/.raw.gz");
-	string outName("dump.tif");	ins >> outName;
+	string outName("dump.tif");     ins >> outName;
 	double minv=-0.5, maxv=255.;   ins>>minv>>maxv;
 	double delv=255.499999999/(maxv-minv);
 	(cout<<minv<<" "<<maxv).flush();
@@ -227,11 +227,11 @@ template<typename T> bool write8bit( stringstream& ins, voxelImageT<T>& vImg)  {
 template<typename T> bool read( stringstream& ins, voxelImageT<T>& vImg)  {
 	KeyHint("ImageToRead.mhd/.am/.tif");
 	int3 nnn = vImg.size3();
-	int processHdr=1;	string fnam;	ins>>fnam>>processHdr;
+	int processHdr=1;  string fnam;   ins>>fnam>>processHdr;
 	cout<<"  reading from  image "<<fnam<<endl;
 	if(fnam.size()>4)  {
 		if ((nnn[2] && (hasExt(fnam,7,".raw.gz") || hasExt(fnam,4,".raw"))) || hasExt(fnam,4,".tif") )  {
-			vImg.reset(nnn,0);
+			vImg.reset(nnn,T(0));
 			vImg.readBin(fnam);
 		}
 		else vImg.readFromHeader(fnam,processHdr);
@@ -300,7 +300,7 @@ template<typename T> bool FaceMedian06( stringstream& ins, voxelImageT<T>& vImg)
 template<typename T> bool PointMedian032( stringstream& ins, voxelImageT<T>& vImg)  {
 	KeyHint("nItrs(1),  nAdj(11), lbl0(0), lbl1(1)");
 	int nItrs(1),  nAdj(11), lbl0(0), lbl1(1);
-	ins >> nItrs>> nAdj>> lbl0>> lbl1;
+	ins >> nItrs >> nAdj >> lbl0 >> lbl1;
 	(cout<<"  PointMedian032, "<<" nItrs:"<<nItrs<< "; nAdjThreshold "<<nAdj<<"  lbl0:"<<lbl0<<"  lbl1;"<<lbl1<<"s \n  PointMedian032 is only applied to the labels  lbl0 and  lbl1").flush();
 	//vImg.growBox(2);
 
@@ -316,7 +316,7 @@ template<typename T> bool faceMedNgrowToFrom( stringstream& ins, voxelImageT<T>&
 	KeyHint("nItrs(2),  lblTo(0), lblFrm(1), ndif(-3)");
 	int nItrs(2),  ndif(-3); 
 	Tint lblTo(0), lblFrm(1);
-	ins >> nItrs>> lblTo>> lblFrm>> ndif;
+	ins  >> nItrs >> lblTo >> lblFrm >> ndif;
 	(cout<<"{ "<<" nItrs:"<<nItrs<<"; "<<lblFrm<<" --> "<<lblTo<< "; ndif: "<<ndif<<";  ").flush();
 
 	vImg.growBox(2); cout<<endl;
@@ -330,7 +330,7 @@ template<typename T> bool faceMedNgrowToFrom( stringstream& ins, voxelImageT<T>&
 template<typename T> bool delense032( stringstream& ins, voxelImageT<T>& vImg)  {
 	KeyHint("nItrs(2) lbl0(0) lbl1(1) nAdj0(10) nAdj1(6)");
 	int nItrs(2),  nAdj0(10),  nAdj1(6);    Tint lbl0(0), lbl1(1);
-	ins >> nItrs>> lbl0>> lbl1>> nAdj0>>nAdj1;
+	ins >> nItrs >> lbl0 >> lbl1 >> nAdj0 >> nAdj1;
 	(cout<<"{ "<<" nItrs:"<<nItrs<<"; lbls: "<<lbl0<<" "<<lbl1<< "; nAdjThresholds: "<<nAdj0<<" "<<nAdj1<<";  ").flush();
 
 	vImg.growBox(2); cout<<endl;
@@ -396,6 +396,13 @@ template<typename T> bool Offset( stringstream& ins, voxelImageT<T>& vImg)  {
 	return 0;
 }
 
+
+template<typename T>  bool keepLargest0( stringstream& ins, voxelImageT<T>& vImg)  {
+	KeyHint(" // sets smaller isolated regions (of value 0) to 254, computationally expensive");	
+	keepLargest0(vImg); //! CtrlF:isolated=254
+	(cout<<".").flush();
+	return 0;
+}
 
 template<typename T>  bool growLabel( stringstream& ins, voxelImageT<T>& vImg)  {
 	KeyHint("vvalue(255)  nIters(0) ");
@@ -504,9 +511,9 @@ std::unordered_map<string,bool(*)( stringstream&, voxelImageT<T>&)>
 		{  "delense032"   , ProcessP(& delense032 )},
 		{  "circleOut"    , ProcessP(& circleOut )},
 		{  "growLabel"    , ProcessP(& growLabel )},
-		{  "maskWriteFraction"  ,ProcessP(& maskWriteFraction )},
+		{  "keepLargest0"    , ProcessP(& keepLargest0 )},
+		{  "maskWriteFraction",ProcessP(& maskWriteFraction )},
 		{  "mapFrom"      , ProcessP(& mapFrom )},
-		//{  "addSurfNoise" , ProcessP(& addSurfNoise )},
 		{  "Paint"        , ProcessP(& Paint )},
 		{  "PaintAdd"     , ProcessP(& PaintAdd )},
 		{  "PaintBefore"    ,ProcessP(& PaintBefore )},
@@ -515,7 +522,7 @@ std::unordered_map<string,bool(*)( stringstream&, voxelImageT<T>&)>
 		{  "PaintAddAfter"  ,ProcessP(& PaintAddAfter )},
 		#ifdef LPNG
 		{  "sliceToPng"    , ProcessP(& sliceToPng )},
-		{  "sliceToPngBW"    , ProcessP(& sliceToPngBW )},
+		{  "sliceToPngBW"  , ProcessP(& sliceToPngBW )},
 		#endif
 		{  "operation"    , ProcessP(& operat )},
 		{  "operat"       , ProcessP(& operat )}
@@ -555,7 +562,7 @@ class  voxelplugins
 	typedef bool(*ProcessP)( stringstream&  inputs, voxelImageT<T>& vImg);
 
 	std::unordered_map<string,ProcessP> key_funs;
-	const std::unordered_map<string,ProcessP>& operator()() const {return key_funs;};
+	const std::unordered_map<string,ProcessP>& operator()() const { return key_funs; }
 	voxelplugins() {
 		using namespace MCTProcessing;
 		key_funs = MCTProcessing::namedProcesses<T>();
@@ -574,8 +581,8 @@ class  voxelplugins
 				(*(paer->second))(ss, img);
 				if(inp.data().size()>2) cout<<endl;
 			}
-			else {
-				if(ky.first!="end") { cout<<"  stopped executing "<<inp.fileName()<<" before \""<<ky.first<<"\"  :/ "; 
+			else  {
+				if(ky.first!="end") { cout<<"  stopped executing "+inp.fileName()+" before \""+ky.first+"\"  :/ "; 
 												return -1; }
 				break;
 			}
@@ -588,7 +595,7 @@ class  voxelplugins
 			//std::streampos begLine = keyins.tellg();
 			//string ky;  keyins>>ky;
 			//if (keyins.fail()) 	{cout<<"  @"<<keyins.tellg()<<"  "<<nam<<" done."<<endl;  break; }
-			//else if (ky[0]=='{' || ky[0]=='}') {keyins.seekg(int(keyins.tellg())-ky.size()-1); continue;}
+			//else if (ky[0]=='{' || ky[0]=='}') { keyins.seekg(int(keyins.tellg())-ky.size()-1); continue; }
 			//else if (ky[0]=='#' || ky[0]=='\'' || ky[0]=='/' || ky[0]=='%')  keyins.ignore(10000,'\n');  
 			//else  {
 				//auto paer = key_funs.find(ky);
@@ -637,7 +644,7 @@ string VxlKeysHelp(string keyname, string subkey)  {
 		auto paer = key_funs.find(keyname);
 		if (paer!=key_funs.end())  {
 			stringstream ss(subkey.empty()?  "?" : "? "+subkey);
-			try {  (*(paer->second))(ss, vImg);  }
+			try                         {  (*(paer->second))(ss, vImg); }
 			catch (std::exception &exc) {  std::cerr <<keyname<<" KeyHelp not implemented:" << exc.what() << endl; }
 			catch (...)                 {  std::cerr <<keyname<<" KeyHelp not implemented:" << endl; }
 			return ss.str();
@@ -648,8 +655,7 @@ string VxlKeysHelp(string keyname, string subkey)  {
 		for(const auto& proc:key_funs) 	keys<<proc.first<<"\n";
 		keys<<" Error: no such keyword "<<keyname<<"\n\n";
 	}
-	else
-	{
+	else  {
 		std::vector<std::pair<string,ProcessP>> keyfuns(key_funs.begin(), key_funs.end());
 		std::sort(keyfuns.begin(), keyfuns.end());
 		for(const auto& proc:keyfuns)  if(proc.first.size()>1)  {
@@ -665,9 +671,9 @@ string VxlKeysHelp(string keyname, string subkey)  {
 
 
 template<typename T>
-void voxelImageT<T>::readFromHeader(istream& hdrFile,	const string& hdrNam, int procesKeys, string inputName )  {
+void voxelImageT<T>::readFromHeader(istream& hdrFile, const string& hdrNam, int procesKeys)  {
 	//! read image from file header, format detected based on image extension
-	auto& vImg=*this;
+	auto& vImg=*this; string inputName;
 
 	int3 nnn(0,0,0);
 	string BinaryData="XXX", flipSigByt="False";
@@ -738,7 +744,7 @@ void voxelImageT<T>::readFromHeader(istream& hdrFile,	const string& hdrNam, int 
 		if (hasExt(hdrNam,7,"_header"))  inputName=hdrNam.substr(0,hdrNam.size()-7);
 		hdrFile>>nnn >> vImg.dx_ >>	vImg.X0_ ;
 		cout<<"\n Nxyz: "<<nnn<<"    dX: "<< vImg.dx_<<"   X0: "<< vImg.X0_ <<" um"<< endl;
-		if (!hdrFile)	 { cout<<"   Incomplete/bad header name, aborting"<<endl; exit(-1);}
+		if (!hdrFile)	 { cout<<"   Incomplete/bad header name. Aborting"<<endl; exit(-1); }
 	}
 	else  alert("Unknown (header) file type: "+hdrNam,-1); // exit
 
@@ -795,12 +801,12 @@ void voxelImageT<T>::readFromHeader(istream& hdrFile,	const string& hdrNam, int 
 
 
 
-template void voxelImageT<unsigned char>::readFromHeader(istream&,	const string&, int, string );
-template void voxelImageT<unsigned short>::readFromHeader(istream&,	const string&, int, string );
-template void voxelImageT<int>::readFromHeader(istream&,	const string&, int, string );
-template void voxelImageT<float>::readFromHeader(istream&,	const string&, int, string );
-template void voxelImageT<double>::readFromHeader(istream&,	const string&, int, string );
-template void voxelImageT<float3>::readFromHeader(istream&,	const string&, int, string );
+template void voxelImageT<unsigned char>::readFromHeader(istream&,	const string&, int );
+template void voxelImageT<unsigned short>::readFromHeader(istream&,	const string&, int );
+template void voxelImageT<int>::readFromHeader(istream&,	const string&, int );
+template void voxelImageT<float>::readFromHeader(istream&,	const string&, int );
+template void voxelImageT<double>::readFromHeader(istream&,	const string&, int );
+template void voxelImageT<float3>::readFromHeader(istream&,	const string&, int );
 
 
 

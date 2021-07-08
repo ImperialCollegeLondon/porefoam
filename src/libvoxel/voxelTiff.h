@@ -11,9 +11,6 @@
 #include <string.h>
 #include <iostream>
 
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
 
 
 
@@ -126,7 +123,7 @@ template<typename T>   int readTif( voxelField<T>&  aa, std::string fnam )
 	  if(vxls) {  getTifTags(vxls->X0Ch(),vxls->dxCh(),tif);
 		  (std::cout<<",  X0:"<<vxls->X0()<<",  dx:"<<vxls->dx()).flush(); } }
 
-	aa.reset(nx,ny,npages,T(0.0));
+	aa.reset(nx,ny,npages,T(0.));
 
 
 	for(int pn=0;pn<npages;++pn) {

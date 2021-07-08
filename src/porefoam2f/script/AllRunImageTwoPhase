@@ -39,7 +39,7 @@
 # discretization parameters,
 # refer to http://dx.doi.org/10.1016/j.jcp.2012.04.011 for further information:
 : ${pcThicknessFactor:=0.1}
-: ${cAlpha:=1.0}
+: ${cAlpha:=1.}
 : ${surfaceForceModel:=CCF}
 : ${fcCorrectTangent:=0.05}
 : ${smoothingKernel:=2}
@@ -395,7 +395,7 @@ echo "_________________________ $dataFile  ____________________________"
 			else
 				xInitAlpha=$(echo "scale=10; ${boundingBox[0]}+(${boundingBox[3]}-(${boundingBox[0]}))*$oilFilldFrac" | bc )
 				echo "xInitAlpha $xInitAlpha"
-				setKeywordValues box  "    (-1.0 -1.0 -1.0) ($xInitAlpha 1000 1000);" ./$runDir/system/setFieldsDict
+				setKeywordValues box  "    (-1. -1. -1.) ($xInitAlpha 1000 1000);" ./$runDir/system/setFieldsDict
 				(cd $runDir && rm log.setFields)
 				(cd $runDir && runApp setFields)
 			fi
@@ -437,7 +437,7 @@ echo "_________________________ $dataFile  ____________________________"
 			if [ -f "$(which $application)" ]; then
 			if [ -f $runDir/log.$application ]; then
 					printf "\nlog.$application exists, press Ctrl-c to stop the new run / make a back up\n"
-				sleep 2.0
+				sleep 2
 				prevRunDate=$(stat -c %y $runDir/log.$application | sed 's/[ :]/-/g' | sed 's/[.+].*//g')
 				(cd $runDir && mv  log.$application log.$application$prevRunDate )
 				sleep 0.5

@@ -16,9 +16,9 @@
 			 muEff.boundaryFieldRef()[bi]+=
 			 min(0.001*cBC* //1.0526315789474;
 			 (mag(gradP.boundaryField()[bi].patchInternalField()))/
-			 ( delCoefs*delCoefs*( mag(Upi.patchInternalField())+(0.001*gAverage(mag(Upi.patchInternalField()))+1e-9))), 1.0*mu.value());
+			 ( delCoefs*delCoefs*( mag(Upi.patchInternalField())+(0.001*gAverage(mag(Upi.patchInternalField()))+1e-9))), 1.*mu.value());
 
-			 muEff.boundaryFieldRef()[bi]*=1.0/delCoefs/(1.0/delCoefs+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
+			 muEff.boundaryFieldRef()[bi]*=1./delCoefs/(1./delCoefs+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
 
 		}
 	}

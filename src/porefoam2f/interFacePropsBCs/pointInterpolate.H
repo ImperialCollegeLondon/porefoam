@@ -9,12 +9,12 @@ namespace Foam
 		pointScalarField alphaP
 		(
 		  IOobject   ( "alphaP",  msh.time().timeName(),  msh ),
-		 pMesh,  dimensionedScalar("alphaP",dimless,0.0)
+		 pMesh,  dimensionedScalar("alphaP",dimless,0.)
 		);
 		pointScalarField alphaPSumWeights
 		(
 		  IOobject  (  "alphaPSumWeights",  alphaf.time().timeName(),  msh  ),
-		 pMesh, dimensionedScalar("alphaPSumWeights",dimless,0.0)
+		 pMesh, dimensionedScalar("alphaPSumWeights",dimless,0.)
 		);
 
 
@@ -99,8 +99,8 @@ namespace Foam
 			}
 		}
 
-		syncTools::syncPointList(msh, alphaPSumWeights, plusEqOp<scalar>(), 0.0, false);
-		syncTools::syncPointList(msh, alphaP, plusEqOp<scalar>(), 0.0, false);
+		syncTools::syncPointList(msh, alphaPSumWeights, plusEqOp<scalar>(), 0., false);
+		syncTools::syncPointList(msh, alphaP, plusEqOp<scalar>(), 0., false);
 
 
 		return alphaP/(alphaPSumWeights+1e-37);
@@ -126,7 +126,7 @@ namespace Foam
         pointScalarField  UPSumWeights
                         (
                           IOobject  ( "UPSumWeights", U.time().timeName(), msh ),
-                         pMesh,  dimensionedScalar("UPSumWeights",dimless,0.0)
+                         pMesh,  dimensionedScalar("UPSumWeights",dimless,0.)
                        );
 
 
@@ -192,7 +192,7 @@ namespace Foam
           }
         }
 
-        syncTools::syncPointList(msh, UPSumWeights, plusEqOp<scalar>(), 0.0, false);
+        syncTools::syncPointList(msh, UPSumWeights, plusEqOp<scalar>(), 0., false);
         syncTools::syncPointList(msh, UP, plusEqOp<vector>(), vector::zero, false);
 
 

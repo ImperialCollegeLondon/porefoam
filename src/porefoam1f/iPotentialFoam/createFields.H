@@ -44,7 +44,7 @@
 	scalar cBC =readScalar( pimple.dict().lookup("cBC")  );
 
 	label pRefCell = 0;
-	scalar pRefValue = 0.0;
+	scalar pRefValue = 0.;
 	setRefCell(p, pimple.dict(), pRefCell, pRefValue);
 
 
@@ -53,7 +53,7 @@
 	scalar lambda( readScalar(pimple.dict().lookup("lambda")) );
 
 
-	scalar deltaTFact=1.0;
+	scalar deltaTFact=1.;
 
 	label nUCorr( readLabel(pimple.dict().lookup("nUCorr")) );
 

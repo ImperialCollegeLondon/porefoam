@@ -24,7 +24,7 @@
 
 	if(filterPd)
 	{
-		volScalarField rAU = 1.0/UEqn.A();
+		volScalarField rAU = 1./UEqn.A();
 
 		//scalar AverageMagPdBeforeFilter=average(mag(pd)).value();
 		pFilter= pBoundBypSmoothFactor*(fvc::average(fvc::interpolate(pd)));
@@ -74,7 +74,7 @@
 
 
 		//U =0.5*U + 0.5/UEqn.A()*( UEqn.H() -gP );
-		U =1.0/UEqn.A()*( UEqn.H() - gP );
+		U =1./UEqn.A()*( UEqn.H() - gP );
 
 	}
 	U.correctBoundaryConditions();
@@ -107,7 +107,7 @@
 			U[i][2] = min (max(U[i][2], -mag(UFilter[i][2])),mag(UFilter[i][2]));
 		}
 
-		UFilter*= 1.0/UBoundByUSmoothFactor;;
+		UFilter*= 1./UBoundByUSmoothFactor;;
 		UFilter.correctBoundaryConditions();
 
 		 U.correctBoundaryConditions();

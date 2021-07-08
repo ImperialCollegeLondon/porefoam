@@ -90,7 +90,7 @@
 	volScalarField Uerror	(
 		IOobject( "Uerror",  runTime.timeName(),  mesh,
 		          IOobject::NO_READ,  IOobject::AUTO_WRITE		),
-	mesh,	0.0	);
+	mesh,	0.	);
 
 #endif 
 
@@ -98,7 +98,7 @@
 
 
 	label pRefCell = 0;
-	scalar pRefValue = 0.0;
+	scalar pRefValue = 0.;
 	setRefCell(pd, mesh.solutionDict().subDict("PIMPLE"), pRefCell, pRefValue);
 
 
@@ -111,7 +111,7 @@
 
 	volVectorField UFilter	(
 		IOobject( "UFilter",  runTime.timeName(),  mesh	),	
-		2.0*(fvc::average(fvc::interpolate(U))),
+		2.*(fvc::average(fvc::interpolate(U))),
 		"zeroGradient"	);
 
 	label nAlphaCorr( readLabel(mesh.solutionDict().subDict("PIMPLE").lookup("nAlphaCorr")));

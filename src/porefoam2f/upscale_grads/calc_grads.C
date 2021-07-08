@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 						  mesh,
 						  IOobject::READ_IF_PRESENT
 					  ),
-					 (linearInterpolate(U) & mesh.Sf())*0.0
+					 (linearInterpolate(U) & mesh.Sf())*0.
 					)
 				  )
 			);
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 						mesh,
 						IOobject::READ_IF_PRESENT
 					),
-					0.0*fvc::grad(pc)
+					0.*fvc::grad(pc)
 				);	
 
 		  	  //surfaceScalarField sgPc   

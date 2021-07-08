@@ -29,11 +29,11 @@
             IOobject::NO_WRITE
         ),
         mesh,
-        dimensionedScalar("pcorr", pd.dimensions(), 0.0),
+        dimensionedScalar("pcorr", pd.dimensions(), 0.),
         pcorrTypes
     );
 
-    dimensionedScalar rUAf("(1|A(U))", dimTime/rho.dimensions(), 1.0);
+    dimensionedScalar rUAf("(1|A(U))", dimTime/rho.dimensions(), 1.);
 
     adjustPhi(phi, U, pcorr);
 

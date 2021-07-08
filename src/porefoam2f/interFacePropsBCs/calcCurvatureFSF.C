@@ -94,7 +94,7 @@ void Foam::interfaceProperties::correctContactAngle
 			nSb[bI] == nsp;
 			nsb[bI] == nsp;
 
-			acap.gradient() == 0.5*(1.0-acap*acap)*((boundary[bI].nf() & nsp)*mag(gradAlphab[bI]));
+			acap.gradient() == 0.5*(1.-acap*acap)*((boundary[bI].nf() & nsp)*mag(gradAlphab[bI]));
 
 			alphaContactAngleFvPatchScalarField& alphaSbCap =
 				 const_cast<alphaContactAngleFvPatchScalarField&>
@@ -141,7 +141,7 @@ void Foam::interfaceProperties::calcCurvatureFSF
 
 
 	volScalarField a1a2Relaxed = smoothingRelaxFactor_*a1a2;
-	volScalarField a1xa2 = a1a2*(1.0-0.000001)+0.000001;
+	volScalarField a1xa2 = a1a2*(1.-0.000001)+0.000001;
 
 
 
@@ -185,7 +185,7 @@ void Foam::interfaceProperties::calcCurvatureFSF
 		// this correction helps stablizing also improves the accuracy for capillary pressure,
 		// it has some theoretical basis but the coefficients here are chosen emperically
 		volScalarField mgK=mag(K_);
-		K_/=mag( 1. + 0.1*((alpha1S_-0.5)+0.1*K_/(magGradAlpha+5.0*mgK)) * K_/(magGradAlpha+2.0*mgK) )+1e-12;
+		K_/=mag( 1. + 0.1*((alpha1S_-0.5)+0.1*K_/(magGradAlpha+5.*mgK)) * K_/(magGradAlpha+2.*mgK) )+1e-12;
 
 		{
 			 K_.correctBoundaryConditions();

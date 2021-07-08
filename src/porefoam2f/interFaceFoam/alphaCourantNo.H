@@ -4,7 +4,7 @@
         readScalar(runTime.controlDict().lookup("maxAlphaCo"))
     );
 
-    scalar alphaCoNum = 0.0;
+    scalar alphaCoNum = 0.;
 
     if (mesh.nInternalFaces())
     {

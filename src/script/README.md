@@ -78,11 +78,10 @@ workflow for code compilation, testing, deployment and release.
 
 ##  Caution
 
-The script here use recursive make by running the AllMake and AllClean 
-scripts. The script change, add and delete and delete files on your 
-computer: the root directory where files are changed, generated or 
+The scripts here use recursive make. These change and delete files on
+your system: the top directory where files are changed, generated or 
 deleted is called msRoot which, by default, points to two directories 
-upper to the location of these script themselves.  If you ever think of 
+upper to the location of these script themselves.  So, if you consider
 using these scripts for building your applications, make sure these are 
 wrapped inside two (sub-)sub-folders, dedicated to source codes.  Here is 
 what the directory structure should looks like:
@@ -121,17 +120,18 @@ temporary/client data, as shown above.  A `.git` directory is kept
 outside the msRoot directory and is used to test and release varius 
 modules of the code, which it ends up in the msRoot directory in the 
 modules published using git.  The `build`, `bin`,`lib`, `test` and 
-`share` folders are auto-geenerated and should not be used to store 
-any user data as they are remove by `make distclean` command.
+`share` folders are auto-generated and should not be used to store 
+any user data as they are removed by `make distclean` command.
 
 
 
-## Makefile usage
+## Makefile.in usage
 
  In `Makefile`s, define variables `tsts` together with `USE_msTEST=1` 
- and `srcs` with `USE_msMAKE=1`.  If not defined, `srcs` will be set 
- to all `.cpp` files.  Example Makefiles can be found in libvoxel 
- (single source.cpp apps) or pnextract (multiple source.cpp files).
+ and `srcs` with `USE_msMAKE=1` and include the Makefile.in file.  
+ If not defined, `srcs` will be set to all `.cpp` files.  Example 
+ Makefiles can be found in libvoxel (single source.cpp apps) 
+ or pnextract (multiple source.cpp files).
 
 
 

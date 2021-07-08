@@ -38,14 +38,14 @@
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define curtailBADOFSET(a,b) ( min( max(a,b), (1.0-(b)) ) )
+#define curtailBADOFSET(a,b) ( min( max(a,b), (1.-(b)) ) )
 
 
 
 // * * * * * * * * * * * * * * * Static Member Data  * * * * * * * * * * * * //
 
 const Foam::scalar Foam::interfaceProperties::convertToRad =
-    Foam::mathematicalConstant::pi/180.0;
+    Foam::mathematicalConstant::pi/180.;
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -71,19 +71,19 @@ Foam::interfaceProperties::interfaceProperties
     //K_
     //(
         //IOobject( "K",  timeName(),  mesh()   ),
-        //mesh(),        dimensionedScalar("K", dimless/dimLength, 0.0),
+        //mesh(),        dimensionedScalar("K", dimless/dimLength, 0.),
         //pc_.boundaryField().types()
     //),
 
     nHatf_
     (
         IOobject(  "nHatf",  timeName(),  mesh()   ),
-        mesh(),        dimensionedScalar("nHatf", dimArea, 0.0)
+        mesh(),        dimensionedScalar("nHatf", dimArea, 0.)
     ),
     gPc_
     (
         IOobject( "gPc",  timeName(),  mesh(),  IOobject::READ_IF_PRESENT   ),//,  IOobject::AUTO_WRITE
-        mesh(),   dimensionedVector("gPc", dimPressure/dimLength, vector(0.0,0.0,0.0)),
+        mesh(),   dimensionedVector("gPc", dimPressure/dimLength, vector(0.,0.,0.)),
         pc_.boundaryField().types()
     ),
     sgPc_
@@ -101,12 +101,12 @@ Foam::interfaceProperties::interfaceProperties
     //nS_
     //(
         //IOobject( "nS",  timeName(),  mesh() ),
-        //mesh(),       dimensionedVector("nS", dimless, vector(0.0,0.0,0.0))//,
+        //mesh(),       dimensionedVector("nS", dimless, vector(0.,0.,0.))//,
     //),
     nw_
     (
         IOobject( "nw",  timeName(),  mesh() ),
-        mesh(),     dimensionedVector("nw", dimless, vector(0.0,0.0,0.0))
+        mesh(),     dimensionedVector("nw", dimless, vector(0.,0.,0.))
     ),
     
     edgemarks_(mesh().edges().size(),0),
@@ -114,29 +114,29 @@ Foam::interfaceProperties::interfaceProperties
     Internalfaces1_
     (
         IOobject( "Internalfaces1",  timeName(), mesh() ),
-        mesh(),  dimensionedScalar("Internalfaces1", dimless, 1.0)
+        mesh(),  dimensionedScalar("Internalfaces1", dimless, 1.)
     ),
     BInternalfs_
     (
         IOobject( "BInternalfs",  timeName(), mesh() ),
-        mesh(),  dimensionedScalar("BInternalfs", dimless, 0.0)
+        mesh(),  dimensionedScalar("BInternalfs", dimless, 0.)
     ),
     AvgInternFaces1_
     (
         IOobject( "AvgInternFaces1",  timeName(), mesh() ),
-        mesh(),  dimensionedScalar("AvgInternFaces1", dimless, 1.0)
+        mesh(),  dimensionedScalar("AvgInternFaces1", dimless, 1.)
     ),
     IsRefCandid_(mesh().cells().size(),1),
 
     sgPcErr_
     (  IOobject( "sgPce", timeName(), mesh(), IOobject::READ_IF_PRESENT ), //! NO_WRITE means restarting releases the filters
-       mesh(),    dimensionedScalar("sgPce", dimPressure/dimLength*dimArea, 0.0)
+       mesh(),    dimensionedScalar("sgPce", dimPressure/dimLength*dimArea, 0.)
     )  ,
 
     sgPcErrn_
     ( IOobject( "sgPcen", timeName(), mesh() ),
       mesh(),
-      dimensionedScalar("sgPcen", dimPressure/dimLength*dimArea, 0.0)
+      dimensionedScalar("sgPcen", dimPressure/dimLength*dimArea, 0.)
     ),
 
   pMesh_(mesh()),
@@ -161,7 +161,7 @@ Foam::interfaceProperties::interfaceProperties
     smoothingRelaxFactor_( readScalar( mesh().solutionDict().subDict("PIMPLE").lookup("smoothingRelaxFactor") ) ),
     wallSmoothingKernel_( readLabel( mesh().solutionDict().subDict("PIMPLE").lookup("wallSmoothingKernel") ) ),
     sigma_(dict.lookup("sigma")),
-    deltaN_  ("deltaN", 1e-12/pow(average(mesh().V()), 1.0/3.0) )
+    deltaN_  ("deltaN", 1e-12/pow(average(mesh().V()), 1./3.) )
 #endif
 
 {
@@ -250,12 +250,12 @@ Foam::interfaceProperties::interfaceProperties
 		forAll(CApfs, pfI)
 		{
 			const labelList& fes = faceEdges[patches[bI].patch().start()+pfI];
-			forAll(fes, eI)  edgemarks_[fes[eI]] = 1.0; 
+			forAll(fes, eI)  edgemarks_[fes[eI]] = 1.; 
 		}
 	}
 	AvgInternFaces1_.internalField()=fvc::average(Internalfaces1_);
 
-	//BInternalfs_=0.0*nHatf_;
+	//BInternalfs_=0.*nHatf_;
 	forAll(BInternalfs_, fI)
 	{
 		const labelList& fes = faceEdges[fI];	  
@@ -298,8 +298,8 @@ Foam::interfaceProperties::interfaceProperties
     {
         if (!boundary[bI].coupled())
         {
-				boundaryCorr_.boundaryField()[bI] = 0.0;
-				boundaryCorr_.boundaryField()[bI] == 0.0;
+				boundaryCorr_.boundaryField()[bI] = 0.;
+				boundaryCorr_.boundaryField()[bI] == 0.;
         }
     }
 	volScalarField corrS2=fvc::average(fvc::interpolate(boundaryCorr_,"limitedScheme"));

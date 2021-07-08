@@ -46,11 +46,11 @@ std::ostream & operator << (std::ostream & out, const std::valarray<Dbls>& vecve
 
 std::valarray<Dbls> distribution(const scalarField & UcompNormed, const scalarField & Vol, double minmax=6)
 {
-	std::valarray<Dbls> distrib(Dbls(0.0, 128),3);
+	std::valarray<Dbls> distrib(Dbls(0., 128),3);
 
 
 	double minU=gMin(UcompNormed);
-	double deltaU=(max(gMax(UcompNormed),minmax)-minU)/128.0+1e-72;
+	double deltaU=(max(gMax(UcompNormed),minmax)-minU)/128.+1e-72;
 
 	for (int i=0; i<128; ++i)	distrib[0][i] = minU+deltaU/2+i*deltaU;
 
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 	scalar K[3];
 	vector dp;
 	vector VDarcy;
-	scalar dx=pow(average(mesh.V()), 1.0/3.0).value();
+	scalar dx=pow(average(mesh.V()), 1./3.).value();
 	L[x_]=(gMax(mesh.points().component(0))-gMin(mesh.points().component(0)));
 	L[y_]=(gMax(mesh.points().component(1))-gMin(mesh.points().component(1)));
 	L[z_]=(gMax(mesh.points().component(2))-gMin(mesh.points().component(2)));
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
 
 		volScalarField clip
 		(	IOobject( "clip", runTime.timeName(), mesh),
-			mesh,	dimensionedScalar("clip",dimless,0.0),	"fixedValue"
+			mesh,	dimensionedScalar("clip",dimless,0.),	"fixedValue"
 		);
 		forAll(C,c) 
 		{ 
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 				(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
 				 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
 				 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
-				clip[c]=1.0;
+				clip[c]=1.;
 		}
 
 		word weightporo = transportProperties.lookupOrDefault("weight",word("porosity"));
@@ -216,14 +216,14 @@ int main(int argc, char *argv[])
 
 
 		std::valarray<Dbls> ditribLogUPlus(ditribLogU[0],5);
-		ditribLogUPlus[0]=std::pow(10.0,ditribLogU[0]);
-		ditribLogUPlus[1]=ditribLogU[1]/ditribLogUPlus[0]/Foam::log(10.0);
-		ditribLogUPlus[2]=ditribLogU[2]/ditribLogUPlus[0]/Foam::log(10.0);
+		ditribLogUPlus[0]=std::pow(10.,ditribLogU[0]);
+		ditribLogUPlus[1]=ditribLogU[1]/ditribLogUPlus[0]/Foam::log(10.);
+		ditribLogUPlus[2]=ditribLogU[2]/ditribLogUPlus[0]/Foam::log(10.);
 		ditribLogUPlus[3]=ditribLogU[1];
 		ditribLogUPlus[4]=ditribLogU[2];
 
 
-		vector FF(0.0, 0.0, 0.0);
+		vector FF(0., 0., 0.);
 		if(nSams==1)
 		{
 			#include "calc_FF.H"
@@ -275,31 +275,31 @@ int main(int argc, char *argv[])
 			/// Note: numerical derivative is used for dXrDy, as it is more accurate here and has no division by zero problem
 			#define pow3(_U_) ((_U_)*(_U_)*(_U_))
 			double dUo2; Dbls dXrDy;
-			dUo2=0.5*(ditribUmCbrt[0][1]-ditribUmCbrt[0][0]);	dXrDy=2.0*dUo2/(pow3(ditribUmCbrt[0]+dUo2)-pow3(ditribUmCbrt[0]-dUo2));
+			dUo2=0.5*(ditribUmCbrt[0][1]-ditribUmCbrt[0][0]);	dXrDy=2.*dUo2/(pow3(ditribUmCbrt[0]+dUo2)-pow3(ditribUmCbrt[0]-dUo2));
 			of<<"\n\n distributions with uniform cbrt(U) interval "<<std::endl;
 			of<<"\n\nx=U_m/U_D dummy \t PDF \t dV/Vdx \t distConstDelCbrtU:"<<std::endl;
-			dUo2=0.5*(ditribUmCbrt[0][1]-ditribUmCbrt[0][0]);	dXrDy=2.0*dUo2/(pow3(ditribUmCbrt[0]+dUo2)-pow3(ditribUmCbrt[0]-dUo2));
+			dUo2=0.5*(ditribUmCbrt[0][1]-ditribUmCbrt[0][0]);	dXrDy=2.*dUo2/(pow3(ditribUmCbrt[0]+dUo2)-pow3(ditribUmCbrt[0]-dUo2));
 			ditribUmCbrt[1]=dXrDy*ditribUmCbrt[1];
 			ditribUmCbrt[2]=dXrDy*ditribUmCbrt[2];
 			ditribUmCbrt[0]=ditribUmCbrt[0]*ditribUmCbrt[0]*ditribUmCbrt[0];
 			of<<ditribUmCbrt<<std::endl;
 
 			of<<"\n\nx=U_x/U_D dummy \t PDF \t dV/Vdx"<<std::endl;
-			dUo2=0.5*(ditribUxCbrt[0][1]-ditribUxCbrt[0][0]);	dXrDy=2.0*dUo2/(pow3(ditribUxCbrt[0]+dUo2)-pow3(ditribUxCbrt[0]-dUo2));
+			dUo2=0.5*(ditribUxCbrt[0][1]-ditribUxCbrt[0][0]);	dXrDy=2.*dUo2/(pow3(ditribUxCbrt[0]+dUo2)-pow3(ditribUxCbrt[0]-dUo2));
 			ditribUxCbrt[1]=dXrDy*ditribUxCbrt[1];
 			ditribUxCbrt[2]=dXrDy*ditribUxCbrt[2];
 			ditribUxCbrt[0]=ditribUxCbrt[0]*ditribUxCbrt[0]*ditribUxCbrt[0];
 			of<<ditribUxCbrt<<std::endl;
 
 			of<<"\n\nx=U_y/U_D dummy \t PDF \t dV/Vdx"<<std::endl;
-			dUo2=0.5*(ditribUyCbrt[0][1]-ditribUyCbrt[0][0]);	dXrDy=2.0*dUo2/(pow3(ditribUyCbrt[0]+dUo2)-pow3(ditribUyCbrt[0]-dUo2));
+			dUo2=0.5*(ditribUyCbrt[0][1]-ditribUyCbrt[0][0]);	dXrDy=2.*dUo2/(pow3(ditribUyCbrt[0]+dUo2)-pow3(ditribUyCbrt[0]-dUo2));
 			ditribUyCbrt[1]=dXrDy*ditribUyCbrt[1];
 			ditribUyCbrt[2]=dXrDy*ditribUyCbrt[2];
 			ditribUyCbrt[0]=ditribUyCbrt[0]*ditribUyCbrt[0]*ditribUyCbrt[0];
 			of<<ditribUyCbrt<<std::endl;
 
 			of<<"\n\nx=U_z/U_D dummy \t PDF \t dV/Vdx"<<std::endl;
-			dUo2=0.5*(ditribUzCbrt[0][1]-ditribUzCbrt[0][0]);	dXrDy=2.0*dUo2/(pow3(ditribUzCbrt[0]+dUo2)-pow3(ditribUzCbrt[0]-dUo2));
+			dUo2=0.5*(ditribUzCbrt[0][1]-ditribUzCbrt[0][0]);	dXrDy=2.*dUo2/(pow3(ditribUzCbrt[0]+dUo2)-pow3(ditribUzCbrt[0]-dUo2));
 			ditribUzCbrt[1]=dXrDy*ditribUzCbrt[1];
 			ditribUzCbrt[2]=dXrDy*ditribUzCbrt[2];
 			ditribUzCbrt[0]=ditribUzCbrt[0]*ditribUzCbrt[0]*ditribUzCbrt[0];

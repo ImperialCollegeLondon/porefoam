@@ -39,7 +39,7 @@ constantAlphaContactAngleFvPatchScalarField
 )
 :
     alphaContactAngleFvPatchScalarField(p, iF),
-    theta0_(0.0)
+    theta0_(0.)
 {}
 
 

@@ -98,7 +98,7 @@ int main(int argc, char *argv[])
 
 	n = vximage.size3();
 
-	vximage.cropD(0,n, 2,1);//         XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	vximage.cropD({0,0,0},n, 2,1);//         XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 	voxelImage SmoothedVoxels=vximage;
 
@@ -111,12 +111,12 @@ int main(int argc, char *argv[])
 
 		scalar perforationWidth(readScalar(meshingDict.lookup("perforationWidth"))) ;
 		scalar perforationLengthFraction(readScalar(meshingDict.lookup("perforationLengthFraction"))) ;
-		scalar perforationLengthFraction0=perforationLengthFraction-(1.0*nSmoothBegin[0]/n[0]);
-		scalar perforationLengthFraction1=perforationLengthFraction-(1.0*nSmoothBegin[1]/n[1]);
-		//vector IntactFaction=( vector(1.0,1.0,1.0) - smoothFaction  )/2.0;
-		//scalar perforationWidth=(perforationWidth+perforationWidth*n[1])/2.0;
-		label beginSkip_0=(1.0-perforationLengthFraction0)*0.5*n[0];
-		label beginSkip_1=(1.0-perforationLengthFraction1)*0.5*n[1];
+		scalar perforationLengthFraction0=perforationLengthFraction-(1.*nSmoothBegin[0]/n[0]);
+		scalar perforationLengthFraction1=perforationLengthFraction-(1.*nSmoothBegin[1]/n[1]);
+		//vector IntactFaction=( vector(1.,1.,1.) - smoothFaction  )/2.;
+		//scalar perforationWidth=(perforationWidth+perforationWidth*n[1])/2.;
+		label beginSkip_0=(1.-perforationLengthFraction0)*0.5*n[0];
+		label beginSkip_1=(1.-perforationLengthFraction1)*0.5*n[1];
 		label begin2_0=n[0]-beginSkip_0-perforationWidth;
 		label begin2_1=n[1]-beginSkip_1-perforationWidth;
 		
@@ -339,7 +339,7 @@ inline int collectManifoldFaces(label meshPI, label connectingFace ,DynamicList<
 			{
 
 
-				SortableList<scalar> closeNess(myEFs.size(), selectMin ? 1000.0: -1000.0 );
+				SortableList<scalar> closeNess(myEFs.size(), selectMin ? 1000.: -1000. );
 				vector masterNormal=faces[connectingFace].normal(points);
 				vector Ce=0.5*(points[meshPoints[edges[eI][0]]]+points[meshPoints[edges[eI][1]]]);
 				vector tmf=faces[connectingFace].centre(points)-Ce;
@@ -354,7 +354,7 @@ inline int collectManifoldFaces(label meshPI, label connectingFace ,DynamicList<
 					const double PI=3.14159265;
 					double angle=std::atan2 (sin,cos) * 180 / PI;
 
-					if ( angle<0.0) angle=360+angle;
+					if ( angle<0.) angle=360+angle;
 					closeNess[fI]=angle;
 				}
 

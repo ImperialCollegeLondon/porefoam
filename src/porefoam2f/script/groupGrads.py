@@ -124,7 +124,7 @@ def gradsToRelPermSwPcKrwKroTRev(Names=[''],volInt=[[]],SinglePhaseRes=[[]],inds
 	viscEVSP=groupTimeAvg(SinglePhaseRes,Names,(('viscE')),inds,1)
 
 	#viscosity
-	mu1=viscEV2*0.0+1.0
+	mu1=viscEV2*0.+1.
 	mu2=mu1
 	muSP=mu1
 	try : mu1=groupTimeAvg(volInt,Names,(('mu1')),inds,nGroup)
@@ -184,26 +184,26 @@ def plotMisc(xxx=None,indx=None,delNGroup=None):
 		hold('on')
 		plot(dot(t,10**3),(multiply(dpEc,Volume) / ((qBack))) / Pc_ref,Colours[1,:],'LineWidth',2,'markersize',2)
 		plot(dot(t,10**3),(multiply(viscEV,Volume) / ((qBack))) / Pc_ref,Colours[3,:],'LineWidth',2,'markersize',2)
-		# plot(t,(dPdzV2+dPczV2)/10000000.0,Colours(3,:),'LineWidth',2);
-		# plot(t,(dPczV1+dPczV2)/10000000.0,Colours(2,:),'LineWidth',2);
+		# plot(t,(dPdzV2+dPczV2)/10000000.,Colours(3,:),'LineWidth',2);
+		# plot(t,(dPczV1+dPczV2)/10000000.,Colours(2,:),'LineWidth',2);
 		# plot(t*10^3,((viscEV+dpEc+dpEd+phiE).*Volume./((UzAvg.*AreaCross)))./Pc_ref,Colours(6,:),'LineWidth',2,'markersize',2);
 		# max(viscFzV)
-		plot(dot(t,10**3),1 - dot(alpha1,1.0),Colours[5,:],'LineWidth',2)
+		plot(dot(t,10**3),1 - dot(alpha1,1.),Colours[5,:],'LineWidth',2)
 		disp('________________TOTAL______________-')
 		# ylim([-2,2])
 		# yMin=0;yMax=-100000;
-		# meanTmp=mean(dPdzV1/10000.0);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
-		# meanTmp=mean(dPczV1/10000.0);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
-		# meanTmp=mean(dPdzV2/10000.0);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
-		# meanTmp=mean(dPczV2/10000.0);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		# meanTmp=mean(dPdzV1/10000.);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		# meanTmp=mean(dPczV1/10000.);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		# meanTmp=mean(dPdzV2/10000.);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		# meanTmp=mean(dPczV2/10000.);	 yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
 		#ufactor=yMax/mean(UzAvg./( dPdzV+dPczV)*dppq_sp(iCV));
 		# yMax=ceil(yMax*10)/10;
 		# yMin=floor(10*yMin)/10;
 		#afactor=yMax;
 		# delPcelZ =-groupTimeAvg(volInt,Names,(["-delPcelZ"]),inds, nGroup  ) ;
-		# plot(t, (viscFzV1+dPdzV1+dPczV1)/10000.0,Colours(5,:),'LineWidth',2);
+		# plot(t, (viscFzV1+dPdzV1+dPczV1)/10000.,Colours(5,:),'LineWidth',2);
 
-		# plot(t, (viscFzV2+dPdzV2+dPczV2)/10000.0,Colours(6,:),'LineWidth',2);
+		# plot(t, (viscFzV2+dPdzV2+dPczV2)/10000.,Colours(6,:),'LineWidth',2);
 		# xlim([0 10000])
 		# ylim([-0.03 0.06])
 		# set (gca, "interpreter", "latex")
@@ -234,7 +234,7 @@ def plotMisc(xxx=None,indx=None,delNGroup=None):
 		plot(dot(t,10 ** 3),(multiply(multiply(- (f_2 / (abs(f_2) + 1e-06)),(viscEV2)),Volume) / (multiply((Uz2Avg + 1e-12),AreaCross))) / Pc_ref,Colours[3,:],'LineWidth',2,'markersize',2)
 		# plot(t*10^3,( dpEc2.*Volume./(Uz2Avg.*AreaCross))./Pc_ref,Colours(4,:),'LineWidth',2,'markersize',2);
 		# max(viscFzV)
-		# plot(t,dPczV2/10000000.0,Colours(4,:),'LineWidth',2);
+		# plot(t,dPczV2/10000000.,Colours(4,:),'LineWidth',2);
 		plot(cat(0),cat(-1),Colours[5,:],'LineWidth',4)
 		#plot(t*10^3,( -(f_2./(abs(f_2)+1e-6)).*(dpEd2+dpEc2).*Volume./((Uz2Avg+1e-12).*AreaCross))./Pc_ref,Colours(3,:),'LineWidth',1,'markersize',0);
 		disp('________________EACH______________-')
@@ -280,7 +280,7 @@ def plotMisc(xxx=None,indx=None,delNGroup=None):
 		plot(dot(t,10 ** 3),(multiply(dpEd2,Volume) / (multiply(Uz2Avg,AreaCross))) / Pc_ref,Colours[2,:],'LineWidth',2,'markersize',2)
 		plot(dot(t,10 ** 3),(multiply(dpEc1,Volume) / (multiply(Uz1Avg,AreaCross))) / Pc_ref,Colours[3,:],'LineWidth',2,'markersize',2)
 		plot(dot(t,10 ** 3),(multiply(dpEc2,Volume) / (multiply(Uz2Avg,AreaCross))) / Pc_ref,Colours[4,:],'LineWidth',2,'markersize',2)
-		# plot(t,dPczV2/10000000.0,Colours(4,:),'LineWidth',2);
+		# plot(t,dPczV2/10000000.,Colours(4,:),'LineWidth',2);
 		plot(dot(t,10 ** 3),1 - dot(alpha1,1),Colours[5,:],'LineWidth',4)
 		disp('________________EACH______________-')
 		# ylim([-0.5 2])
@@ -305,10 +305,10 @@ def plotMisc(xxx=None,indx=None,delNGroup=None):
 		viscEVSP=groupTimeAvg(SinglePhaseRes,Names,(cat('viscE')),inds,1)
 		UzAvgSP=copy(UzAvgSP)
 		viscEVSP=viscEVSP[end()]
-		plot(1.0 - alpha1,multiply(Uz1Avg,UzAvg) / (viscEV) / (dot(UzAvgSP,UzAvgSP) / viscEVSP),Colours[1,:],'LineWidth',2,'markersize',3)
+		plot(1. - alpha1,multiply(Uz1Avg,UzAvg) / (viscEV) / (dot(UzAvgSP,UzAvgSP) / viscEVSP),Colours[1,:],'LineWidth',2,'markersize',3)
 		hold('on')
-		plot(1.0 - alpha1,multiply(Uz2Avg,UzAvg) / (viscEV) / (dot(UzAvgSP,UzAvgSP) / viscEVSP),Colours[3,:],'LineWidth',2,'markersize',3)
-		plot(1.0 - alpha1,f_1,Colours[2,:],'LineWidth',2,'markersize',1)
+		plot(1. - alpha1,multiply(Uz2Avg,UzAvg) / (viscEV) / (dot(UzAvgSP,UzAvgSP) / viscEVSP),Colours[3,:],'LineWidth',2,'markersize',3)
+		plot(1. - alpha1,f_1,Colours[2,:],'LineWidth',2,'markersize',1)
 		disp('__________pppppppppppp______________-')
 		set(gca,'xminortick','on','yminortick','on','xgrid','on','ygrid','on')
 		xlim(cat(- 0.0001,1.0001))

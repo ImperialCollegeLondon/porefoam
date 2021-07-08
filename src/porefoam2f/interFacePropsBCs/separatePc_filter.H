@@ -4,7 +4,7 @@
 #define SET_REF_(rfc, rfv, sfx, _alpha1SAtanh_) 			if (Pstream::master()) { \
 	constexpr scalar aSp01=std::atanh(1.8*0.01-0.9); /* SYN123433*/ \
 	for(rfc = rfc##sfx; rfc<_alpha1SAtanh_.size()-5; ++rfc) \
-		if ((_alpha1SAtanh_[rfc]<aSp01 || _alpha1SAtanh_[rfc]>-aSp01) && (magGradAlpha[rfc]<1000.0*deltaN_.value()) && IsRefCandid_[rfc])  break; \
+		if ((_alpha1SAtanh_[rfc]<aSp01 || _alpha1SAtanh_[rfc]>-aSp01) && (magGradAlpha[rfc]<1000.*deltaN_.value()) && IsRefCandid_[rfc])  break; \
 	if (rfc==_alpha1SAtanh_.size()) Info<<"Error cannot find suitable refCell for pc solver"<<endl;\
 	rfv=0.9999*pc_[rfc]+0.0001*rfv##sfx; \
 	} else rfc=-1;
@@ -91,8 +91,8 @@
 
 	surfaceVectorField gPcllInterface=fvc::interpolate(vgPcllInterface,"smoothSchemegPc");    //surfaceVectorField gPcf=fvc::interpolate(gPc_,"smoothSchemegPc");
 	gPcllInterface=(gPcllInterface)-((gPcllInterface)&(nHatfv))*(nHatfv);    //surfaceVectorField gPcf=fvc::interpolate(gPc_,"smoothSchemegPc");
-	gPcllInterface*=(1.0-mag(nHatf_)/msh.magSf());
-	sgPcErr_=dInterf*(min(2.0*(1.4-mag(nHatf_)/msh.magSf()), 1.0)*(sgPcErr_+fcCorrectTangent_*(gPcllInterface& msh.Sf())) );//  *( 1.0-(mag(nHatf_)/msh.magSf()) )   ); /*aSolid_cPcCorrRelax_* */ 
+	gPcllInterface*=(1.-mag(nHatf_)/msh.magSf());
+	sgPcErr_=dInterf*(min(2.*(1.4-mag(nHatf_)/msh.magSf()), 1.)*(sgPcErr_+fcCorrectTangent_*(gPcllInterface& msh.Sf())) );//  *( 1.-(mag(nHatf_)/msh.magSf()) )   ); /*aSolid_cPcCorrRelax_* */ 
 
 
 	long long sgPcErr_checkErrs=0;
@@ -105,7 +105,7 @@
 	{
 		if (!boundary[bI].coupled())
 		{
-			sgPcErr_.boundaryField()[bI] = 0.0;
+			sgPcErr_.boundaryField()[bI] = 0.;
 		}
 		else
 		{
@@ -123,7 +123,7 @@
 	if(sgPcErr_checkErrs)  Info<<"\n\n sgPcErr_checkErrs: "<<sgPcErr_checkErrs<<endl<<endl;
 
 	//stfThreshold=0.5*(stfThreshold+(1.*fcdFilter_)*mag(stf));
-	stfThreshold=((1.0*fcdFilter_)*( mag(stf)+ mag((sigma_*0.1)*deltaS_*deltaS_*msh.magSf()) ));
+	stfThreshold=((1.*fcdFilter_)*( mag(stf)+ mag((sigma_*0.1)*deltaS_*deltaS_*msh.magSf()) ));
 	sgPcErrn_ = (min (max(sgPc_, -stfThreshold),stfThreshold) );
 	sgPc_-=sgPcErrn_;  
 
@@ -132,7 +132,7 @@
 
 
 	volVectorField gPcS=fvc::average(fvc::interpolate(gPc_)*Internalfaces1_)/fvc::average(Internalfaces1_);
-	stfThreshold = 2.0*mag((fvc::interpolate(gPcS)) & msh.Sf());
+	stfThreshold = 2.*mag((fvc::interpolate(gPcS)) & msh.Sf());
 	sgPc_ = (min (max(sgPc_, -stfThreshold),stfThreshold));
 
 	gPc_= fvc::reconstruct((sgPc_));

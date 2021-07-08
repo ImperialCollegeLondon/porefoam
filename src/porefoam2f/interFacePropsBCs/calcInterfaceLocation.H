@@ -24,7 +24,7 @@
 
 
 	//distPointInterface_ =	dimensionedVector("distPointInterface_",dimLength,vector::zero);
-	//forAll(interfPoints,pi) if(!interfPoints[pi]) nSpCurl_[pi]*=0.0; ;;
+	//forAll(interfPoints,pi) if(!interfPoints[pi]) nSpCurl_[pi]*=0.; ;;
 
 
 	//pointVectorField Up = pointInterpolate(U_,pMesh_);
@@ -50,16 +50,16 @@
 			//else
 			{
 				scalar ap=alpha1P[pi];
-				//distPointInterface_[pi] = min(1.0,max(5.0*ap*(1.0-ap)-0.1,0.0))*((scalar(0.5) - ap)/(magGradAlphaP[pi]))*nHatSp[pi];
-				distPointInterface_[pi] = ((0.0- ap)/(magGradAlphaP[pi]))*nHatSp[pi];
+				//distPointInterface_[pi] = min(1.,max(5.*ap*(1.-ap)-0.1,0.))*((scalar(0.5) - ap)/(magGradAlphaP[pi]))*nHatSp[pi];
+				distPointInterface_[pi] = ((0.- ap)/(magGradAlphaP[pi]))*nHatSp[pi];
 			}
 		}
-		else distPointInterface_[pi]*=0.0;
+		else distPointInterface_[pi]*=0.;
 			
 	}
 
 	// calculate the distance between interface and point
-	  //distPointInterface_ = ((scalar(0.5) - alpha1P)/(magGradAlphaP))*nHatSp;    	//distPointInterface_ = (((1.0/0.9/0.9)*(alpha1P+0.4)*(1.4-alpha1P)))*((0.5 - alpha1P)/(magGradAlphaP))*nHatSp;
+	  //distPointInterface_ = ((scalar(0.5) - alpha1P)/(magGradAlphaP))*nHatSp;    	//distPointInterface_ = (((1./0.9/0.9)*(alpha1P+0.4)*(1.4-alpha1P)))*((0.5 - alpha1P)/(magGradAlphaP))*nHatSp;
 
 
 

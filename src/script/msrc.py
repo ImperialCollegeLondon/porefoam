@@ -108,7 +108,7 @@ def grepFloatInStr(lines='',keyword='Kx=', fnamHint=''):
 
 def grepFloatInFile(inFIle='summary.txt',keyword='Kx='):
 	try:     lines = open(inFIle, 'r').read()
-	except: DbgMsg('cannot open '+inFIle) ; return 0.0
+	except: DbgMsg('cannot open '+inFIle) ; return 0.
 	return grepFloatInStr(lines,keyword, inFIle)
 
 def fileFloatDiffersFrom(inFIle, keyword, val, frac=0.01, delta=1e-32):

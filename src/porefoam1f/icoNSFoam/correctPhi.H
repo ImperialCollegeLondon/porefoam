@@ -21,16 +21,14 @@
         (
             "pcorr",
             runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
+            mesh
         ),
         mesh,
-        dimensionedScalar("pcorr", p.dimensions(), 0.0),
+        dimensionedScalar("pcorr", p.dimensions(), 0.),
         pcorrTypes
     );
 
-    dimensionedScalar rAUf("(1|A(U))", dimTime/rho.dimensions(), 1.0);
+    dimensionedScalar rAUf("(1|A(U))", dimTime/rho.dimensions(), 1.);
 
     adjustPhi(phi, U, pcorr);
 

@@ -132,7 +132,7 @@ PIMPLE
 
 	pcThicknessFactor  .1; 
 	fcCorrectTangent   .05; 
-	fcCorrectTangentRelax 1.0;
+	fcCorrectTangentRelax 1.;
 	smoothingKernel   2; 
 	smoothingRelaxFactor   0.7; // high vaqlue leads to alpha leakage
 
@@ -147,9 +147,9 @@ PIMPLE
 	lambda   0;
 	lambdaS  0;
 	cSSlip   0.05;
-	nSlip    1.0;
+	nSlip    1.;
 
-	UBoundByUSmoothFactor 2.0;
+	UBoundByUSmoothFactor 2.;
 
 	nUCorr 0;
 	beta              beta [ 1 -1 -1 0 0 0 0 ] 0.001;

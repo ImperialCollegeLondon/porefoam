@@ -71,7 +71,7 @@ const facePiece& faces, const piece<point>& points, const labelListList& pPoints
 			if(isMyEdge)  {
 
 
-				dbls closeNess(myEFs.size(), selectMin ? 1000.0: -1000.0 );
+				dbls closeNess(myEFs.size(), selectMin ? 1000.: -1000. );
 				dbl3 masterNormal=normal(faces[connectingFace],points);
 				dbl3 Ce=0.5*(points[pI]+points[pPoints[pI][eI]]);
 				dbl3 tmf=centre(faces[connectingFace],points)-Ce;
@@ -85,7 +85,7 @@ const facePiece& faces, const piece<point>& points, const labelListList& pPoints
 					const double PI=3.14159265;
 					double angle=std::atan2 (sin,cos) * 180 / PI;
 
-					if ( angle<0.0) angle=360+angle;
+					if ( angle<0.) angle=360+angle;
 					closeNess[fI]=angle;
 				}
 

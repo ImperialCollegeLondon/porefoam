@@ -44,7 +44,7 @@
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#define curtailBADOFSET(a,b) (min (max(a,b),(1.0-(b)))	)
+#define curtailBADOFSET(a,b) (min (max(a,b),(1.-(b)))	)
 
 
 
@@ -169,7 +169,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 					vector Ne = 0.5*(nHatSp[ip2]+nHatSp[ip1]);    Ne /= mag(Ne)+1e-15;
 
 
-					curvatureForcef[fI] +=  (2.0*(deltaS_[fI]>=0)-1.0) * Le^Ne;
+					curvatureForcef[fI] +=  (2.*(deltaS_[fI]>=0)-1.) * Le^Ne;
 					nSHatfv[fI] +=  gradAlphaP[ip1];
 					//nSHatfv[fI] +=  mag(Le) * (Ne);
 			}
@@ -197,7 +197,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 					vector Ne = 0.5*(nHatSp[ip2]+nHatSp[ip1]);   Ne /= mag(Ne)+1e-15;
 
-					patchCurveIntegralf[bfI] += (2.0*(deltaS_p[bfI]>=0)-1.0) * Le^Ne;
+					patchCurveIntegralf[bfI] += (2.*(deltaS_p[bfI]>=0)-1.) * Le^Ne;
 					nSHatfvp[bfI] += gradAlphaP[ip1];
 					//nHatfp[bfI] += mag(Le) * Ne;
 				}

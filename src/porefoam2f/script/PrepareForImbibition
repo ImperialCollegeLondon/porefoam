@@ -13,7 +13,7 @@ usage()
 	scriptName=`basename "${BASH_SOURCE[0]}"`
 	echo " - Usage/example:"
 	echo "$scriptName  CA   inU0 inU1  outP0 outP1  fillFrac inputCase  tDrain  outName "
-	echo "$scriptName  95    2.   1.   20.  0.0      0.1     Berea_.07  0.1   BereaImb "
+	echo "$scriptName  95    2.   1.    20.    0.      0.1     Berea_.07  0.1   BereaImb "
 	echo "  this script will then create ./BereaImb145_0.1/BereaImb135_0.1  for you,  hint: "
 	echo " - Other settings:"
 	echo "export thetaIn=90"

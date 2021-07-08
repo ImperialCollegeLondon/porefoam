@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 		subCycleTime alphaSubCycle(runTime, 2);
 		{
 			tOld= runTime.elapsedCpuTime() ;
-			interface.correct(0.0);
+			interface.correct(0.);
 			sgPc = interface.sgPc();
 			ifMonitor  {Info<< "  ExeTime pc = " << runTime.elapsedCpuTime()-tOld << " s"	<< endl;}
 			twoPhaseProperties.correct();

@@ -44,7 +44,7 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 
 
 	//int counter = 0;
-	vector uTotal(0.0,0.0,0.0);
+	vector uTotal(0.,0.,0.);
 
 //forAll(timeDirs, timeI)
 //if (timeDirs[timeI]==0.0671834){
@@ -97,7 +97,7 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 
 		volScalarField clip
 		(	IOobject( "clip", runTime.timeName(), mesh),
-			mesh,	dimensionedScalar("clip",dimless,0.0),	"fixedValue"
+			mesh,	dimensionedScalar("clip",dimless,0.),	"fixedValue"
 		);
 		forAll(clip,c) 
 		{ 
@@ -105,7 +105,7 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
 					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
 					 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
-					clip[c]=1.0;
+					clip[c]=1.;
 		}
 
 
@@ -122,8 +122,8 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 
 		forAll(boundary, bi)
 		{
-			clip.boundaryField()[bi]=0.0;
-			clip.boundaryField()[bi]==0.0;
+			clip.boundaryField()[bi]=0.;
+			clip.boundaryField()[bi]==0.;
 		}
 
 
@@ -141,9 +141,9 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 		slice.dpddz()=-sum(gradPz *clipVC).value()/vol;
 
 		//#include  "calcdEdts.H"
-		vector viscE(0.0,0.0,0.0);
-		vector gPdE(0.0,0.0,0.0);
-		vector rhoPhiUE(0.0,0.0,0.0);
+		vector viscE(0.,0.,0.);
+		vector gPdE(0.,0.,0.);
+		vector rhoPhiUE(0.,0.,0.);
 		//{
 
 		surfaceScalarField BSurafce=fvcDelta(clip);

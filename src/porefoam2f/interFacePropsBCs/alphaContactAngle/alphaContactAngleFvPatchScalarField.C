@@ -107,7 +107,7 @@ Foam::alphaContactAngleFvPatchScalarField::alphaContactAngleFvPatchScalarField
     else
     {
         fvPatchField<scalar>::operator=(patchInternalField());
-        gradient() = 0.0;
+        gradient() = 0.;
     }
     if (dict.found("transitionFactor"))
     {
@@ -159,7 +159,7 @@ void Foam::alphaContactAngleFvPatchScalarField::evaluate
     
 	if (reset)
     {
-        gradient() = 0.0;
+        gradient() = 0.;
     }
     else if (limit_ == lcGradient)
     {
@@ -179,13 +179,13 @@ void Foam::alphaContactAngleFvPatchScalarField::evaluate
            //max(min
            //(
                //alphapintern + gradient()/patch().deltaCoeffs(),
-               //scalar(1.0)), scalar(0.0)
+               //scalar(1.)), scalar(0.)
            //) - alphapintern
        //);
     }
     else if (limit_ == lcZeroGradient)
     {
-        gradient() = 0.0;
+        gradient() = 0.;
     }
     
 
@@ -194,8 +194,8 @@ void Foam::alphaContactAngleFvPatchScalarField::evaluate
 
     if (limit_ == lcAlpha || limit_ == lcGradient)
     {
-        scalarField::operator=(max(min( (1./transitionFactor_)*(*this)-(0.5/transitionFactor_-0.5) , scalar(1.0)), scalar(0.0)));
-        //scalarField::operator=(max(min((*this), scalar(1.0)), scalar(0.0)));
+        scalarField::operator=(max(min( (1./transitionFactor_)*(*this)-(0.5/transitionFactor_-0.5) , scalar(1.)), scalar(0.)));
+        //scalarField::operator=(max(min((*this), scalar(1.)), scalar(0.)));
     }
 }
 

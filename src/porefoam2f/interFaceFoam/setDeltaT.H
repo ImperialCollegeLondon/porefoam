@@ -16,7 +16,7 @@ if (adjustTimeStep)
     
     if( maxDeltaTFact>1.2 && (CoNum < CoNumOld*deltaTFact || maxDeltaTFact > 1.5) )
     {
-        deltaTFact = min(min(maxDeltaTFact, 1.0 + 0.1*(maxDeltaTFact-1.0)), 1.3);
+        deltaTFact = min(min(maxDeltaTFact, 1. + 0.1*(maxDeltaTFact-1.)), 1.3);
         runTime.setDeltaT
         (
             min
@@ -41,7 +41,7 @@ if (adjustTimeStep)
     }
     else
     {
-        deltaTFact = 1.0;
+        deltaTFact = 1.;
     }
         
     CoNumOld=CoNum;   

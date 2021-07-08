@@ -2,7 +2,7 @@
 	volScalarField VC
 	(	IOobject
 		(	"VC",  runTime.timeName(),  mesh
-		),  mesh,  dimensionedScalar("VC",dimVolume,0.0),  "fixedValue"
+		),  mesh,  dimensionedScalar("VC",dimVolume,0.),  "fixedValue"
 	);	
 	VC.internalField()=mesh.V();
 
@@ -66,7 +66,7 @@
 			IOobject::AUTO_WRITE
 		),
 		mesh,
-		dimensionedScalar("PPRegions",dimless,0.0),
+		dimensionedScalar("PPRegions",dimless,0.),
 		"zeroGradient"
 	);
 
@@ -101,7 +101,7 @@
 
 	fileName imageName( postProcDict.lookupOrDefault("labelImage", fileName("")) );
 	Info << "labelImage:" << imageName<<endl;
-	voxelImageT<int> CV_img(1,1,1,1); CV_img.X0Ch()-=dbl3(100000000.0,100000000.0,100000000.0);CV_img.dxCh()*=1000000000.0;
+	voxelImageT<int> CV_img(1,1,1,1); CV_img.X0Ch()-=dbl3(100000000.,100000000.,100000000.);CV_img.dxCh()*=1000000000.;
 
 
 	if(!imageName.empty()) { readConvertFromHeader(CV_img,runTime.system()+"/../"+imageName); }
@@ -111,7 +111,7 @@
 
 	//CV_img.write(runTime.system()+"/../voxelI mageT_CV_img.dat");
 	int3 nnn = CV_img.size3();
-	dbl3 xmin=CV_img.X0();  if(postProcDict.lookupOrDefault("resetX0", word("true"))==word("true")) xmin*=0.0;//1e-6 ;      ///.   WARNING IGNORING ORIGIN
+	dbl3 xmin=CV_img.X0();  if(postProcDict.lookupOrDefault("resetX0", word("true"))==word("true")) xmin*=0.;//1e-6 ;      ///.   WARNING IGNORING ORIGIN
 	dbl3 dx=CV_img.dx();   //dx*=1e-6;
 	std::cout<<"  dx: "<<dx<<";  xmin: "<<xmin<<std::endl;
 	int nRejecteds(0);
@@ -119,9 +119,9 @@
 	const vectorField & C =	mesh.C().internalField();
 	forAll(C,c)
 	{
-		int i=(C[c][0]-xmin[0]+0.0*dx[0])/dx[0];
-		int j=(C[c][1]-xmin[1]+0.0*dx[1])/dx[1];
-		int k=(C[c][2]-xmin[2]+0.0*dx[2])/dx[2];
+		int i=(C[c][0]-xmin[0]+0.*dx[0])/dx[0];
+		int j=(C[c][1]-xmin[1]+0.*dx[1])/dx[1];
+		int k=(C[c][2]-xmin[2]+0.*dx[2])/dx[2];
 		if (k>=0 && k<nnn[2] && j>=0 && j<nnn[1] && i>=0 && i<nnn[0] )
 		{
 			label CV_ind=CV_img(i,j,k);

@@ -102,13 +102,13 @@ int main(int argc, char *argv[])
 		vectorField pNorms(points.size(), vector::zero);
 
 		const scalarField& Vols = mesh.cellVolumes(); 
-		const scalar& VavgInv = 1.0/gAverage(Vols); 
+		const scalar& VavgInv = 1./gAverage(Vols); 
 		const vectorField& Cfs = mesh.faceCentres(); 
 		const label nInteFaces = mesh.nInternalFaces();
 		vectorField avgPCellCntrs(points.size(), vector::zero);
 		vectorField avgPPoints(points.size(), vector::zero);
 
-		scalarField pointWeis(points.size(), 1.0);
+		scalarField pointWeis(points.size(), 1.);
 		labelList pointOnBoundary(points.size(), 1);
 		vectorField avgPFCentres(points.size(), vector::zero);
 		{
@@ -119,14 +119,14 @@ int main(int argc, char *argv[])
 				vector CCSum(Cfs[fI]);
 				scalar wei = VavgInv*(fI<nInteFaces ?  //Warning 1e15 should be replaced by 1/AvgVolCell
 												(Vols[owns[fI]]+Vols[neis[fI]]) : 
-												6.0*Vols[owns[fI]]);//*(magAfs[fI])
+												6.*Vols[owns[fI]]);//*(magAfs[fI])
 				forAll(f, fpI)
 				{
 						label pI = f[fpI];
 						avgPFCentres[pI] += wei*CCSum; 
 						nPointFaces[pI]+=wei;
 						pointOnBoundary[pI]=fI<nInteFaces ? 0 : 1; // WAS ALWAYS 1
-						pointWeis[pI]=fI<nInteFaces ? 1.0 : 27.0;
+						pointWeis[pI]=fI<nInteFaces ? 1. : 27.;
 				}
 			}
 			avgPFCentres/=nPointFaces;
@@ -153,19 +153,19 @@ int main(int argc, char *argv[])
 			scalarField pointWeisTmp = pointWeis;
 			forAll(pointWeisTmp, pI)
 			{
-				scalar PwBSum(0.0);
-				scalar wPwBSum(0.0);
+				scalar PwBSum(0.);
+				scalar wPwBSum(0.);
 				const labelList& 	neiPoints = pointPoints[pI];
 				forAll(neiPoints, ppI) 
 				{
 				 label pII = neiPoints[ppI];
 				 if(pointOnBoundary[pII])
 				 {
-					wPwBSum += 1.0; 
+					wPwBSum += 1.; 
 					PwBSum += pointWeisTmp[pII]; 
 				 }
 				}
-				if(!pointOnBoundary[pI])	pointWeis[pI]=(PwBSum+2.0*pointWeis[pI])/(2.0+wPwBSum);
+				if(!pointOnBoundary[pI])	pointWeis[pI]=(PwBSum+2.*pointWeis[pI])/(2.+wPwBSum);
 			}
 		}
 
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 				forAll(neiPoints, ppI)
 				{
 					label pII = neiPoints[ppI];
-					scalar w=pointWeis[pII];//1.0;//(pointsOrig[pI]-pointsOrig[pII]);
+					scalar w=pointWeis[pII];//1.;//(pointsOrig[pI]-pointsOrig[pII]);
 					if(pIOnB && pointOnBoundary[pII]!=pIOnB)  w = 1e-64;
 
 					CCSum += w*pointsOrig[pII]; 
@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
 				;
 
 
-				vector normbfs(0.0,0.0,0.0);
+				vector normbfs(0.,0.,0.);
 				forAll(pointfaces[pI],j)
 				{
 					if (pointfaces[pI][j]>=nInteFaces)

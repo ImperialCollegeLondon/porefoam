@@ -42,7 +42,7 @@
 
 
 	label pRefCell = 0;
-	scalar pRefValue = 0.0;
+	scalar pRefValue = 0.;
 	setRefCell(p, pimple.dict(), pRefCell, pRefValue);
 
 
@@ -50,19 +50,19 @@
 
 	scalar refDelUx10( pimple.dict().lookupOrDefault("thresholdDelUPer10Step", 0.0005) );
 	scalar oldDelUx10 = 1e+64;
-	scalar oldAvgU10 = 0.0;
+	scalar oldAvgU10 = 0.;
 
 	label AitkenEvery( pimple.dict().lookupOrDefault("AitkenEvery", 7) );
-	scalar UAkOld = 0.0;
-	scalar UAkOOld = 0.0;
-	scalar UAkOOOld = 0.0;
-	scalar UAkOOOOld = 0.0;
+	scalar UAkOld = 0.;
+	scalar UAkOOld = 0.;
+	scalar UAkOOOld = 0.;
+	scalar UAkOOOOld = 0.;
 
 
 	scalar lambda( readScalar(pimple.dict().lookup("lambda")) );
 
 
-	scalar deltaTFact=1.0;
+	scalar deltaTFact=1.;
 
 	label nUCorr( readLabel(pimple.dict().lookup("nUCorr")) );
 

@@ -1,19 +1,39 @@
 
 Make/*/
-bin/*
+bin/
 build/*
+include/
+lib/
+share/
+test/
+**/bu
+**/BU
 *.log
 log.*
 *-.cpp
+**/__pycache__
+*.pyc
+**/*.pyc
 *-
-*/lnInclude
+**/lnInclude/
+**/Make/linux*/
+
+*_secrets
 
 #latex
 *.aux
 *.toc
 
+
+
+
+thirdparty/**/bin/
+
+
+
 # Prerequisites
 *.d
+*.dep
 
 # Compiled Object files
 *.slo

@@ -562,8 +562,8 @@ void fixImage(voxelImage& voxels)  {
 	cout<<"removing disconnected parts of the image "<<endl;
 	int nxmid=n[0]/2;
 	unsigned int vmax=n[1]*n[2]+1;
-	voxelImageT<unsigned int> vxlsMids(1,n[1], n[2],bigN);
-	voxelImageT<unsigned int> vxlsMidMap(1,n[1], n[2],vmax);
+	voxelField<unsigned int> vxlsMids(1,n[1], n[2],bigN);
+	voxelField<unsigned int> vxlsMidMap(1,n[1], n[2],vmax);
 	vector<unsigned int> vxlsMidCompresdReg(n[1]*n[2],bigN);
 	//std::valarray<unsigned int> vxlsMidMap(0,n[1]*n[2]);
 	//std::valarray<unsigned int> vxlsMidMapCount(0,n[1]*n[2]);
@@ -618,7 +618,7 @@ void fixImage(voxelImage& voxels)  {
 
 
 
-	voxelImageT<unsigned int> vxlImg(n[0],n[1],n[2],bigN);
+	voxelField<unsigned int> vxlImg(n[0],n[1],n[2],bigN);
 
 
 	//for (int k=0; k<vxlImg.nz(); ++k)

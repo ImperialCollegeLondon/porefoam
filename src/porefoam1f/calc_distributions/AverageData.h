@@ -1,7 +1,7 @@
 
 
 const double minZfrac=0.00;
-const double maxZfrac=1.0;
+const double maxZfrac=1.;
 
 
 	
@@ -72,7 +72,7 @@ void writePostProcHeader(std::string fnam, int nSlices)
 
 }
 
-snapShot_zt::snapShot_zt() : data_(12,0.0) {	};
+snapShot_zt::snapShot_zt() : data_(12,0.) {	};
 
 class snapShot_t 
 {
@@ -90,12 +90,12 @@ class snapShot_t
 
 	void reset(unsigned int numSlices)
 	{
-		t=0.0;
-		maxMagU=0.0;
-		QIn=0.0;
-		QOut=0.0;
-		Dp=0.0;
-		ADarcy=0.0;
+		t=0.;
+		maxMagU=0.;
+		QIn=0.;
+		QOut=0.;
+		Dp=0.;
+		ADarcy=0.;
 		slices=List<snapShot_zt>(numSlices);
 	};
 	

@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 		
 
 		const vectorField & C =	mesh.C().internalField();
-		double sumAlpha=0.0, sumWalpha=1e-64;
+		double sumAlpha=0., sumWalpha=1e-64;
 		if (vximage.nx())
 		{
 		  forAll(C,c)
@@ -126,7 +126,7 @@ int main(int argc, char *argv[])
 			int k=(C[c][2]-xmin[2])/dx[2]*0.999999999999;
 			alpha1[c]=vximage(i,j,k);
 			sumAlpha += alpha1[c];
-			sumWalpha += 1.0;
+			sumWalpha += 1.;
 		  }
 		}
 		Info<<" AvgAlpha: "<<sumAlpha/sumWalpha<<endl;
@@ -143,23 +143,23 @@ int main(int argc, char *argv[])
 			alpha1.correctBoundaryConditions();
 			alpha1=fvc::average(linearInterpolate(alpha1));
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-90.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-90.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-150.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-150.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-60.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-60.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-180.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-180.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-30.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-30.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-210.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-210.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-120.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-120.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-120.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-120.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
-			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.0)-120.0,0.0),1.0);
+			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-120.,0.),1.);
 					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 
 			if(nGrowAlpha<0)
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 				for (label itr=0;itr<-nGrowAlpha;++itr)
 				{
 					alpha1.correctBoundaryConditions();
-					alpha1=1.0-min(fvc::average(linearInterpolate(1.0-alpha1))*(241.0),1.0);				
+					alpha1=1.-min(fvc::average(linearInterpolate(1.-alpha1))*(241.),1.);				
 				}
 			}
 			else if(nGrowAlpha>0)
@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
 				for (label itr=0;itr<nGrowAlpha;++itr)
 				{
 					alpha1.correctBoundaryConditions();
-					alpha1=min(fvc::average(linearInterpolate(alpha1))*(241.0),1.0);				
+					alpha1=min(fvc::average(linearInterpolate(alpha1))*(241.),1.);				
 				}
 			}
 

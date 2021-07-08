@@ -112,7 +112,6 @@ int main(int argc, char *argv[])
 
 	}
 
-	//vectorField pointNormals(pointPoints.size(),vector(0.0,0.0,0.0));
 	//const labelList& meshPoints = surf1.meshPoints();
 
 	Info<<"........"<<endl<<endl ;

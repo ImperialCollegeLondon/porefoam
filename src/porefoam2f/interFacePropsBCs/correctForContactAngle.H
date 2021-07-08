@@ -41,12 +41,12 @@ namespace Foam
 			else	if (isA<alphaContactAngleFvPatchScalarField>(alpha1.boundaryField()[bi]))
 			{
 				primitivePatchInterpolation pinterpolator(boundaryMesh[bi]);
-				const Foam::scalar convertToRad =  Foam::mathematicalConstant::pi/180.0;
+				const Foam::scalar convertToRad =  Foam::mathematicalConstant::pi/180.;
 
 				pointField nWp= pinterpolator.faceToPointInterpolate(nw_.boundaryField()[bi]);
 				const  alphaContactAngleFvPatchScalarField& acap =  refCast<const alphaContactAngleFvPatchScalarField> ( alpha1.boundaryField()[bi] );
 				vectorField Uprelative= pinterpolator.faceToPointInterpolate( U.internalField()[bi]-U.boundaryField()[bi] );
-				vectorField nHatp=0.0*nWp;
+				vectorField nHatp=0.*nWp;
 				forAll(patchPoints, ppI) nHatp[ppI] = gradAlphaP[patchPoints[ppI]];
 				nHatp /= mag(nHatp) + 1e-37;
 				scalarField theta = convertToRad*acap.theta(Uprelative, nHatp, nWp);

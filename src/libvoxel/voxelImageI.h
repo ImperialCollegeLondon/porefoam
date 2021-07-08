@@ -64,7 +64,7 @@ Ali Q Raeini: a.q.raeini@imperial.ac.uk
 	for (int i=_ib_; i<(_ie_); ++i)
 #define forAllkji(_vxls) forkji_be(0,0,0, (_vxls).nx(), (_vxls).ny(), (_vxls).nz())
 
-#define forAllkji_(_vxls)   OMPFor()	forAllkji(_vxls)
+#define forAllkji_(_vxls)     OMPFor()	forAllkji(_vxls)
 
 
 #define forAllvp_seq(_vxls)   for(auto vp=_vxls.data_.data(); vp<&(*_vxls.data_.cend()); ++vp)
@@ -78,10 +78,10 @@ Ali Q Raeini: a.q.raeini@imperial.ac.uk
  	for (int k=_nNei; k<(_vxls).nz()-_nNei; ++k)   \
  	for (int j=_nNei,_je_=(_vxls).ny()-_nNei; j<_je_; ++j)   \
  	for (int i=_nNei,_ie_=(_vxls).nx()-_nNei; i<_ie_; ++i)
-#define forAllkji_m_(_nNei,_vxls)   OMPFor()  forAllkji_m_seq(_nNei,_vxls)
-#define forAllkji_1(_vxls)   forAllkji_m_seq(1,_vxls) 
-#define forAllkji_1_sum_(_vxls, redct_M)  OMPFor(redct_M)  forAllkji_m_seq(1,_vxls) 
-#define forAllkji_1_(_vxls)               OMPFor()         forAllkji_m_seq(1,_vxls) 
+#define forAllkji_1(_vxls)                            forAllkji_m_seq(1,_vxls) 
+#define forAllkji_1_(_vxls)                  OMPFor() forAllkji_m_seq(1,_vxls) 
+#define forAllkji_1_sum_(_vxls, _redu)  OMPFor(_redu) forAllkji_m_seq(1,_vxls) 
+#define forAllkji_m_(_nNei,_vxls)            OMPFor() forAllkji_m_seq(_nNei,_vxls)
 
 
 
@@ -171,8 +171,7 @@ TRes accumulate(const voxelField<T>& vf, TFunc operatorFunc, TRes result=0)  {
 	{
 		TRes res_private = result;
 		OMPragma("omp for nowait")
-		for(auto vp=vf.data_.begin(); vp<vf.data_.end(); ++vp)
-		{
+		for(auto vp=vf.data_.begin(); vp<vf.data_.end(); ++vp)  {
 			res_private=operatorFunc(res_private,*vp);
 		}
 		OMPragma("omp critical")
@@ -194,17 +193,17 @@ int accumulateT(const voxelImage& vf, std::function<T(T, T)> operatorFunc, T res
 template<class voxelFieldT>
 vars<dbls> vxlDist(const voxelFieldT& vf, int nsteps=32, double minV=3e38, double maxV=-3e38) 
 {
-	vars<dbls> distrib(2,dbls(nsteps,0.0));
+	vars<dbls> distrib(2,dbls(nsteps,0.));
 
 	if(minV> 1e38) minV=accumulate(vf,dblfunc(std::min), 1e38);
 	if(maxV<-1e38) maxV=accumulate(vf,dblfunc(std::max),-1e38);
 	double spanV=(maxV-minV);
-	double deltaV=spanV/nsteps*(1.0+1e-14);
+	double deltaV=spanV/nsteps*(1.+1e-14);
 	std::cout<<"  vxlDist_range: ["<<minV<<" "<<maxV<<"]";
 
 	for (int i=0; i<nsteps; ++i)	distrib[0][i] = minV+deltaV/2+i*deltaV;
 
-	for (auto vv : vf.data_ ) distrib[1][std::min(std::max(0, int((vv-minV)/deltaV+0.5)),nsteps)]+=1.0;
+	for (auto vv : vf.data_ ) distrib[1][std::min(std::max(0, int((vv-minV)/deltaV+0.5)),nsteps)]+=1.;
 	ensure(distrib[1].sum()>1e-32);
 	distrib[1]/=distrib[1].sum()*deltaV;
 
@@ -311,8 +310,7 @@ inline std::string getAmiraDataType(const std::string& fnam)  {
 	std::ifstream hdr(fnam);
 	ensure(hdr, "could not open "+fnam, -1);
 	std::string tmp;
-	while (true)
-	{
+	while (true)  {
 		hdr>>tmp;
 		std::stringstream ss;
 		if(hdr.peek()!='\n') hdr.get (*(ss.rdbuf()));
@@ -327,8 +325,7 @@ inline std::string getAmiraDataType(const std::string& fnam)  {
 
 inline void getAmiraHeaderSize(const std::string& fnam, int3& nnn, dbl3& dx_, dbl3& X0_, int& nSkipBytes, int& RLE)  {
 	std::ifstream hdr(fnam);
-	while (true)
-	{
+	while (true)  {
 		std::string tmpStr;    hdr>>tmpStr;
 
 		std::stringstream ss;
@@ -373,12 +370,10 @@ template<typename T>   bool voxelField<T>::readBin(std::string fnam, int nSkipBy
 
 	(std::cout<<", size:"<<size_t(nnn.x)<<'*'<<nnn.y<<'*'<<nnn.z<<"*"<<sizeof(T)).flush();
 
-	if(hasExt(fnam,3,".gz"))
-	{
+	if(hasExt(fnam,3,".gz"))  {
 
 	 #ifdef ZLIB
-		if(std::ifstream(fnam).good())
-		{
+		if(std::ifstream(fnam).good())  {
 			(std::cout<<  ", using libz").flush();
 			gzifstream  in(fnam.c_str());
 			in.read(reinterpret_cast<char*>(&((*this)(0,0,0))), (size_t(nnn.x)*nnn.y*nnn.z)*sizeof(T) );
@@ -398,15 +393,14 @@ template<typename T>   bool voxelField<T>::readBin(std::string fnam, int nSkipBy
 	if(!in)  {std::cout<<"\n\n  Error: can not open image file, "<<fnam<<std::endl<<std::endl;		return false;}
 	if(nSkipBytes) in.ignore(nSkipBytes);
 
-	if(RLEcompressed)
-	{
+	if(RLEcompressed)  {
 		std::cout<<", RLE decoding";
 		char count=0;
 		char val=0;
 		//ensure(sizeof(T)==1,"Only 8bit .am files are supported");
 		char* vp= reinterpret_cast<char*>(&*voxelField<T>::data_.begin());
-		while(vp<reinterpret_cast<char*>(&*voxelField<T>::data_.end()))
-		{	in.get(count); in.get(val);
+		while(vp<reinterpret_cast<char*>(&*voxelField<T>::data_.end()))  {
+			in.get(count); in.get(val);
 			if(count&char(0x80))
 			{	*vp=val;
 				count&=0x7f;
@@ -416,8 +410,7 @@ template<typename T>   bool voxelField<T>::readBin(std::string fnam, int nSkipBy
 			else  {  std::fill(vp,vp+count,val);  vp+=count;  }
 		}
 	}
-	else
-	{
+	else  {
 		(std::cout<<  ", reading raw data").flush();
 		in.read(reinterpret_cast<char*>(&((*this)(0,0,0))), (size_t(nnn.x)*nnn.y*nnn.z)*sizeof(T) );
 	}
@@ -432,15 +425,13 @@ template<typename T>   bool voxelField<T>::readBin(std::string fnam, int nSkipBy
 
 template<typename T>   
 bool voxelField<T>::readBin(std::string fnam, int iS,int iE, int jS,int jE, int kS,int kE, int nSkipBytes)  {
-	if(hasExt(fnam,4,".tif"))
-	{
+	if(hasExt(fnam,4,".tif"))  {
 		voxelImageT<T> vxls(fnam);
 		if (vxls.nx()!=iE-iS)	std::cout<<"Error in reading "<<fnam<<", unexpected size: Nx="<<vxls.nx()<<"  !="<<iE-iS<<std::endl;
 		setBlock(iS,jS,kS, vxls);
 		return true;
 	}
-	if(hasExt(fnam,3,".gz"))
-	{
+	if(hasExt(fnam,3,".gz"))  {
 		voxelField<T> vxls(int3(iE-iS, jE-jS, kE-kS));
 		vxls.readBin(fnam);
 		setBlock(iS,jS,kS, vxls);
@@ -467,8 +458,7 @@ bool voxelField<T>::readBin(std::string fnam, int iS,int iE, int jS,int jE, int 
 template<typename T>   void voxelField<T>::writeBin(std::string fnam) const  {
 	int3 nnn = size3();
 
-	if(hasExt(fnam,4,".tif"))
-	{
+	if(hasExt(fnam,4,".tif"))  {
 	 #ifdef TIFLIB
 		std::cout<<  "\n  writing tif file "<<fnam<<";  size: "<<nnn<<" "; std::cout.flush();
 		writeTif(*this, fnam);
@@ -480,8 +470,7 @@ template<typename T>   void voxelField<T>::writeBin(std::string fnam) const  {
 	}
 
 	#ifdef ZLIB
-	if(hasExt(fnam,3,".gz"))
-	{
+	if(hasExt(fnam,3,".gz"))  {
 		std::cout<<  "\n  writing compressed file "<<fnam<<";  size: "<<nnn; std::cout.flush();
 		gzofstream  of(fnam.c_str());
 		of << setcompression(5);//,Z_RLE TODO: benchmark  Z_DEFAULT_COMPRESSION   Z_RLE +gz
@@ -500,11 +489,10 @@ template<typename T>   void voxelField<T>::writeBin(std::string fnam) const  {
 
 	std::cout<<  "\n  writing binary file "<<fnam<<";  size: "<<nnn; std::cout.flush();
 	auto mod = std::ios::out | std::ios::binary;
-	if( hasExt(fnam,3,".am") ) // in case write Header called before
-	{
+	if( hasExt(fnam,3,".am")) 	{ // in case write Header called before
 		char cs[]="xxx";
 		std::ifstream is(fnam); if(is)	{ is.seekg (3, is.end);	is.get(cs,3); }		is.close();
-		if(cs[0]!='@' || cs[1]!='1' || cs[2]!='\n')	writeHeader(fnam,{0,0,0},nnn,1.0,0.0);
+		if(cs[0]!='@' || cs[1]!='1' || cs[2]!='\n')	writeHeader(fnam,{0,0,0},nnn,{1.,1.,1.},{0.,0.,0.});
 		mod = mod | std::ios::app;
 	}
 	//else if(!hasExt(fnam,4,".tif")) writeHeader(fnam,{0,0,0},nnn); this overwrites voxelImage one
@@ -524,8 +512,7 @@ template<typename T>
 void voxelField<T>::writeBin(std::string fnam, int iS,int iE, int jS,int jE, int kS,int kE ) const  {
 
 
-	if(hasExt(fnam,4,".tif"))
-	{
+	if(hasExt(fnam,4,".tif"))  {
 	 #ifdef TIFLIB
 		std::cout<<  "\n  writing tif file "<<fnam<<";  i: "<<iS<<" "<<iE<<",  j: "<<jS<<" "<<jE<<",  k: "<<kS<<" "<<kE; std::cout.flush();
 		writeTif(*this, fnam, iS, iE,  jS, jE,  kS, kE);
@@ -537,8 +524,7 @@ void voxelField<T>::writeBin(std::string fnam, int iS,int iE, int jS,int jE, int
 	}
 
 	#ifdef ZLIB
-	if(hasExt(fnam,3,".gz"))
-	{
+	if(hasExt(fnam,3,".gz"))  {
 		std::cout<<  "\n  writing compressed file "<<fnam<<";  i: "<<iS<<" "<<iE<<",  j: "<<jS<<" "<<jE<<",  k: "<<kS<<" "<<kE; std::cout.flush();
 		gzofstream  of(fnam.c_str());
 		of << setcompression(5);//,Z_RLE
@@ -558,24 +544,19 @@ void voxelField<T>::writeBin(std::string fnam, int iS,int iE, int jS,int jE, int
 
 	std::cout<<  "\n  writing binary file "<<fnam<<";  i: "<<iS<<" "<<iE<<",  j: "<<jS<<" "<<jE<<",  k: "<<kS<<" "<<kE; std::cout.flush();
 	auto mod = std::ios::out | std::ios::binary;
-	if(hasExt(fnam,3,".am"))
-	{
+	if(hasExt(fnam,3,".am"))  {
 		char cs[]="xxx";
 		std::ifstream is(fnam);		if(is)	{ is.seekg (3, is.end);	is.get(cs,3); }		is.close();
-		if(cs[0]!='@' || cs[1]!='1' || cs[2]!='\n')	writeHeader(fnam,{iS,jS,kS},{iE,jE,kE}, 1.0, 0.0);
+		if(cs[0]!='@' || cs[1]!='1' || cs[2]!='\n')	writeHeader(fnam,{iS,jS,kS},{iE,jE,kE}, {1.,1.,1.}, {0.,0.,0.});
 		mod = mod | std::ios::app;
 	}
-	//else if(!hasExt(fnam,4,".tif"))		writeHeader(fnam,{iS,jS,kS},{iE,jE,kE}, 1.0, 0.0); this overwrites voxelImage one
+	//else if(!hasExt(fnam,4,".tif"))		writeHeader(fnam,{iS,jS,kS},{iE,jE,kE}, 1., 0.); this overwrites voxelImage one
 	std::ofstream of(fnam, mod);
 	assert(of);
 	if(data_.size())
 	 for (int k = kS; k < kE; k++)
 		for (int j = jS; j < jE; ++j)
-		{
 			of.write(reinterpret_cast<const char*>(&((*this)(iS,j,k))), (iE-iS) * sizeof(T));
-		}
-	of.flush();
-	of.close();
 	(std::cout<<"  ").flush();
 
 }
@@ -644,16 +625,14 @@ template<typename T> void voxelImageT<T>::writeHeader(std::string ofnam) const  
 template<typename T>
 void voxelField<T>::writeHeader(std::string fnam, int3 iS, int3 iE, dbl3 dx, dbl3 X0) const  {
 
-	if(dx.x<0)
-	{
+	if(dx.x<0)  {
 		std::cerr<<"Error negative dx, writing abs value instead" ;
 		dx.x=std::abs(dx.x);  dx.y=std::abs(dx.y);  dx.z=std::abs(dx.z);
 	}
 	dbl3 xmin(X0+iS*dx);
 	dbl3 xmax(X0+iE*dx);
 	int3	nnn(iE-iS);
-	if (hasExt(fnam,3,".am"))
-	{
+	if (hasExt(fnam,3,".am"))  {
 		std::string typ="uchar";
 		if (typeid(T)==typeid(char)) typ="char";
 		else if (typeid(T)==typeid(short)) typ="short";
@@ -678,23 +657,22 @@ void voxelField<T>::writeHeader(std::string fnam, int3 iS, int3 iE, dbl3 dx, dbl
 		    <<"Lattice { "<<typ<<" Data } @1\n\n# Data section follows\n@1\n";
 
 	} else
-	if (hasExt(fnam,7,"_header"))
-	{
+	if (hasExt(fnam,7,"_header"))  {
 		std::ofstream of(fnam); assert(of);
 		of
 		 <<"Nxyz\n"
-		 <<"dxX0\n"
+		   "dxX0\n"
 		 <<nnn<<'\n'<<dx<<'\n'<<xmin<<std::endl
 		 <<"\n\nComments:\n"
-		 <<" first 9 entries above are:"
-		 <<"	Nx Ny Nz\n	dx dy dz\n	Xo Yo Zo\n"
-		 <<" Nx, Ny and Nz  count for the number of columns, rows and layers respectively as written in the file\n"
-		 <<" Optional keywords (move above Comments to activate):\n"
-		 <<"	crop		0  299   0  299   0  299\n"
-		 <<"	pore 		0 0\n"
-		 <<"	resample	1\n"
-		 <<"	direction	z\n"
-		 <<"	..... "
+		   " first 9 entries above are:"
+		   "	Nx Ny Nz\n	dx dy dz\n	Xo Yo Zo\n"
+		   " Nx, Ny and Nz  count for the number of columns, rows and layers respectively as written in the file\n"
+		   " Optional keywords (move above Comments to activate):\n"
+		   "	crop		0  299   0  299   0  299\n"
+		   "	pore 		0 0\n"
+		   "	resample	1\n"
+		   "	direction	z\n"
+		   "	..... "
 		 <<std::endl;
 	}
 	else
@@ -903,8 +881,7 @@ template<typename T> void voxelImageT<T>::growBox(int nLayers) {
 	int3 nnn = (*this).size3();
 	(*this).cropD(int3(0,0,0),nnn, nLayers,1,false);
 
-	for (int i=0; i<nLayers; ++i)
-	{
+	for (int i=0; i<nLayers; ++i)  {
 		(*this).replaceyLayer(nnn.y+nLayers+i, nnn.y+nLayers-1);
 		(*this).replaceyLayer(i, nLayers);
 		(*this).replacexLayer(nnn.x+nLayers+i, nnn.x+nLayers-1);
@@ -919,8 +896,7 @@ template<typename T>
 void voxelImageT<T>::zeroGrad(int nLayers)  {
 
 	int3 nnn = (*this).size3();
-	for (int i=0; i<nLayers; ++i)
-	{
+	for (int i=0; i<nLayers; ++i)  {
 		(*this).replaceyLayer(nnn.y-nLayers+i, nnn.y-nLayers-1);
 		(*this).replaceyLayer(i, nLayers);
 		(*this).replacexLayer(nnn.x-nLayers+i, nnn.x-nLayers-1);
@@ -943,8 +919,7 @@ voxelImageT<T> growBounds(const voxelImageT<T>& vxls, int nLayers)  {
 			std::copy(&vxls(0,j+0,k+0), &vxls(0,j+0,k+0)+nnn.x, &tmp(nLayers,j+nLayers,k+nLayers));
 
 
-	for (int i=0; i<nLayers; ++i)
-	{
+	for (int i=0; i<nLayers; ++i)  {
 		tmp.replaceyLayer(nnn.y+nLayers+i, nnn.y+nLayers-1);
 		tmp.replaceyLayer(i, nLayers);
 		tmp.replacexLayer(nnn.x+nLayers+i, nnn.x+nLayers-1);
@@ -960,10 +935,9 @@ template<typename T>  void voxelImageT<T>::growLabel(T vl)  {
 
 	const voxelImageT<T> voxls=growBounds(*this,1);
 
-	forAllkji_1_(voxls)
-	{
-		if (voxls(i,j,k)==vl)
-		{	const T* optr=&voxls(i,j,k);
+	forAllkji_1_(voxls)  {
+		if (voxls(i,j,k)==vl)  {
+			const T* optr=&voxls(i,j,k);
 			      T* vptr=&(*this)(i-1,j-1,k-1);
 			if(voxls.v_i(-1,optr)!=vl) (*this).v_i(-1,vptr)=vl;
 			if(voxls.v_i( 1,optr)!=vl) (*this).v_i( 1,vptr)=vl;
@@ -980,9 +954,8 @@ template<typename T>
 voxelImageT<T>  resampleMean(const voxelImageT<T>& img, double nReSampleNotSafe) {//  TODO to be tested
 
 	voxelImageT<T> tmp;
-	if (nReSampleNotSafe < .999)
-	{
-		int nReS=1.0/nReSampleNotSafe+0.5;
+	if (nReSampleNotSafe < .999)  {
+		int nReS=1./nReSampleNotSafe+0.5;
 		tmp.reset(nReS*img.size3());
 		forAllkji_(tmp)
 			tmp(i,j,k)=img((0.5+i)/nReS,(0.5+j)/nReS,(0.5+k)/nReS);
@@ -991,12 +964,10 @@ voxelImageT<T>  resampleMean(const voxelImageT<T>& img, double nReSampleNotSafe)
 		tmp.X0Ch()=img.X0()/nReS; //fixed
 		return tmp;
 	}
-	else if (nReSampleNotSafe > 1.001)
-	{
+	else if (nReSampleNotSafe > 1.001)  {
 		int nReS=nReSampleNotSafe+0.5; /// Warning unsigned doesn't work  wTf
 		tmp.reset(img.size3()/nReS);
-		forAllkji_(tmp)
-		{
+		forAllkji_(tmp)  {
 			int neiSum=0;
 			forAllNei(0,nReS-1) 	neiSum+=_nei(img,i*nReS,j*nReS,k*nReS);
 			tmp(i,j,k)=(0.5+double(neiSum)/(nReS*nReS*nReS));
@@ -1019,8 +990,7 @@ voxelImageT<T>  resliceZ(const voxelImageT<T>& img, double nReSampleNotSafe)//  
 	if (nReSampleNotSafe<1e-64) { nReSampleNotSafe=img.dx().x/img.dx().z; (std::cout << " nResample: "<<nReSampleNotSafe<<", ").flush(); }
 	voxelImageT<T> tmp;
 	int3 nnn=img.size3();
-	if (nReSampleNotSafe < .999)
-	{
+	if (nReSampleNotSafe < .999)  {
 		//int nReS=1./nReSampleNotSafe+0.5;
 		double nReS=nReSampleNotSafe;
 		tmp.reset({nnn.x, nnn.y, int(nnn.z/nReS)});
@@ -1031,14 +1001,12 @@ voxelImageT<T>  resliceZ(const voxelImageT<T>& img, double nReSampleNotSafe)//  
 		tmp.X0Ch()=img.X0(); tmp.X0Ch().z*=nReS; //fixed
 		return tmp;
 	}
-	else if (nReSampleNotSafe > 1.001)
-	{
+	else if (nReSampleNotSafe > 1.001)  {
 		std::cout<<"resliceZ >1 not tested" <<std::endl;
 		//exit(-1);
 		int nReS=nReSampleNotSafe+0.5; /// Warning unsigned doesn't work  wTf
 		tmp.reset({nnn.x, nnn.y, nnn.z/nReS});
-		forAllkji_(tmp)
-		{
+		forAllkji_(tmp)  {
 			std::map<T,short> neis;///.  ID-counter
 			Tint sumv=0;
 			forint(kk,0,nReS) sumv+=img(i,j,k*nReS+kk);
@@ -1057,9 +1025,8 @@ template<typename T>
 voxelImageT<T>  resampleMode(const voxelImageT<T>& img, double nReSampleNotSafe)//  TODO to be tested
 {
 	voxelImageT<T> tmp;
-	if (nReSampleNotSafe < .999)
-	{
-		int nReS=1.0/nReSampleNotSafe+0.5;
+	if (nReSampleNotSafe < .999)  {
+		int nReS=1./nReSampleNotSafe+0.5;
 		tmp.reset(nReS*img.size3());
 		forAllkji_(tmp)
 			tmp(i,j,k)=img((0.5+i)/nReS,(0.5+j)/nReS,(0.5+k)/nReS);
@@ -1068,12 +1035,10 @@ voxelImageT<T>  resampleMode(const voxelImageT<T>& img, double nReSampleNotSafe)
 		tmp.X0Ch()=img.X0()/nReS; //fixed
 		return tmp;
 	}
-	else if (nReSampleNotSafe > 1.001)
-	{
+	else if (nReSampleNotSafe > 1.001)  {
 		int nReS=nReSampleNotSafe+0.5; /// Warning unsigned doesn't work  wTf
 		tmp.reset(img.size3()/nReS);
-		forAllkji_(tmp)
-		{
+		forAllkji_(tmp)  {
 			std::map<T,short> neis;///.  ID-counter
 			const T pID = tmp(i,j,k);
 			forAllNei(0,nReS-1)
@@ -1097,21 +1062,18 @@ template<typename T>
 voxelImageT<T> resampleMax(const voxelImageT<T>& img, double nReSampleNotSafe)//  TODO to be tested
 {
 	voxelImageT<T> tmp;
-	if (nReSampleNotSafe < .999)
-	{
-		int nReS=1.0/nReSampleNotSafe+0.5;
+	if (nReSampleNotSafe < .999)  {
+		int nReS=1./nReSampleNotSafe+0.5;
 		tmp.reset(nReS*img.size3());
 		forAllkji_(img)
 			tmp(i,j,k)=img((0.5+i)/nReS,(0.5+j)/nReS,(0.5+k)/nReS);
 
 		tmp.dxCh()/=nReS; //fixed
 	}
-	else if (nReSampleNotSafe > 1.001)
-	{
+	else if (nReSampleNotSafe > 1.001)  {
 		int nReS=nReSampleNotSafe+0.5; /// Warning unsigned doesn't work  wTf
 		tmp.reset(img.size3()/nReS);
-		forAllkji_(img)
-		{
+		forAllkji_(img)  {
 			T neiSum=std::numeric_limits<T>::min();
 			forAllNei(0,nReS-1)
 			{
@@ -1132,14 +1094,13 @@ void voxelImageT<T>::rotate(char direction)  {// wrong X0
 
 	(std::cout<<" x<->"<<direction<<" ").flush();
 	voxelField<T>::getSize(n1,n2,n3);
-	if (direction=='z' || direction=='Z')
-	{
+	if (direction=='z' || direction=='Z')  {
 		{
 			double X0Tmp=X0_.x;  X0_.x=X0_.z;  X0_.z=X0Tmp;
 			double dxTmp=dx_.x;   dx_.x=dx_.z;  dx_.z=dxTmp;
 		}
 		voxelImageT<T> tmp=*this;
-		this->reset(n3,n2,n1,0);
+		this->reset(n3,n2,n1,T(0));
 		size_t nij =this->nij_;
 		OMPFor()
 		for (int k=0; k<n3; ++k)
@@ -1155,31 +1116,27 @@ void voxelImageT<T>::rotate(char direction)  {// wrong X0
 				if(n1%2) (*this)(k,j,n1-1)=tmp(n1-1,j,k);
 			}
 	}
-	else if (direction=='y' || direction=='Y')
-	{
+	else if (direction=='y' || direction=='Y')  {
 		{
 			double X0Tmp=X0_.x;  X0_.x=X0_.y;  X0_.y=X0Tmp;
 			double dxTmp=dx_.x;  dx_.x=dx_.y;  dx_.y=dxTmp;
 		}
 
 		voxelImageT<T> tmp=*this;
-		this->reset(n2,n1,n3,0);
+		this->reset(n2,n1,n3,T(0));
 		for (int k=0; k<n3; ++k)
-			for (int j=0; j<n2; ++j)
-			{	//for (int i=1; i<n1; ++i) (*this)(j,i,k)=tmp(i,j,k);
-				for (int i=1; i<n1 ; i+=2)
-				{
+			for (int j=0; j<n2; ++j) {
+				//for (int i=1; i<n1; ++i) (*this)(j,i,k)=tmp(i,j,k);
+				for (int i=1; i<n1 ; i+=2) {
 					const T& vv0 = tmp(i,j,k);
 					const T  vv1 = *(&vv0-1);
 					*(&((*this)(j,i,k)=vv0)-(*this).nnn_.x)=vv1;
 				}
 				if(n1%2) (*this)(j,n1-1,k)=tmp(n1-1,j,k);
-
 			}
 				
 	}
-	else if (direction=='-')
-	{
+	else if (direction=='-')  {
 		std::cout<<" -> flipping image,  x origin will be invalid "<<std::endl;
 		voxelImageT<T> tmp=*this;
 		for (int k=0; k<n3; ++k)
@@ -1188,9 +1145,7 @@ void voxelImageT<T>::rotate(char direction)  {// wrong X0
 					(*this)(n1-1-i, j, k)=tmp(i,j,k);
 	}
 	else
-	{
 		std::cout<<"\n\nSwapping "<<direction<<" and x directions(!?!), skipping  \n"<<std::endl;
-	}
 
 }
 
@@ -1206,15 +1161,12 @@ void voxelImageT<T>::PointMedian032(int nAdj0,int nAdj1, T lbl0, T lbl1)  {
 	//voxls.growBox(1);
 
 
-	forAllkji_1_sum_(voxls, reduction(+:nChanges))
-	{
+	forAllkji_1_sum_(voxls, reduction(+:nChanges))  {
 		T& vr = (*this)(i,j,k); //(*this)(i-1,j-1,k-1);
 		const T vv = (*this)(i,j,k); //(*this)(i-1,j-1,k-1);
-		if(lbl0==vv || vv ==lbl1)
-		{
+		if(lbl0==vv || vv ==lbl1)  {
 			int neiSum0=0, neiSum1=0;
-			forAllNei(-1,1)
-			{
+			forAllNei(-1,1) {
 				T vj=_nei(voxls,i,j,k);
 				neiSum0 += vj==lbl0;
 				neiSum1 += vj==lbl1;
@@ -1251,11 +1203,9 @@ void FaceMedGrowToFrom(voxelImageT<T>& vImg, T lblTo, T lblFrm, int ndif=0)  {
 	voxelImageT<T> voxls=vImg;
 	//voxls.growBox(1);
 
-	forAllkji_1_sum_(voxls, reduction(+:nChanges))
-	{
+	forAllkji_1_sum_(voxls, reduction(+:nChanges))  {
 		const T vv = vImg(i,j,k);////(*this)(i-1,j-1,k-1);
-		if(vv ==lblFrm)
-		{
+		if(vv ==lblFrm)  {
 			int neiSumTo=0, neiSum1=0;
 
 			//short nSames(0);
@@ -1287,17 +1237,14 @@ size_t  voxelImageT<T>::FaceMedian06(int nAdj0,int nAdj1)  {
 	voxelImageT<T> voxls=*this;
 	voxls.growBox(1);
 
-	forAllkji_1_sum_(voxls, reduction(+:nChanges))
-	{
+	forAllkji_1_sum_(voxls, reduction(+:nChanges))  {
 		int neiSum = sum6Nei(voxls, &voxls(i,j,k));
 
-		if (neiSum <= nAdj0 && (*this)(i-1,j-1,k-1))
-		{
+		if (neiSum <= nAdj0 && (*this)(i-1,j-1,k-1))  {
 			(*this)(i-1,j-1,k-1)=0;
 			++nChanges;
 		}
-		else if (neiSum >= nAdj1 && !((*this)(i-1,j-1,k-1)))
-		{
+		else if (neiSum >= nAdj1 && !((*this)(i-1,j-1,k-1)))  {
 			(*this)(i-1,j-1,k-1)=1;
 			++nChanges;
 		}
@@ -1314,8 +1261,7 @@ voxelImageT<T> medianx(const voxelImageT<T>& vImage)  {
 	//unsigned long nChanges(0);
 	(std::cout<<"  median ").flush();
 	voxelImageT<T> voxls=vImage;
-	forAllkji_1_(vImage)
-	{  const T* vp=&vImage(i,j,k);
+	forAllkji_1_(vImage)  {  const T* vp=&vImage(i,j,k);
 		std::array<T,3> vvs={{ *vp,
 								vImage.v_i(-1,vp), vImage.v_i( 1,vp)
 								}};
@@ -1341,11 +1287,9 @@ void voxelImageT<T>::shrinkPore()  {
 
 
 	OMPFor() 		
-	for (int k=1; k<voxls.nz()-1; ++k)
-	{
-		for (int j=1; j<voxls.ny()-1; ++j)
-		{
-			//for (int i=0; i<voxls.nx()-1; ++i)
+	for (int k=1; k<voxls.nz()-1; ++k)  {
+		for (int j=1; j<voxls.ny()-1; ++j)  {
+			//for (int i=0; i<voxls.nx()-1; ++i)//
 			{	int i=0;
 				if (voxls(i,j,k)==0 && ( voxls(i,j+1,k) || voxls(i,j-1,k) || voxls(i,j,k+1) || voxls(i,j,k-1) ))
 					(*this)(i,j,k)=1;
@@ -1360,9 +1304,7 @@ void voxelImageT<T>::shrinkPore()  {
 
 	OMPFor() 		
 	for (int k=1; k<voxls.nz()-1; ++k)
-	{
 		//for (int j=0; j<voxls.ny()-1; ++j)
-		{
 			for (int i=1; i<voxls.nx()-1; ++i)
 			{
 				int j=0;
@@ -1373,14 +1315,10 @@ void voxelImageT<T>::shrinkPore()  {
 				if (voxls(i,j,k)==0 && ( voxls(i-1,j,k) || voxls(i+1,j,k) || voxls(i,j,k-1) || voxls(i,j,k+1) ))
 					(*this)(i,j,k)=1;
 		   }
-		}
-	}
 
 	//for (int k=0; k<voxls.nz()-1; ++k)
-	{
 		OMPFor() 		
 		for (int j=1; j<voxls.ny()-1; ++j)
-		{
 			for (int i=1; i<voxls.nx()-1; ++i)
 			{
 				int k=0;
@@ -1391,9 +1329,6 @@ void voxelImageT<T>::shrinkPore()  {
 				if (voxls(i,j,k)==0 && ( voxls(i-1,j,k) || voxls(i+1,j,k) || voxls(i,j-1,k) || voxls(i,j+1,k) ))
 					(*this)(i,j,k)=1;
 		   }
-		}
-	}
-
 
 }
 
@@ -1403,8 +1338,7 @@ void voxelImageT<T>::mode(short minDif, bool verbose)  {
 	short nSameSkip=3-(minDif/2);
 	long long nChanges = 0;
 	voxelImageT<T> voxls=*this;
-	forAllkji_1_sum_(voxls, reduction(+:nChanges))
-	{
+	forAllkji_1_sum_(voxls, reduction(+:nChanges))  {
 		T* vp = &((*this)(i,j,k));
 		const T pID = *vp;
 
@@ -1425,8 +1359,7 @@ void voxelImageT<T>::mode(short minDif, bool verbose)  {
 		vj = voxls.v_k(1,vp);
 		if (vj != pID  ) 	 ++(neis.insert(std::pair<T,short>(vj,0)).first->second); else ++nSames;
 
-		if(nSames<nSameSkip)
-		{
+		if(nSames<nSameSkip)  {
 			auto neitr = std::max_element(neis.begin(), neis.end(), mapComparer<T>());
 			if (neitr->second >= nSames+minDif)
 			{
@@ -1442,8 +1375,7 @@ template<typename T>
 long long modeNSames(voxelImageT<T>& vImage, const short nSameNei, bool verbose=false)  {
 	long long nChanges = 0;
 	voxelImageT<T> voxls=vImage;
-	forAllkji_1_sum_(voxls, reduction(+:nChanges))
-	{
+	forAllkji_1_sum_(voxls, reduction(+:nChanges))  {
 		T* vp = &(vImage(i,j,k));
 		const T pID = *vp;
 
@@ -1464,8 +1396,7 @@ long long modeNSames(voxelImageT<T>& vImage, const short nSameNei, bool verbose=
 		vj = voxls.v_k(1,vp);
 		if (vj != pID  ) 	 ++(neis.insert(std::pair<T,short>(vj,0)).first->second); else ++nSames;
 
-		if(nSames<=nSameNei)
-		{
+		if(nSames<=nSameNei)  {
 			 auto neitr = std::max_element(neis.begin(), neis.end(), mapComparer<T>());
 			 if (neitr->second > nSames)
 			 {
@@ -1490,8 +1421,7 @@ void voxelImageT<T>::growPore()  {// optimized function, should be further optim
 	voxelImageT<T> voxls=*this;
 
 
-	forAllkji_1_(voxls)
-	{
+	forAllkji_1_(voxls)  {
 
 		if (voxls(i,j,k) && ( !voxls(i-1,j,k) || !voxls(i+1,j,k) ||
 							  !voxls(i,j-1,k) || !voxls(i,j,k+1) || !voxls(i,j+1,k) || !voxls(i,j,k-1) ))
@@ -1501,10 +1431,8 @@ void voxelImageT<T>::growPore()  {// optimized function, should be further optim
 
 	OMPFor() 		
 	for (int k=1; k<voxls.nz()-1; ++k)
-	{
 		for (int j=1; j<voxls.ny()-1; ++j)
-		{
-			// for (int i=0; i<voxls.nx()-1; ++i)
+			// for (int i=0; i<voxls.nx()-1; ++i)//
 			{	int i=0;
 				if (voxls(i,j,k) && ( !voxls(i+1,j,k) || !voxls(i,j-1,k)  || !voxls(i,j,k+1) || !voxls(i,j+1,k) || !voxls(i,j,k-1) ))
 					(*this)(i,j,k)=0;
@@ -1512,16 +1440,12 @@ void voxelImageT<T>::growPore()  {// optimized function, should be further optim
 				i=voxls.nx()-1;
 				if (voxls(i,j,k) && ( !voxls(i-1,j,k) || !voxls(i,j-1,k)  || !voxls(i,j,k+1) || !voxls(i,j+1,k) || !voxls(i,j,k-1) ))
 					(*this)(i,j,k)=0;
-		   }
-		}
-	}
+			}
 
 
 	OMPFor() 		
 	for (int k=1; k<voxls.nz()-1; ++k)
-	{
 		// for (int j=0; j<voxls.ny()-1; ++j)
-		{
 			for (int i=1; i<voxls.nx()-1; ++i)
 			{	int j=0;
 
@@ -1532,14 +1456,10 @@ void voxelImageT<T>::growPore()  {// optimized function, should be further optim
 				if (voxls(i,j,k) && ( !voxls(i-1,j,k) || !voxls(i+1,j,k) || !voxls(i,j-1,k)  || !voxls(i,j,k+1) || !voxls(i,j,k-1) ))
 					(*this)(i,j,k)=0;
 		   }
-		}
-	}
 
 	// for (int k=0; k<voxls.nz()-1; ++k)
-	{
 		OMPFor() 		
 		for (int j=1; j<voxls.ny()-1; ++j)
-		{
 			for (int i=1; i<voxls.nx()-1; ++i)
 			{	int k=0;
 
@@ -1550,8 +1470,6 @@ void voxelImageT<T>::growPore()  {// optimized function, should be further optim
 				if (voxls(i,j,k) && ( !voxls(i-1,j,k) || !voxls(i+1,j,k) || !voxls(i,j-1,k) || !voxls(i,j+1,k) || !voxls(i,j,k-1) ))
 					(*this)(i,j,k)=0;
 		   }
-		}
-	}
 
 }
 
@@ -1592,8 +1510,7 @@ template<typename T>  void voxelImageT<T>::minEq(const voxelImageT& data2)  {
 
 template<typename T>
 void voxelImageT<T>::threshold101(T theresholdMin,T  theresholdMax)  {
-	forAllvp_((*this))
-	{	T vv = *vp;
+	forAllvp_((*this))  {	T vv = *vp;
 		*vp=	( vv < theresholdMin )  || ( vv > theresholdMax  );
 	}
 
@@ -1609,10 +1526,7 @@ void rescale(voxelImageT<T>& img, T theresholdMin,T  theresholdMax)  {
 	forAllcp(img) {vmin = std::min(*cp,vmin); vmax = std::max(*cp,vmin); }
 	std::cout<<"   vmin:"<<int(vmin)<<"   vmax:"<<int(vmax)<<"  ";
 	vmax = std::max(T(vmin+1),vmax);
-	forAllvp_(img)
-	{	*vp = theresholdMin + (deltaT*(*vp - vmin))/(vmax-vmin);
-	}
-
+	forAllvp_(img)  *vp = theresholdMin + (deltaT*(*vp - vmin))/(vmax-vmin);
 }
 
 
@@ -1622,22 +1536,21 @@ template<typename T>
 void voxelImageT<T>::fillHoles(int maxHoleRadius)  { // TODO optimize
 	std::cout<<"  filling small isolated parts: "<<std::flush;
 	voxelImageT<T> dataTmp=*this;
-		std::cout<<"-"<<std::flush;
+	std::cout<<"-"<<std::flush;
 
 	dataTmp.shrinkPore(); std::cout<<".";std::cout.flush();
-	for (int i=0; i<6; ++i)
-		{ dataTmp.growPore();  dataTmp.OR(*this); std::cout<<".";std::cout.flush();}
+	for (int i=0; i<6; ++i)  {
+		dataTmp.growPore();  dataTmp.OR(*this); std::cout<<".";std::cout.flush(); }
 	*this=dataTmp;
 	std::cout<<"-"<<std::flush;
 
 	dataTmp.growPore();
-	for (int i=0; i<4; ++i)
-		{ dataTmp.shrinkPore(); dataTmp.AND(*this); std::cout<<".";std::cout.flush();}
+	for (int i=0; i<4; ++i)  {
+		dataTmp.shrinkPore(); dataTmp.AND(*this); std::cout<<".";std::cout.flush();}
 	*this=dataTmp;
 	std::cout<<"-"<<std::flush;
 
-	if ( maxHoleRadius > 1)
-	{
+	if ( maxHoleRadius > 1)  {
 		for (int i=0; i<maxHoleRadius; ++i)
 			{ dataTmp.shrinkPore(); std::cout<<".";std::cout.flush();}
 		for (int i=0; i<maxHoleRadius*4; ++i)
@@ -1659,11 +1572,9 @@ void voxelImageT<T>::fillHoles(int maxHoleRadius)  { // TODO optimize
 template<typename T>
 void voxelImageT<T>::writeAConnectedPoreVoxel(std::string fnam) const  {
 	std::cout<<" finding a connected pore voxel:";
-	for (int nShrink=4; nShrink>=0  ; nShrink--)
-	{
+	for (int nShrink=4; nShrink>=0  ; nShrink--)  {
 		voxelImageT<T> dataTmp=*this;
-		for (int iShrink=1; iShrink<=nShrink ; iShrink++)
-		{
+		for (int iShrink=1; iShrink<=nShrink ; iShrink++)  {
 			dataTmp.shrinkPore();
 		}
 
@@ -1701,11 +1612,7 @@ template<typename T>
 void replaceRange(voxelImageT<T>& vImage, T minvi, T  maxvi, T midvi)  {
 	(std::cout<<"  "<<Tint(minvi)<<":"<<Tint(maxvi)<<"->"<<Tint(midvi)<<"  ").flush();
 	const T minv=minvi,   maxv=maxvi,  midv=midvi;
-	forAllvp_(vImage)
-	{	T vv = *vp;
-		if (minv<=vv && vv<=maxv)
-			*vp=midv;
-	}
+	forAllvp_(vImage)  if (minv<=*vp && *vp<=maxv)  *vp=midv;
 }
 
 
@@ -1734,7 +1641,7 @@ void printInfo(const voxelImageT<T>& vImage)  {
 	}
 	else
 	{
-		double minv=1e64, maxv=-1e64, avgv=0.0;
+		double minv=1e64, maxv=-1e64, avgv=0.;
 		OMPragma("omp parallel for reduction(min:minv) reduction(max:maxv) reduction(+:avgv)")
 		forAllcp(vImage)  { double val = toScalar(*cp); minv=std::min(minv,val); maxv=std::max(maxv,val); avgv+=val;
 			
@@ -1769,8 +1676,7 @@ voxelImageT<T> median(const voxelImageT<T>& vImage)  {
 	//unsigned long nChanges(0);
 	(std::cout<<"  median ").flush();
 	voxelImageT<T> voxls=vImage;
-	forAllkji_1_(vImage)
-	{  const T* vp=&vImage(i,j,k);
+	forAllkji_1_(vImage)  {  const T* vp=&vImage(i,j,k);
 		std::array<T,7> vvs={{ *vp,
 								vImage.v_i(-1,vp), vImage.v_i( 1,vp),
 								vImage.v_j(-1,vp), vImage.v_j( 1,vp),
@@ -1790,14 +1696,12 @@ voxelImageT<T> median(const voxelImageT<T>& vImage)  {
 template<typename T>
 void circleOut(voxelImageT<T>& vImage, int X0,int Y0,int R, char dir='z', T outVal=maxT(T))  {
 	int rlim = R*R;
-	if (dir=='z')
-	{
+	if (dir=='z')  {
 	 forAllkji_(vImage)
 		  if((i-X0)*(i-X0)+(j-Y0)*(j-Y0)>rlim)
 		    vImage(i,j,k)=outVal;
 	}
-	else if (dir=='x')
-	{
+	else if (dir=='x')  {
 	 for (int k=0; k<vImage.nz(); k++)
 	  for (int j=0; j<vImage.ny(); ++j)
 		if((j-X0)*(j-X0)+(k-Y0)*(k-Y0)>rlim)
@@ -1817,10 +1721,8 @@ void maskWriteFraction(voxelImageT<T>& vImage, std::string maskname, std::string
 	std::vector<int> nMasked(maxvv+3,0);
 	std::vector<int> nNotmsk(maxvv+3,0);
 	
-	forAllkji_(vImage)
-	{	T vv=vImage(i,j,k);
-		if(minIelm<=vv && vv<=maxIelm)
-		{
+	forAllkji_(vImage)  {	T vv=vImage(i,j,k);
+		if(minIelm<=vv && vv<=maxIelm)  {
 			if(mask(i,j,k)==maskvv)		++nMasked[vv];
 			else                       ++nNotmsk[vv];
 		}
@@ -1829,8 +1731,7 @@ void maskWriteFraction(voxelImageT<T>& vImage, std::string maskname, std::string
 	mask.printInfo();
 	//mask.write("dumpMask.mhd");
 	std::ofstream of(fnam); ensure(of);
-	if(of)
-	{
+	if(of)  {
 		std::cout<<"  Writting "<<fnam<<std::endl;
 		for(T i=minIelm; i<=maxvv; ++i) of<<double(nMasked[i])/(nMasked[i]+nNotmsk[i]+1e-38)<<std::endl;
 	}
@@ -1854,11 +1755,9 @@ void mapToFrom(voxelImageT<T>& vImage, const voxelImageT<T>& vimg2, T vmin, T vm
 	OMPFor(reduction(+:count))
 	for (int k=N1.z; k<N2.z; ++k)
 	for (int j=N1.y; j<N2.y; ++j)
-	for (int i=N1.x; i<N2.x; ++i)
-	{
+	for (int i=N1.x; i<N2.x; ++i)  {
 		T&  vv = vImage(i, j, k);
-		if(vmin<=vv && vv<=vmax)
-		{
+		if(vmin<=vv && vv<=vmax)  {
 			vv = vimg2(i+Dn.x,j+Dn.y,k+Dn.z);  
 			++count;
 		}
@@ -1884,8 +1783,7 @@ void mapToFrom(voxelImageT<T>& vImage, const voxelImageT<T>& vimg2)  { // no int
 	OMPFor()
 	for (int k=N1.z; k<N2.z; ++k)
 	for (int j=N1.y; j<N2.y; ++j)
-	for (int i=N1.x; i<N2.x; ++i)
-	{
+	for (int i=N1.x; i<N2.x; ++i)  {
 			vImage(i, j, k) = vimg2(i+Dn.x,j+Dn.y,k+Dn.z);  
 			++count;
 	}
@@ -1940,8 +1838,7 @@ template<typename T>
   typename std::enable_if<std::is_integral<T>::value,bool>::type 
   operat( voxelImageT<T>& vImg, char opr, std::string img2Nam, std::stringstream& ins)  {
 
-	if(img2Nam.empty())
-	{
+	if(img2Nam.empty())  {
 	 std::cout<<"  image ="<<opr<<"image ";
 	 switch (opr) {
 		case '!':
@@ -1999,15 +1896,15 @@ template<typename T> typename std::enable_if<!std::is_integral<T>::value,int>::t
   operat( voxelImageT<T>& vImg, char opr, std::string img2Nam, std::stringstream & ins)  {
 
 	double shift(0.);  ins>>shift;
-	if(img2Nam.empty())
-	{
+	if(img2Nam.empty())  {
 	 std::cout<<"  image ="<<opr<<"image ";
 	 switch (opr) {
 		case '-':
 			forAllvp_(vImg) { *vp *= -1; }  break;
 		default:   std::cout<<"  Image  "<<opr<<"= !!!not supported!!! ";
 	 }
-	}else{
+	}
+	else  {
 	 if (!isalpha(img2Nam[0])&&!isalpha(img2Nam.back()))
 	 {
 		Tint   ii; ii=strTo<Tint>(img2Nam);

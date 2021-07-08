@@ -35,7 +35,7 @@ boundaryField
 		gradientFactor0 		0;
 		gradientFactor1 		0;
 		pdUniformization		0.9;
-		pcUniformization		1.0;
+		pcUniformization		1.;
 		value           		uniform (0 0 0);
 	}
 	Right

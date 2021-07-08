@@ -223,7 +223,7 @@ castellatedMeshControls
         //sphere.stl
         //{
         //    mode inside;
-        //    levels ((1.0 4));
+        //    levels ((1. 4));
         //    // Optional override of uniform refinement level such
         //    //  that in small gaps we're getting more cells.
         //    //  The specification is
@@ -358,7 +358,7 @@ snapControls
 
     // Maximum relative distance for points to be attracted by surface.
     // True distance is this factor times local maximum edge length.
-    tolerance 3.0;
+    tolerance 3.;
 
     // Number of mesh displacement relaxation iterations.
     nSolveIter 10;
@@ -433,7 +433,7 @@ addLayersControls
     //       mode on a per-patch basis (only the values can be overridden)
 
         // Expansion factor for layer mesh
-        expansionRatio 1.0;
+        expansionRatio 1.;
 
         // Wanted thickness of the layer furthest away from the wall.
         // If relativeSizes this is relative to undistorted size of cell

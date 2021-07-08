@@ -60,7 +60,7 @@ for iiCV=1:length(ihas)
 
 	% AreaCross=groupTime(volInt,VolI(Names,'Volume'))/DeltaX;
 
-	% ViscCorrection=1.0+0.0*(1.-0.5*(dPdzV1+dPczV1)./groupTime(volInt,VolI(Names,'Volume'))*dx/2 ...
+	% ViscCorrection=1.+0.*(1.-0.5*(dPdzV1+dPczV1)./groupTime(volInt,VolI(Names,'Volume'))*dx/2 ...
 	% .*((surfInt(1:end,SrfI('Area'))-2*AreaCross)*0.66)./viscFzV);
 
 
@@ -153,11 +153,11 @@ for iiCV=1:length(ihas)
 		plot(t*10^3,(dpEc.*Volume./((qBack)))./Pc_ref,Colours(1,:),'LineWidth',2,'markersize',2);
 		plot(t*10^3,(viscEV.*Volume./((qBack)))./Pc_ref,Colours(3,:),'LineWidth',2,'markersize',2);
 		% plot(t*10^3,(phiE.*Volume./((qBack)))./Pc_ref,Colours(4,:),'LineWidth',2,'markersize',2);
-		% plot(t,(dPdzV2+dPczV2)/10000000.0,Colours(3,:),'LineWidth',2);
-		% plot(t,(dPczV1+dPczV2)/10000000.0,Colours(2,:),'LineWidth',2);
+		% plot(t,(dPdzV2+dPczV2)/10000000.,Colours(3,:),'LineWidth',2);
+		% plot(t,(dPczV1+dPczV2)/10000000.,Colours(2,:),'LineWidth',2);
 		% plot(t*10^3,((viscEV+dpEc+dpEd+phiE).*Volume./((UzAvg.*AreaCross)))./Pc_ref,Colours(6,:),'LineWidth',2,'markersize',2);
 		% max(viscFzV)
-		plot(t*10^3, 1-alpha1*1.0,Colours(5,:),'LineWidth',2);
+		plot(t*10^3, 1-alpha1*1.,Colours(5,:),'LineWidth',2);
 		
 		disp('________________TOTAL______________-');
 		
@@ -166,19 +166,19 @@ for iiCV=1:length(ihas)
 		% ylim([-2,2])
 		
 		% yMin=0;yMax=-100000;
-		% meanTmp=mean(dPdzV1/10000.0);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
-		% meanTmp=mean(dPczV1/10000.0);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
-		% meanTmp=mean(dPdzV2/10000.0);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
-		% meanTmp=mean(dPczV2/10000.0);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		% meanTmp=mean(dPdzV1/10000.);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		% meanTmp=mean(dPczV1/10000.);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		% meanTmp=mean(dPdzV2/10000.);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
+		% meanTmp=mean(dPczV2/10000.);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
 		%ufactor=yMax/mean(UzAvg./( dPdzV+dPczV)*dppq_sp(iCV));
 		% yMax=ceil(yMax*10)/10;
 		% yMin=floor(10*yMin)/10;
 		%afactor=yMax;
 		
 		% delPcelZ =-groupTimeAvg(volInt,Names,(["-delPcelZ"]),iha, nGroup  ) ;
-		% plot(t, (viscFzV1+dPdzV1+dPczV1)/10000.0,Colours(5,:),'LineWidth',2);
+		% plot(t, (viscFzV1+dPdzV1+dPczV1)/10000.,Colours(5,:),'LineWidth',2);
 		%
-		% plot(t, (viscFzV2+dPdzV2+dPczV2)/10000.0,Colours(6,:),'LineWidth',2);
+		% plot(t, (viscFzV2+dPdzV2+dPczV2)/10000.,Colours(6,:),'LineWidth',2);
 		
 		% xlim([0 10000])
 		% ylim([-0.03 0.06])
@@ -234,7 +234,7 @@ for iiCV=1:length(ihas)
 		% plot(t*10^3,( dpEc1.*Volume./(Uz1Avg.*AreaCross))./Pc_ref,Colours(3,:),'LineWidth',2,'markersize',2);
 		% plot(t*10^3,( dpEc2.*Volume./(Uz2Avg.*AreaCross))./Pc_ref,Colours(4,:),'LineWidth',2,'markersize',2);
 		% max(viscFzV)
-		% plot(t,dPczV2/10000000.0,Colours(4,:),'LineWidth',2);
+		% plot(t,dPczV2/10000000.,Colours(4,:),'LineWidth',2);
 
 		plot([0], [-1], Colours(5,:),'LineWidth',4);
 
@@ -276,7 +276,7 @@ for iiCV=1:length(ihas)
 			  'Color','none');
 		plot(t*10^3, (1-alpha1)*1,'Parent',haxes2, Colours(5,:),'LineWidth',4);
 
-		%set(haxes2,'ylim',[.0 1]);
+		%set(haxes2,'ylim',[. 1]);
 		%set(haxes2,'xlim',[1 300]);
 		% set(haxes2,'xlabel'," ");
 		%                     xmin ymin xmax ymax
@@ -314,7 +314,7 @@ for iiCV=1:length(ihas)
 		plot(t*10^3,( dpEc1.*Volume./(Uz1Avg.*AreaCross))./Pc_ref,Colours(3,:),'LineWidth',2,'markersize',2);
 		plot(t*10^3,( dpEc2.*Volume./(Uz2Avg.*AreaCross))./Pc_ref,Colours(4,:),'LineWidth',2,'markersize',2);
 		% max(viscFzV)
-		% plot(t,dPczV2/10000000.0,Colours(4,:),'LineWidth',2);
+		% plot(t,dPczV2/10000000.,Colours(4,:),'LineWidth',2);
 		plot(t*10^3, 1-alpha1*1,Colours(5,:),'LineWidth',4);
 
 		disp("________________EACH______________-");
@@ -490,11 +490,11 @@ function  returnedDataInd=    VolI(Names,Name)
 	% yy_a1=zeros(1,nS_+1);
 	% n_a1=1e-12*ones(1,nS_+1);
 
-	%tmp_mo=0.0;
+	%tmp_mo=0.;
 	% for i=1:length(xx)
 			% iS_=round(xx(i)*nS_)+1;
 
-			% n_a1(iS_)=n_a1(iS_)+1.0;
+			% n_a1(iS_)=n_a1(iS_)+1.;
 			% xx_a1(iS_)=xx_a1(iS_)+xx(i);
 			% yy_a1(iS_)=yy_a1(iS_)+yy(i);
 	% end

@@ -42,19 +42,19 @@ slowTwoPhaseFluxFvPatchVectorField::slowTwoPhaseFluxFvPatchVectorField
 )
 :
     fixedValueFvPatchVectorField(pd, iF),
-    flowRate0_(0.0),
-    flowRate1_(0.0),
-    gradientFactor0_(0.0),
-    gradientFactor1_(0.0),    
-    pdFactor_(1.0),
-    pcFactor_(0.0),
+    flowRate0_(0.),
+    flowRate1_(0.),
+    gradientFactor0_(0.),
+    gradientFactor1_(0.),    
+    pdFactor_(1.),
+    pcFactor_(0.),
     curTimeIndex_(-1)
     //relaxationFactor_(0.1)
     
 {
     //refValue() = *this;
     //refGrad() = vector::zero;
-    //valueFraction() = 1.0;
+    //valueFraction() = 1.;
 }
 
 slowTwoPhaseFluxFvPatchVectorField::slowTwoPhaseFluxFvPatchVectorField
@@ -90,7 +90,7 @@ slowTwoPhaseFluxFvPatchVectorField::slowTwoPhaseFluxFvPatchVectorField
     gradientFactor0_(pTraits<scalar>(dict.lookup("gradientFactor0"))),
     gradientFactor1_(pTraits<scalar>(dict.lookup("gradientFactor1"))),
     //pdFactor_(0.9),
-    //pcFactor_(2.0),
+    //pcFactor_(2.),
     pdFactor_(pTraits<scalar>(dict.lookupOrDefault("pdUniformization",0.9))),
     pcFactor_(pTraits<scalar>(dict.lookupOrDefault("pcUniformization",0.1))),
     curTimeIndex_(-1)
@@ -178,13 +178,13 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 	if (curTimeIndex_ == this->db().time().timeIndex()) return; 
 	curTimeIndex_ = this->db().time().timeIndex();
 
-	#define  curtailBADOFSET(a,b) ( min( max(a,b), (1.0-(b)) ) )
+	#define  curtailBADOFSET(a,b) ( min( max(a,b), (1.-(b)) ) )
 
  
    const Field<scalar>& magS = patch().magSf();
 	primitivePatchInterpolation pinterpolator(patch().patch());
 
-	scalarField UBn =  0.0*mag(this->patchInternalField());
+	scalarField UBn =  0.*mag(this->patchInternalField());
 
 	Info().precision(4);
 
@@ -198,11 +198,11 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 	if (flowRate0_>1e-27)
 	{
-	 scalarField alphapSharp=curtailBADOFSET(10*(1.0-alpha1p.patchInternalField())-7.0,0.0);
+	 scalarField alphapSharp=curtailBADOFSET(10*(1.-alpha1p.patchInternalField())-7.,0.);
 	 scalar sumMagSa = gSum(magS*alphapSharp);
 	 if (sumMagSa>1e-32)
 	 {
-		//scalar sign=(flowRate0_/sumMagS>0.0)*2.0-1.0;
+		//scalar sign=(flowRate0_/sumMagS>0.)*2.-1.;
 		scalarField  phipn0=upif/(flowRate0_/sumMagSa);
 
 		phipn0=phipn0*alphapSharp;
@@ -216,18 +216,18 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		const fvPatchField<scalar>&   pcp = patch().patchField<volScalarField, scalar>(db().lookupObject<volScalarField>("pc"));
 
 
-		Info<<" "<<patch().name()<<"0: alfa:"<<int(sumMagSa/gSum(magS)*100.0)/100.0<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";	 
+		Info<<" "<<patch().name()<<"0: alfa:"<<int(sumMagSa/gSum(magS)*100.)/100.<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";	 
 		Info<<" :P["<< gMax(pdp.patchInternalField())<< "  " <<gMin(pdp.patchInternalField()) 
-		  <<"]  logU["<<int(gMin( _logPatchValues )*10.0)/10.0<<" "<<int(gMax(_logPatchValues)*10.0)/10.0<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
+		  <<"]  logU["<<int(gMin( _logPatchValues )*10.)/10.<<" "<<int(gMax(_logPatchValues)*10.)/10.<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
 
 		scalarField  pdpif = 0.9*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
 		scalarField alphaShSmooth = (pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphapSharp+1e-9) ));
 		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
 		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
 		pdpif += 0.1*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
-		pdpif = alphapSharp*pdpif + (1.0-alphapSharp)*gSum(pdpif*alphapSharp)/gSum(alphapSharp);
-		pdpif-= gMin(pdpif) - 10.0;//
-		pdpif/=gMax(pdpif) + 20.0 ;//
+		pdpif = alphapSharp*pdpif + (1.-alphapSharp)*gSum(pdpif*alphapSharp)/gSum(alphapSharp);
+		pdpif-= gMin(pdpif) - 10.;//
+		pdpif/=gMax(pdpif) + 20. ;//
 
 		_logPatchValues +=  pdFactor_*(curtailBADOFSET(pdpif,0.2)-pdpif);
 
@@ -235,14 +235,14 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		Info<<"Pcor u="<<	 uAvg <<"; ";
 
 
-		if (log(uAvg)>0.1)	 	   _logPatchValues += (0.0 - 0.5*(log(uAvg)) )            -0.09;	
-		else if (log(uAvg)< -0.1)  _logPatchValues += (0.0 - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active	
-		else					   _logPatchValues += (0.0 - 0.9*(log(uAvg)) );	 
+		if (log(uAvg)>0.1)	 	   _logPatchValues += (0. - 0.5*(log(uAvg)) )            -0.09;	
+		else if (log(uAvg)< -0.1)  _logPatchValues += (0. - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active	
+		else					   _logPatchValues += (0. - 0.9*(log(uAvg)) );	 
 
 		uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa;
 		Info<<"Qcor u="<<	 uAvg <<"; ";
 		
-		_logPatchValues = min(log(10.0)+min(log(uAvg+1e-1),0.0) , _logPatchValues);
+		_logPatchValues = min(log(10.)+min(log(uAvg+1e-1),0.) , _logPatchValues);
 
 		Info<<"cut u="<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<"\n";
 
@@ -256,11 +256,11 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 	if (flowRate1_>1e-27)
 	{
-	 scalarField alphapSharp=curtailBADOFSET(10.0*(alpha1p.patchInternalField())-7.0,0.0);
+	 scalarField alphapSharp=curtailBADOFSET(10.*(alpha1p.patchInternalField())-7.,0.);
 	 scalar sumMagSa = gSum(magS*alphapSharp);
 	 if (sumMagSa>1e-32)
 	 {
-		//scalar sign=(flowRate1_/sumMagS>0.0)*2.0-1.0;
+		//scalar sign=(flowRate1_/sumMagS>0.)*2.-1.;
 		scalarField  phipn0=upif/(flowRate1_/sumMagSa);
 
 		phipn0=phipn0*alphapSharp;
@@ -275,18 +275,18 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 
 
-		Info<<" "<<patch().name()<<"1: alfa:"<<int(sumMagSa/gSum(magS)*100.0)/100.0<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";	 
+		Info<<" "<<patch().name()<<"1: alfa:"<<int(sumMagSa/gSum(magS)*100.)/100.<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";	 
 		Info<<" :P["<< gMax(pdp.patchInternalField())<< "  " <<gMin(pdp.patchInternalField()) 
-		  <<"]  logU["<<int(gMin( _logPatchValues )*10.0)/10.0<<" "<<int(gMax(_logPatchValues)*10.0)/10.0<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
+		  <<"]  logU["<<int(gMin( _logPatchValues )*10.)/10.<<" "<<int(gMax(_logPatchValues)*10.)/10.<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
 
 		scalarField  pdpif = 0.9*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
 		scalarField alphaShSmooth = (pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphapSharp+1e-9) ));
 		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
 		pdpif = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(pdpif*alphapSharp+1e-9) )/alphaShSmooth-0.4*pdpif;
 		pdpif += 0.1*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
-		pdpif = alphapSharp*pdpif + (1.0-alphapSharp)*gSum(pdpif*alphapSharp)/gSum(alphapSharp);
-		pdpif-= gMin(pdpif) - 10.0;//
-		pdpif/=gMax(pdpif) + 20.0 ;//
+		pdpif = alphapSharp*pdpif + (1.-alphapSharp)*gSum(pdpif*alphapSharp)/gSum(alphapSharp);
+		pdpif-= gMin(pdpif) - 10.;//
+		pdpif/=gMax(pdpif) + 20. ;//
 
 		_logPatchValues +=  pdFactor_*(curtailBADOFSET(pdpif,0.2)-pdpif);
 
@@ -294,14 +294,14 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		Info<<"Pcor u="<<	 uAvg <<"; ";
 
 
-		if (log(uAvg)>0.1)	 	   _logPatchValues += (0.0 - 0.5*(log(uAvg)) )            -0.09;	
-		else if (log(uAvg)< -0.1)  _logPatchValues += (0.0 - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active	
-		else					   _logPatchValues += (0.0 - 0.9*(log(uAvg)) );	 
+		if (log(uAvg)>0.1)	 	   _logPatchValues += (0. - 0.5*(log(uAvg)) )            -0.09;	
+		else if (log(uAvg)< -0.1)  _logPatchValues += (0. - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active	
+		else					   _logPatchValues += (0. - 0.9*(log(uAvg)) );	 
 
 		uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa ;
 		Info<<"Qcor u="<<	 uAvg <<"; ";
 		
-		_logPatchValues = min(log(10.0)+min(log(uAvg+1e-1),0.0) , _logPatchValues);
+		_logPatchValues = min(log(10.)+min(log(uAvg+1e-1),0.) , _logPatchValues);
 
 		Info<<"cut u="<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<"\n";
 

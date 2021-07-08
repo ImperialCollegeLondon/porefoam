@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 
 
 
-		dimensionedScalar sgPc("sgPc", dimPressure/dimLength*dimArea, 0.0);
+		dimensionedScalar sgPc("sgPc", dimPressure/dimLength*dimArea, 0.);
 		while (pimple.loop())
 		{
 			//rhoPhi = rho1*phi;

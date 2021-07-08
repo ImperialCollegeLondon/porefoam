@@ -99,7 +99,7 @@ void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAl
 
 		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
-			fil << "vt  " << zoneI/255.0 <<' '<< zoneI/255.0 << endl;
+			fil << "vt  " << zoneI/255. <<' '<< zoneI/255. << endl;
 
 			if (zone.size())  {
 				fil << "g  zone" << zoneI << endl;
@@ -225,7 +225,7 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 
 		for_(facess, zoneI)  {
 			const facePiece& zone = facess[zoneI];
-			fil << "vt  " << zoneI/255.0 <<' '<< zoneI/255.0 << endl;
+			fil << "vt  " << zoneI/255. <<' '<< zoneI/255. << endl;
 
 			if (zone.size())  {
 				fil << "g  v" << zoneI/256<<"_to_v"<<zoneI%256<< endl;

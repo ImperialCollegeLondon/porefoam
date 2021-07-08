@@ -121,7 +121,7 @@ namespace MCTProcessing
   public:
 	paraPlates(stringstream & ins)
 	{
-		ins>>p1;   p2 = p1;   p1.y=0.0; ins>>p1.y;
+		ins>>p1;   p2 = p1;   p1.y=0.; ins>>p1.y;
 		cout <<"\nparaPlates: slope1,mX="<<p1.x<<"    separation,dy="<<p2.y<<"   slope2,mZ="<<p1.z<<"   shift, y1:"<<p1.y<<endl;
 	};
 	int value(dbl3 ij)    {  return ( ij.y > p1.x*ij.x+p1.z*ij.z+p1.y 
@@ -152,7 +152,7 @@ namespace MCTProcessing
 	{cout<<"Error: fix me saqdakjoigfgfgfg "<<endl;
 		ins>>p1>>po_; p2=p1;
 		cout <<"\n plate: slope_x="<<p1.x<<"  r_cap="<<p1.y<<"  slope_z="<<p1.z<<"\n"<<endl;
-		p1.y=0.0;    po_.z = po_.y;  po_.y = (p1.x*po_.x+p1.z*po_.z+p1.y);
+		p1.y=0.;    po_.z = po_.y;  po_.y = (p1.x*po_.x+p1.z*po_.z+p1.y);
 		cout <<"plate: a1="<<p1.x<<"   a2="<<p2.x<<"    r="<<p1.y<<"    b2="<<p2.y<<endl;
 	};
 	int value(dbl3 ij)  {  return  ( ij.y > p1.x*ij.x + p1.z*ij.z+p1.y && mag(ij-po_) <= p2.y )  ?  insidev : outsidev;  }

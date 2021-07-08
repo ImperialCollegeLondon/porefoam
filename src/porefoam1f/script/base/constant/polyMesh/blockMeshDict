@@ -15,7 +15,7 @@ FoamFile // -*- C++ -*-
 
 
 
-convertToMeters 1.0;
+convertToMeters 1.;
 
 vertices
 (

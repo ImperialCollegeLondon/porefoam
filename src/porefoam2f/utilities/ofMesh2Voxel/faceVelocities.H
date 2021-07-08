@@ -16,9 +16,9 @@
 \*-------------------------------------------------------------------------*/
 
     
-	voxelField<double> vface0(n,0.0);
-	voxelField<double> vface1(n,0.0);
-	voxelField<double> vface2(n,0.0);
+	voxelField<double> vface0(n,0.);
+	voxelField<double> vface1(n,0.);
+	voxelField<double> vface2(n,0.);
     const faceList& faces = mesh.faces();
     const surfaceVectorField& Cf = mesh.Cf();
     const surfaceVectorField& Sf = mesh.Sf();
@@ -33,9 +33,9 @@
 	forAll(Cf,c)
 	{
 
-		int i=(Cf[c][0]+dx[0]/4.0)/dx[0];
-		int j=(Cf[c][1]+dx[1]/4.0)/dx[1];
-		int k=(Cf[c][2]+dx[2]/4.0)/dx[2];
+		int i=(Cf[c][0]+dx[0]/4.)/dx[0];
+		int j=(Cf[c][1]+dx[1]/4.)/dx[1];
+		int k=(Cf[c][2]+dx[2]/4.)/dx[2];
                 
         vector nf=(Sf[c]/mag(Sf[c]));
         if      (mag(nf[0])>0.95)
@@ -65,9 +65,9 @@
             {
                 //label faceI=patches[patchI].patch().start()+i;
                 //const point pi = Cf[faceI];
-                int i=(Cfp[c][0]+dx[0]/4.0)/dx[0];
-                int j=(Cfp[c][1]+dx[1]/4.0)/dx[1];
-                int k=(Cfp[c][2]+dx[2]/4.0)/dx[2];
+                int i=(Cfp[c][0]+dx[0]/4.)/dx[0];
+                int j=(Cfp[c][1]+dx[1]/4.)/dx[1];
+                int k=(Cfp[c][2]+dx[2]/4.)/dx[2];
             
               if( i<n[0] && j<n[1] && k<n[2] )
               {
