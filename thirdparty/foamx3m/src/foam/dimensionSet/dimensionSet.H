@@ -175,6 +175,8 @@ public:
 			const scalar moles
 		);
 
+		dimensionSet(const dimensionSet&) = default; // needed to suppress compiler warning
+
 		//- Construct from Istream
 		dimensionSet(Istream&);
 
