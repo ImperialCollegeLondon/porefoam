@@ -20,7 +20,7 @@ jobs:
         key: ${{ runner.os }}-lib
 
     - name: install prerequisites
-      run: sudo apt -y install mpi-default-dev flex libscotch-dev
+      run: sudo apt update && sudo apt -y install mpi-default-dev flex libscotch-dev
     - name: clean
       run: echo skip make distclean, NOTE parallel make may fail due to RAM limit
     - name: make
