@@ -62,7 +62,7 @@ BlockMatrixAgglomeration<tensor>::restrictMatrix
 		<< abort(FatalError);
 
 	// Dummy return to keep compiler happy
-	return autoPtr<BlockAMGLevel<tensor> >(NULL);
+	return autoPtr<BlockAMGLevel<tensor> >(nullptr);
 }
 
 

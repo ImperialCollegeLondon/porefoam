@@ -70,7 +70,7 @@ template<class T>
 inline T* Foam::autoPtr<T>::ptr()
 {
 	T* ptr = ptr_;
-	ptr_ = NULL;
+	ptr_ = nullptr;
 	return ptr;
 }
 
@@ -104,7 +104,7 @@ inline void Foam::autoPtr<T>::reset(T* p)
 template<class T>
 inline void Foam::autoPtr<T>::clear()
 {
-	reset(NULL);
+	reset(nullptr);
 }
 
 

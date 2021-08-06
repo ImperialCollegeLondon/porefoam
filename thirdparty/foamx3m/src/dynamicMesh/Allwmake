@@ -9,7 +9,7 @@ meshMotion/Allwmake
 
 # Make libraries in dynamicFvMesh
 wmake libso dynamicFvMesh
-wmake libso dynamicTopoFvMesh
+#wmake libso dynamicTopoFvMesh
 
 echo "decativated: wmake libso topoChangerFvMesh"
 

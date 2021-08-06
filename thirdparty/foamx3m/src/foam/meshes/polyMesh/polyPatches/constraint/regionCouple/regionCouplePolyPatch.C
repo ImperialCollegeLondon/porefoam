@@ -597,12 +597,12 @@ Foam::regionCouplePolyPatch::regionCouplePolyPatch
 	reject_(ggiZoneInterpolation::BB_OCTREE),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
-	mapPtr_(NULL)
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
+	mapPtr_(nullptr)
 {}
 
 
@@ -634,12 +634,12 @@ Foam::regionCouplePolyPatch::regionCouplePolyPatch
 	reject_(reject),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
-	mapPtr_(NULL)
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
+	mapPtr_(nullptr)
 {}
 
 
@@ -662,12 +662,12 @@ Foam::regionCouplePolyPatch::regionCouplePolyPatch
 	reject_(ggiZoneInterpolation::BB_OCTREE),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
-	mapPtr_(NULL)
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
+	mapPtr_(nullptr)
 {
 	if (dict.found("quickReject"))
 	{
@@ -696,12 +696,12 @@ Foam::regionCouplePolyPatch::regionCouplePolyPatch
 	reject_(pp.reject_),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
-	mapPtr_(NULL)
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
+	mapPtr_(nullptr)
 {}
 
 
@@ -725,12 +725,12 @@ Foam::regionCouplePolyPatch::regionCouplePolyPatch
 	reject_(pp.reject_),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
-	mapPtr_(NULL)
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
+	mapPtr_(nullptr)
 {}
 
 

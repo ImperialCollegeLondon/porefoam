@@ -181,9 +181,6 @@ class voxelImageT: public voxelImageTBase, public voxelField<T>   //!  3D image 
 	voxelImageT(int3 n, dbl3 dx=dbl3(1.,1.,1.), dbl3 xmin=dbl3(0.,0.,0.), T value=0)
 	: voxelField<T>( n.x,  n.y,  n.z,  value), X0_(xmin),dx_(dx) {}
 
-	voxelImageT(const voxelImageT & vm)
-	:  voxelField<T>(vm), X0_(vm.X0_), dx_(vm.dx_) {}
-
 
 
 	voxelImageT(const std::string& headerName, int processKeys=1)

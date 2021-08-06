@@ -32,7 +32,7 @@ License
 Foam::wordRe::wordRe(Istream& is)
 :
 	word(),
-	re_(NULL)
+	re_(nullptr)
 {
 	is >> *this;
 }

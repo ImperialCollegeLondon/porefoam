@@ -175,8 +175,8 @@ public:
 			lookupShadowPatchField
 			(
 				const word& name,
-				const LookupField* = NULL,
-				const LookupType* = NULL
+				const LookupField* = nullptr,
+				const LookupType* = nullptr
 			) const;
 
 			//- Return a shadow patch

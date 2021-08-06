@@ -30,7 +30,6 @@ License
 #include "JobInfo.H"
 #include "Pstream.H"
 
-#include <execinfo.h>
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 Foam::IOerror::IOerror(const string& title)
@@ -69,16 +68,6 @@ Foam::OSstream& Foam::IOerror::operator()
 	ioFileName_ = ioFileName;
 	ioStartLineNumber_ = ioStartLineNumber;
 	ioEndLineNumber_ = ioEndLineNumber;
-
-// https://www.gnu.org/software/libc/manual/html_node/Backtraces.html
-	void *array[10];
-	size_t size;
-	char **strings;
-	size_t i;
-	size = backtrace (array, 10);
-	strings = backtrace_symbols (array, size);
-	printf ("Obtained %zd stack frames.\n", size);
-	for (i = 0; i < size; i++) printf ("%s\n", strings[i]);
 
 	return operator OSstream&();
 }

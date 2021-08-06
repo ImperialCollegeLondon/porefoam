@@ -140,9 +140,9 @@ Foam::CoeffField<Type>::toSquare()
 template<class Type>
 Foam::CoeffField<Type>::CoeffField(const label size)
 :
-	scalarCoeffPtr_(NULL),
-	linearCoeffPtr_(NULL),
-	squareCoeffPtr_(NULL),
+	scalarCoeffPtr_(nullptr),
+	linearCoeffPtr_(nullptr),
+	squareCoeffPtr_(nullptr),
 	size_(size)
 {}
 
@@ -151,9 +151,9 @@ template<class Type>
 Foam::CoeffField<Type>::CoeffField(const CoeffField<Type>& f)
 :
 	refCount(),
-	scalarCoeffPtr_(NULL),
-	linearCoeffPtr_(NULL),
-	squareCoeffPtr_(NULL),
+	scalarCoeffPtr_(nullptr),
+	linearCoeffPtr_(nullptr),
+	squareCoeffPtr_(nullptr),
 	size_(f.size())
 {
 	if (f.scalarCoeffPtr_)
@@ -174,9 +174,9 @@ Foam::CoeffField<Type>::CoeffField(const CoeffField<Type>& f)
 template<class Type>
 Foam::CoeffField<Type>::CoeffField(Istream& is)
 :
-	scalarCoeffPtr_(NULL),
-	linearCoeffPtr_(NULL),
-	squareCoeffPtr_(NULL),
+	scalarCoeffPtr_(nullptr),
+	linearCoeffPtr_(nullptr),
+	squareCoeffPtr_(nullptr),
 	size_(0)
 {
 	// Read keyword and pick up allocated field

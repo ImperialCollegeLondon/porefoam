@@ -88,7 +88,7 @@ bool Foam::primitiveEntry::expandVariable
 	const entry* ePtr = dict.lookupEntryPtr(varName, true, false);
 
 	// ...if defined insert its tokens into this
-	if (ePtr != NULL)
+	if (ePtr != nullptr)
 	{
 		append(ePtr->stream());
 		return true;

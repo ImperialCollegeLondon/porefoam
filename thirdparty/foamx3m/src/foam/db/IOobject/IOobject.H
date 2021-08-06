@@ -149,7 +149,7 @@ protected:
 	// Protected member functions
 
 		//- Construct and return an IFstream for the object.
-		//  The results is NULL if the stream construction failed
+		//  The results is nullptr if the stream construction failed
 		Istream* objectStream();
 
 		//- Set the object state to bad

@@ -61,13 +61,13 @@ public:
 		inline explicit autoPtr(T* = 0);
 
 		//- Construct as copy by transfering pointer to this autoPtr and
-		//  setting the arguments pointer to NULL
+		//  setting the arguments pointer to nullptr
 		inline autoPtr(const autoPtr<T>&);
 
 
 	// Destructor
 
-		//- Delete object if pointer is not NULL
+		//- Delete object if pointer is not nullptr
 		inline ~autoPtr();
 
 
@@ -96,7 +96,7 @@ public:
 			inline void reset(T* = 0);
 
 			//- If object pointer points to valid object:
-			//  delete object and set pointer to NULL
+			//  delete object and set pointer to nullptr
 			inline void clear();
 
 

@@ -204,7 +204,7 @@ public:
 			(
 				"autoPtr<TimeActivatedExplicitSource> clone() const"
 			);
-			return autoPtr<TimeActivatedExplicitSource>(NULL);
+			return autoPtr<TimeActivatedExplicitSource>(nullptr);
 		}
 
 		//- Return pointer to new TimeActivatedExplicitSource object created

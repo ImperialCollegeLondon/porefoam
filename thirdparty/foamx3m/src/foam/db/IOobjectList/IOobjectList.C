@@ -143,7 +143,7 @@ Foam::IOobject* Foam::IOobjectList::lookup(const word& name) const
 				<< endl;
 		}
 
-		return NULL;
+		return nullptr;
 	}
 }
 

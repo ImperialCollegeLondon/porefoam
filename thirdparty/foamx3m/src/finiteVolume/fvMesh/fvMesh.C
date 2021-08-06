@@ -104,16 +104,16 @@ Foam::fvMesh::fvMesh(const IOobject& io)
 	polyMesh(io),
 	surfaceInterpolation(*this),
 	boundary_(*this, boundaryMesh()),
-	lduPtr_(NULL),
+	lduPtr_(nullptr),
 	curTimeIndex_(time().timeIndex()),
-	VPtr_(NULL),
-	V0Ptr_(NULL),
-	V00Ptr_(NULL),
-	SfPtr_(NULL),
-	magSfPtr_(NULL),
-	CPtr_(NULL),
-	CfPtr_(NULL),
-	phiPtr_(NULL)
+	VPtr_(nullptr),
+	V0Ptr_(nullptr),
+	V00Ptr_(nullptr),
+	SfPtr_(nullptr),
+	magSfPtr_(nullptr),
+	CPtr_(nullptr),
+	CfPtr_(nullptr),
+	phiPtr_(nullptr)
 {
 	if (debug)
 	{
@@ -206,16 +206,16 @@ Foam::fvMesh::fvMesh
 	polyMesh(io, points, faces, allOwner, allNeighbour, syncPar),
 	surfaceInterpolation(*this),
 	boundary_(*this),
-	lduPtr_(NULL),
+	lduPtr_(nullptr),
 	curTimeIndex_(time().timeIndex()),
-	VPtr_(NULL),
-	V0Ptr_(NULL),
-	V00Ptr_(NULL),
-	SfPtr_(NULL),
-	magSfPtr_(NULL),
-	CPtr_(NULL),
-	CfPtr_(NULL),
-	phiPtr_(NULL)
+	VPtr_(nullptr),
+	V0Ptr_(nullptr),
+	V00Ptr_(nullptr),
+	SfPtr_(nullptr),
+	magSfPtr_(nullptr),
+	CPtr_(nullptr),
+	CfPtr_(nullptr),
+	phiPtr_(nullptr)
 {
 	if (debug)
 	{
@@ -236,16 +236,16 @@ Foam::fvMesh::fvMesh
 	polyMesh(io, points, faces, cells, syncPar),
 	surfaceInterpolation(*this),
 	boundary_(*this),
-	lduPtr_(NULL),
+	lduPtr_(nullptr),
 	curTimeIndex_(time().timeIndex()),
-	VPtr_(NULL),
-	V0Ptr_(NULL),
-	V00Ptr_(NULL),
-	SfPtr_(NULL),
-	magSfPtr_(NULL),
-	CPtr_(NULL),
-	CfPtr_(NULL),
-	phiPtr_(NULL)
+	VPtr_(nullptr),
+	V0Ptr_(nullptr),
+	V00Ptr_(nullptr),
+	SfPtr_(nullptr),
+	magSfPtr_(nullptr),
+	CPtr_(nullptr),
+	CfPtr_(nullptr),
+	phiPtr_(nullptr)
 {
 	if (debug)
 	{
@@ -283,16 +283,16 @@ Foam::fvMesh::fvMesh
 	),
 	surfaceInterpolation(*this),
 	boundary_(*this),
-	lduPtr_(NULL),
+	lduPtr_(nullptr),
 	curTimeIndex_(time().timeIndex()),
-	VPtr_(NULL),
-	V0Ptr_(NULL),
-	V00Ptr_(NULL),
-	SfPtr_(NULL),
-	magSfPtr_(NULL),
-	CPtr_(NULL),
-	CfPtr_(NULL),
-	phiPtr_(NULL)
+	VPtr_(nullptr),
+	V0Ptr_(nullptr),
+	V00Ptr_(nullptr),
+	SfPtr_(nullptr),
+	magSfPtr_(nullptr),
+	CPtr_(nullptr),
+	CfPtr_(nullptr),
+	phiPtr_(nullptr)
 {
 	if (debug)
 	{

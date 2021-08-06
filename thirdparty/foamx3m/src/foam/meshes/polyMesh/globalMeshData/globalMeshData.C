@@ -454,10 +454,10 @@ Foam::globalMeshData::globalMeshData(const polyMesh& mesh)
 	nGlobalPoints_(-1),
 	sharedPointLabels_(0),
 	sharedPointAddr_(0),
-	sharedPointGlobalLabelsPtr_(NULL),
+	sharedPointGlobalLabelsPtr_(nullptr),
 	nGlobalEdges_(-1),
-	sharedEdgeLabelsPtr_(NULL),
-	sharedEdgeAddrPtr_(NULL)
+	sharedEdgeLabelsPtr_(nullptr),
+	sharedEdgeAddrPtr_(nullptr)
 {
 	updateMesh();
 }
@@ -478,10 +478,10 @@ Foam::globalMeshData::globalMeshData(const IOobject& io, const polyMesh& mesh)
 	nGlobalPoints_(-1),
 	sharedPointLabels_(0),
 	sharedPointAddr_(0),
-	sharedPointGlobalLabelsPtr_(NULL),
+	sharedPointGlobalLabelsPtr_(nullptr),
 	nGlobalEdges_(-1),
-	sharedEdgeLabelsPtr_(NULL),
-	sharedEdgeAddrPtr_(NULL)
+	sharedEdgeLabelsPtr_(nullptr),
+	sharedEdgeAddrPtr_(nullptr)
 {
 	initProcAddr();
 

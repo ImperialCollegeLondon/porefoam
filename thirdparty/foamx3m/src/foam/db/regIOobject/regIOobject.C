@@ -54,7 +54,7 @@ Foam::regIOobject::regIOobject(const IOobject& io, const bool isTime)
 	  ? 0
 	  : db().getEvent()
 	),
-	isPtr_(NULL)
+	isPtr_(nullptr)
 {
 	// Register with objectRegistry if requested
 	if (registerObject())
@@ -72,7 +72,7 @@ Foam::regIOobject::regIOobject(const regIOobject& rio)
 	ownedByRegistry_(false),
 	lastModified_(rio.lastModified_),
 	eventNo_(db().getEvent()),
-	isPtr_(NULL)
+	isPtr_(nullptr)
 {
 	// Do not register copy with objectRegistry
 }
@@ -87,7 +87,7 @@ Foam::regIOobject::regIOobject(const regIOobject& rio, bool registerCopy)
 	ownedByRegistry_(false),
 	lastModified_(rio.lastModified_),
 	eventNo_(db().getEvent()),
-	isPtr_(NULL)
+	isPtr_(nullptr)
 {
 	if (registerCopy && rio.registered_)
 	{
@@ -113,7 +113,7 @@ Foam::regIOobject::~regIOobject()
 	if (isPtr_)
 	{
 		delete isPtr_;
-		isPtr_ = NULL;
+		isPtr_ = nullptr;
 	}
 
 	// Check out of objectRegistry if not owned by the registry
@@ -281,7 +281,7 @@ void Foam::regIOobject::operator=(const IOobject& io)
 	if (isPtr_)
 	{
 		delete isPtr_;
-		isPtr_ = NULL;
+		isPtr_ = nullptr;
 	}
 
 	// Check out of objectRegistry

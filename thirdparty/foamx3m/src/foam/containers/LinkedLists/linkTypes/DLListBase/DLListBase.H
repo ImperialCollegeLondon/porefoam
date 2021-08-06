@@ -191,7 +191,7 @@ public:
 
 			// Private Member Functions
 
-			//- Construct for a given SLListBase with NULL element and link.
+			//- Construct for a given SLListBase with nullptr element and link.
 			//  Only used to create endIter
 			inline iterator(DLListBase&);
 
@@ -202,6 +202,7 @@ public:
 
 			// Member operators
 
+				iterator(const iterator&) = default;
 				inline void operator=(const iterator&);
 
 				inline bool operator==(const iterator&) const;
@@ -240,6 +241,7 @@ public:
 
 			// Member operators
 
+				const_iterator(const const_iterator&) = default;
 				inline void operator=(const const_iterator&);
 
 				inline bool operator==(const const_iterator&) const;

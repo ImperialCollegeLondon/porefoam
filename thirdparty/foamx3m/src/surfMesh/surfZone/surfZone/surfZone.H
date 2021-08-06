@@ -112,7 +112,7 @@ public:
 		autoPtr<surfZone> clone() const
 		{
 			notImplemented("autoPtr<surfZone> clone() const");
-			return autoPtr<surfZone>(NULL);
+			return autoPtr<surfZone>(nullptr);
 		}
 
 		static autoPtr<surfZone> New(Istream& is)

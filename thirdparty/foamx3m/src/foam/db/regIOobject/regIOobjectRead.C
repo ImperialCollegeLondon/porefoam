@@ -129,7 +129,7 @@ void Foam::regIOobject::close()
 	if (isPtr_)
 	{
 		delete isPtr_;
-		isPtr_ = NULL;
+		isPtr_ = nullptr;
 	}
 }
 

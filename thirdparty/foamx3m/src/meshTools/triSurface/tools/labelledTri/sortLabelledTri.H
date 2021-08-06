@@ -79,7 +79,7 @@ public:
 		//- Construct null
 		surfAndLabel()
 		:
-			surfPtr_(NULL),
+			surfPtr_(nullptr),
 			index_(-1)
 		{}
 

@@ -31,7 +31,6 @@ License
 #include "readHexLabel.H"
 
 #include <cxxabi.h>
-#include <dlfcn.h>
 #include <stdlib.h>
 #include <search.h>
 #include <stdio.h>
@@ -58,7 +57,7 @@ string pOpen(const string &cmd, label line=0)
 
 			char* s = fgets(buffer, MAX-1, cmdPipe);
 
-			if (s == NULL)
+			if (s == nullptr)
 			{
 #ifdef darwin
 				// workaround for the Python-Script
@@ -392,7 +391,7 @@ void error::printStack(Ostream& os)
 				char* cplusNamePtr = abi::__cxa_demangle
 				(
 					cName.c_str(),
-					NULL,				   // have it malloc itself
+					nullptr,				   // have it malloc itself
 					0,
 					&status
 				);

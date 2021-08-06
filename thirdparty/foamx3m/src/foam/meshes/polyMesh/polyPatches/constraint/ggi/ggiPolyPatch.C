@@ -624,14 +624,14 @@ Foam::ggiPolyPatch::ggiPolyPatch
 	reject_(ggiZoneInterpolation::BB_OCTREE),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
 	comm_(Pstream::worldComm),
 	tag_(Pstream::msgType()),
-	mapPtr_(NULL)
+	mapPtr_(nullptr)
 {}
 
 
@@ -655,14 +655,14 @@ Foam::ggiPolyPatch::ggiPolyPatch
 	reject_(reject),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
 	comm_(Pstream::worldComm),
 	tag_(Pstream::msgType()),
-	mapPtr_(NULL)
+	mapPtr_(nullptr)
 {}
 
 
@@ -681,14 +681,14 @@ Foam::ggiPolyPatch::ggiPolyPatch
 	reject_(ggiZoneInterpolation::BB_OCTREE),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
 	comm_(Pstream::worldComm),
 	tag_(Pstream::msgType()),
-	mapPtr_(NULL)
+	mapPtr_(nullptr)
 {
 	if (dict.found("quickReject"))
 	{
@@ -713,14 +713,14 @@ Foam::ggiPolyPatch::ggiPolyPatch
 	reject_(pp.reject_),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
 	comm_(pp.comm_),
 	tag_(pp.tag_),
-	mapPtr_(NULL)
+	mapPtr_(nullptr)
 {}
 
 
@@ -741,14 +741,14 @@ Foam::ggiPolyPatch::ggiPolyPatch
 	reject_(pp.reject_),
 	shadowIndex_(-1),
 	zoneIndex_(-1),
-	patchToPatchPtr_(NULL),
-	zoneAddressingPtr_(NULL),
-	remoteZoneAddressingPtr_(NULL),
-	reconFaceCellCentresPtr_(NULL),
-	localParallelPtr_(NULL),
+	patchToPatchPtr_(nullptr),
+	zoneAddressingPtr_(nullptr),
+	remoteZoneAddressingPtr_(nullptr),
+	reconFaceCellCentresPtr_(nullptr),
+	localParallelPtr_(nullptr),
 	comm_(pp.comm_),
 	tag_(pp.tag_),
-	mapPtr_(NULL)
+	mapPtr_(nullptr)
 {}
 
 

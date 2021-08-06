@@ -38,10 +38,14 @@ if (adjustTimeStep)
 
 	runTime.setDeltaT
 	(
-		min
+		Foam::max
+		(
+			minDeltaT,
+			Foam::min
 		(
 			deltaTFact*runTime.deltaT().value(),
 			maxDeltaT
+			)
 		)
 	);
 

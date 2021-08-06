@@ -9,7 +9,6 @@ LIB_LIBS = $(PLIBS)\
     $(FOAM_LIBBIN)/libOSspecific.o \
     -lz \
     -L$(WM_THIRD_PARTY_DIR)/packages/system/lib \
-    -ldl \
     -lpsapi \
     -lpthread
 

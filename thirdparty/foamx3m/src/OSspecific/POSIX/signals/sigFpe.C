@@ -60,7 +60,7 @@ struct sigaction Foam::sigFpe::oldAction_;
 
 #if defined(LINUX)
 
-void *(*Foam::sigFpe::old_malloc_hook)(size_t, const void *) = NULL;
+void *(*Foam::sigFpe::old_malloc_hook)(size_t, const void *) = nullptr;
 
 void* Foam::sigFpe::my_malloc_hook(size_t size, const void *caller)
 {
@@ -109,7 +109,7 @@ void* Foam::sigFpe::my_malloc_hook(size_t size, const void *caller)
 
 #elif defined(__APPLE__)
 
-void *(*Foam::sigFpe::system_malloc_)(malloc_zone_t *zone, size_t size)=NULL;
+void *(*Foam::sigFpe::system_malloc_)(malloc_zone_t *zone, size_t size)=nullptr;
 
 void* Foam::sigFpe::nan_malloc_(malloc_zone_t *zone, size_t size)
 {
@@ -145,7 +145,7 @@ void* Foam::sigFpe::nan_malloc_(malloc_zone_t *zone, size_t size)
 void Foam::sigFpe::sigFpeHandler(int)
 {
 	// Reset old handling
-	if (sigaction(SIGFPE, &oldAction_, NULL) < 0)
+	if (sigaction(SIGFPE, &oldAction_, nullptr) < 0)
 	{
 		FatalErrorIn
 		(
@@ -170,7 +170,7 @@ void Foam::sigFpe::sigFpeHandler(int)
 
 Foam::sigFpe::sigFpe()
 {
-	oldAction_.sa_handler = NULL;
+	oldAction_.sa_handler = nullptr;
 }
 
 
@@ -183,7 +183,7 @@ Foam::sigFpe::~sigFpe()
 #	   ifdef LINUX_GNUC
 
 		// Reset signal
-		if (oldAction_.sa_handler && sigaction(SIGFPE, &oldAction_, NULL) < 0)
+		if (oldAction_.sa_handler && sigaction(SIGFPE, &oldAction_, nullptr) < 0)
 		{
 			FatalErrorIn
 			(
@@ -207,9 +207,9 @@ Foam::sigFpe::~sigFpe()
 
 			#	   elif defined(__APPLE__)
 
-		if(system_malloc_!=NULL) {
+		if(system_malloc_!=nullptr) {
 			malloc_zone_t *zone = malloc_default_zone();
-			if(zone==NULL) {
+			if(zone==nullptr) {
 				FatalErrorIn("Foam__sigFpe::set")
 					<< "Could not get malloc_default_zone()." << endl
 						<< "Seems like this version of Mac OS X doesn't support FOAM_SETNAN"
@@ -229,7 +229,7 @@ Foam::sigFpe::~sigFpe()
 				);//remove the write protection
 			}
 			zone->malloc=system_malloc_;
-			system_malloc_=NULL;
+			system_malloc_=nullptr;
 			if(zone->version==8)
 			{
 				vm_protect(
@@ -310,7 +310,7 @@ void Foam::sigFpe::set(const bool verbose)
 		  | _EN_OVERFL,
 			0,
 			_ABORT_ON_ERROR,
-			NULL
+			nullptr
 		);
 
 #	   elif defined(__APPLE__)
@@ -352,7 +352,7 @@ void Foam::sigFpe::set(const bool verbose)
 
 #elif defined(__APPLE__)
 
-		if(system_malloc_!=NULL) {
+		if(system_malloc_!=nullptr) {
 			FatalErrorIn("Foam__sigFpe::set")
 				<< "system_malloc_ already reset." << endl
 					<< "This should never happen"
@@ -361,7 +361,7 @@ void Foam::sigFpe::set(const bool verbose)
 		}
 
 		malloc_zone_t *zone = malloc_default_zone();
-		if(zone==NULL) {
+		if(zone==nullptr) {
 			FatalErrorIn("Foam__sigFpe::set")
 				<< "Could not get malloc_default_zone()." << endl
 					<< "Seems like this version of Mac OS X doesn't support FOAM_SETNAN"

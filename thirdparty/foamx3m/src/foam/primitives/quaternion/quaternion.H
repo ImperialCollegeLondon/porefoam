@@ -152,7 +152,7 @@ public:
 
 	// Member operators
 
-		inline void operator=(const quaternion&);
+		//inline void operator=(const quaternion&);
 		inline void operator+=(const quaternion&);
 		inline void operator-=(const quaternion&);
 		inline void operator*=(const quaternion&);

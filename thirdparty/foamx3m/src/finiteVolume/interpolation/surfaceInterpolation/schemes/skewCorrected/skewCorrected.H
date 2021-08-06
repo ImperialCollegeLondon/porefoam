@@ -205,7 +205,7 @@ public:
 			else
 			{
 				return
-					tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >(NULL);
+					tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >(nullptr);
 			}
 		}
 };

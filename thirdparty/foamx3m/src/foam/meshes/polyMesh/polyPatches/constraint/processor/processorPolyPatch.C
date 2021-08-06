@@ -63,8 +63,8 @@ Foam::processorPolyPatch::processorPolyPatch
 	neighbFaceCentres_(),
 	neighbFaceAreas_(),
 	neighbFaceCellCentres_(),
-	neighbPointsPtr_(NULL),
-	neighbEdgesPtr_(NULL)
+	neighbPointsPtr_(nullptr),
+	neighbEdgesPtr_(nullptr)
 {}
 
 
@@ -82,8 +82,8 @@ Foam::processorPolyPatch::processorPolyPatch
 	neighbFaceCentres_(),
 	neighbFaceAreas_(),
 	neighbFaceCellCentres_(),
-	neighbPointsPtr_(NULL),
-	neighbEdgesPtr_(NULL)
+	neighbPointsPtr_(nullptr),
+	neighbEdgesPtr_(nullptr)
 {}
 
 
@@ -99,8 +99,8 @@ Foam::processorPolyPatch::processorPolyPatch
 	neighbFaceCentres_(),
 	neighbFaceAreas_(),
 	neighbFaceCellCentres_(),
-	neighbPointsPtr_(NULL),
-	neighbEdgesPtr_(NULL)
+	neighbPointsPtr_(nullptr),
+	neighbEdgesPtr_(nullptr)
 {}
 
 
@@ -119,8 +119,8 @@ Foam::processorPolyPatch::processorPolyPatch
 	neighbFaceCentres_(),
 	neighbFaceAreas_(),
 	neighbFaceCellCentres_(),
-	neighbPointsPtr_(NULL),
-	neighbEdgesPtr_(NULL)
+	neighbPointsPtr_(nullptr),
+	neighbEdgesPtr_(nullptr)
 {}
 
 

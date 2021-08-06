@@ -66,7 +66,7 @@ BlockMatrixAgglomeration<scalar>::restrictMatrix() const
 		<< abort(FatalError);
 
 	// Dummy return to keep compiler happy
-	return autoPtr<BlockAMGLevel<scalar> >(NULL);
+	return autoPtr<BlockAMGLevel<scalar> >(nullptr);
 }
 
 

@@ -69,7 +69,7 @@ void Foam::regExp::set(const char* pattern, const bool ignoreCase) const
 {
 	clear();
 
-	// avoid NULL pointer and zero-length patterns
+	// avoid nullptr pointer and zero-length patterns
 	if (pattern && *pattern)
 	{
 		preg_ = new regex_t;

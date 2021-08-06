@@ -357,12 +357,12 @@ Foam::Istream* Foam::IOobject::objectStream()
 		else
 		{
 			delete isPtr;
-			return NULL;
+			return nullptr;
 		}
 	}
 	else
 	{
-		return NULL;
+		return nullptr;
 	}
 }
 

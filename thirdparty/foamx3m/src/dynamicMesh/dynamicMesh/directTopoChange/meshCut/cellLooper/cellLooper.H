@@ -143,7 +143,7 @@ public:
 		autoPtr<cellLooper> clone() const
 		{
 			notImplemented("autoPtr<tcellLooper> clone() const");
-			return autoPtr<cellLooper>(NULL);
+			return autoPtr<cellLooper>(nullptr);
 		}
 
 

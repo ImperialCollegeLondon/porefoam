@@ -11,7 +11,7 @@ fi
 
 set -x
 
-wmake all solvers
+#wmake all solvers
 wmake all utilities
 
 # ----------------------------------------------------------------- end-of-file
