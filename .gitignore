@@ -1,11 +1,11 @@
 
 Make/*/
-bin/
-build/*
-include/
-lib/
-share/
-test/
+/bin/
+/build/*
+/include/
+/lib/
+/share/
+/test/
 **/bu
 **/BU
 *.log
