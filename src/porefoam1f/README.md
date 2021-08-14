@@ -57,7 +57,7 @@ License:
 
 [Imperial College pore-scale modelling website]: https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling
 [libvoxel]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/src/libvoxel 
-[foamx3m]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/thirdparty/foamx3m    
-[libtiff]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/thirdparty/libtiff    
-[zlib]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/thirdparty/foamx3m    
-[script]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/thirdparty/foamx3m   
+[foamx3m]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx3m    
+[libtiff]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/libtiff    
+[zlib]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx3m    
+[script]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx3m   

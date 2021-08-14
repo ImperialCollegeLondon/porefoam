@@ -41,8 +41,8 @@ else
 		# Openfoam settings:
 		# Change according to your openfoam installation directory
 		#export WM_NCOMPPROCS=28
-		#export FOAM_INST_DIR=$(cd $myUpperDIR/../thirdparty && pwd)
-		export FOAM_INST_DIR=$msRoot/thirdparty
+		#export FOAM_INST_DIR=$(cd $myUpperDIR/../pkgs && pwd)
+		export FOAM_INST_DIR=$msRoot/pkgs
 		source $FOAM_INST_DIR/foamx3m/etc/bashrc
 	else
 		printf "\n *** OpenFOAM:  $WM_PROJECT_DIR \n *** Suggestion: Deactivate this old OF installation and recompile, in a new terminal.\n\n"
