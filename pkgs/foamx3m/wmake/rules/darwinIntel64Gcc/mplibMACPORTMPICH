@@ -1,3 +1,0 @@
-PFLAGS     = -DOMPI_SKIP_MPICXX
-PINC       = -I/opt/local/include/mpich-$(WM_MACPORT_MPI_VERSION)
-PLIBS      = -L/opt/local/lib/mpich-$(WM_MACPORT_MPI_VERSION) -lmpich -lpmpich

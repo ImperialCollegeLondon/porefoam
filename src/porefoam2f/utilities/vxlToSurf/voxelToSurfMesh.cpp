@@ -77,6 +77,8 @@ int main(int argc, char *argv[])  {
 	forAllvp_(vimage) if(*vp>nVVs) *vp=nVVs; //! set isolateds to last vv, CtrlF:isolated=254
 	++nVVs;
 	cout<<"nVVs:"<<int(nVVs)<<endl;
+	if(int nZG=inp.getOr("nZeroGradLayers",0)) //TODO make this part of libvoxel commands
+		vimage.zeroGrad(nZG);
 
 
 	if (inp.getOr("extractBoxBoundary",false))  {

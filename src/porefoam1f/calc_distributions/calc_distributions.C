@@ -22,7 +22,6 @@ Ali Qaseminejad Raeini:    a.q.raeini@imperial.ac.uk
 #include "argList.H"
 #include "timeSelector.H"
 #include "graph.H"
-#include "mathematicalConstants.H"
 //#include "incompressibleTwoPhaseMixture.H"
 #include "pimpleControl.H"
 
@@ -30,6 +29,13 @@ Ali Qaseminejad Raeini:    a.q.raeini@imperial.ac.uk
 #include <valarray>
 #include "voxelImage.h"
 #include "AverageData.h"
+
+
+#ifdef FOAMX
+#define _Insid internalField()
+#else
+#define _Insid internalField().field()
+#endif
 
 using namespace Foam;
 typedef std::valarray<double> Dbls; // warning weird initialization of valarray
@@ -111,7 +117,7 @@ int main(int argc, char *argv[])
 	scalar K[3];
 	vector dp;
 	vector VDarcy;
-	scalar dx=pow(average(mesh.V()), 1./3.).value();
+	scalar dx=std::cbrt(average(mesh.V()).value());
 	L[x_]=(gMax(mesh.points().component(0))-gMin(mesh.points().component(0)));
 	L[y_]=(gMax(mesh.points().component(1))-gMin(mesh.points().component(1)));
 	L[z_]=(gMax(mesh.points().component(2))-gMin(mesh.points().component(2)));
@@ -132,8 +138,7 @@ int main(int argc, char *argv[])
 	const volVectorField& C=mesh.C();
 
 	int nSams = CVBounds1.size();
-	for (int iSam=0;iSam<nSams;iSam++)   
-	{
+	for (int iSam=0; iSam<nSams; iSam++)  {
 
 		volScalarField clip
 		(	IOobject( "clip", runTime.timeName(), mesh),
@@ -187,8 +192,8 @@ int main(int argc, char *argv[])
 		scalar Pmax_min=(max(p)-min(p)).value();
 		scalar Umax=(max(mag(U))).value();
 		scalar Re=rho.value()*VDarcy[iDir]*std::sqrt(K[iDir])/mu.value() ;
-		double porVol = gSum(mesh.V()*porosity.internalField());
-		double cvFraction = gSum(mesh.V()*porosity.internalField()*clip.internalField())/porVol;
+		double porVol = gSum(mesh.V()*porosity._Insid);
+		double cvFraction = gSum(mesh.V()*porosity._Insid*clip._Insid)/porVol;
 
 		Info << runTime.caseName()
 			<<"\t\t effPorosity=  "<<porVol/(L[x_]*L[y_]*L[z_])<<"                  = V_pore/(L_x*L_y*L_z)= "<<porVol<<" /( "<<L[x_]<<" "<<L[y_]<<" "<<L[z_]<<" )\n"
@@ -203,16 +208,16 @@ int main(int argc, char *argv[])
 			<<" cvFraction= "<<  cvFraction
 			<< "\n";
 		VDarcy[iDir]=max(1e-64,VDarcy[iDir]);
-		std::valarray<Dbls> ditribLogU = distribution(log10(max(1e-16,clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir]) ), mesh.V()*porosity.internalField());
-		std::valarray<Dbls> ditribU  = distribution(clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir], mesh.V());
-		std::valarray<Dbls> ditribUx = distribution(clip.internalField()*U.internalField().component(vector::X)/porosity.internalField()/VDarcy[iDir], mesh.V()*porosity.internalField());
-		std::valarray<Dbls> ditribUy = distribution(clip.internalField()*U.internalField().component(vector::Y)/porosity.internalField()/VDarcy[iDir], mesh.V()*porosity.internalField());
-		std::valarray<Dbls> ditribUz = distribution(clip.internalField()*U.internalField().component(vector::Z)/porosity.internalField()/VDarcy[iDir], mesh.V()*porosity.internalField());
+		std::valarray<Dbls> ditribLogU = distribution(log10(max(1e-16,clip._Insid*mag(U._Insid)/porosity._Insid/VDarcy[iDir]) ), mesh.V()*porosity._Insid);
+		std::valarray<Dbls> ditribU  = distribution(clip._Insid*mag(U._Insid)/porosity._Insid/VDarcy[iDir], mesh.V());
+		std::valarray<Dbls> ditribUx = distribution(clip._Insid*U._Insid.component(vector::X)/porosity._Insid/VDarcy[iDir], mesh.V()*porosity._Insid);
+		std::valarray<Dbls> ditribUy = distribution(clip._Insid*U._Insid.component(vector::Y)/porosity._Insid/VDarcy[iDir], mesh.V()*porosity._Insid);
+		std::valarray<Dbls> ditribUz = distribution(clip._Insid*U._Insid.component(vector::Z)/porosity._Insid/VDarcy[iDir], mesh.V()*porosity._Insid);
 
-		std::valarray<Dbls> ditribUmCbrt = distribution(cbrt(clip.internalField()*mag(U.internalField())/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
-		std::valarray<Dbls> ditribUxCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(0)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
-		std::valarray<Dbls> ditribUyCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(1)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
-		std::valarray<Dbls> ditribUzCbrt = distribution(cbrt(clip.internalField()*U.internalField().component(2)/porosity.internalField()/VDarcy[iDir]), mesh.V()*porosity.internalField(),-1e9);
+		std::valarray<Dbls> ditribUmCbrt = distribution(cbrt(clip._Insid*mag(U._Insid)/porosity._Insid/VDarcy[iDir]), mesh.V()*porosity._Insid,-1e9);
+		std::valarray<Dbls> ditribUxCbrt = distribution(cbrt(clip._Insid*U._Insid.component(0)/porosity._Insid/VDarcy[iDir]), mesh.V()*porosity._Insid,-1e9);
+		std::valarray<Dbls> ditribUyCbrt = distribution(cbrt(clip._Insid*U._Insid.component(1)/porosity._Insid/VDarcy[iDir]), mesh.V()*porosity._Insid,-1e9);
+		std::valarray<Dbls> ditribUzCbrt = distribution(cbrt(clip._Insid*U._Insid.component(2)/porosity._Insid/VDarcy[iDir]), mesh.V()*porosity._Insid,-1e9);
 
 
 		std::valarray<Dbls> ditribLogUPlus(ditribLogU[0],5);

@@ -107,7 +107,7 @@
 			U[i][2] = min (max(U[i][2], -mag(UFilter[i][2])),mag(UFilter[i][2]));
 		}
 
-		UFilter*= 1./UBoundByUSmoothFactor;;
+		UFilter*= dimensionedScalar(1./UBoundByUSmoothFactor);
 		UFilter.correctBoundaryConditions();
 
 		 U.correctBoundaryConditions();

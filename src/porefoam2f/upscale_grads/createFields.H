@@ -6,11 +6,10 @@
 	
 	Info<< "Reading field alpha1\n" << endl;
 	volScalarField alpha1 (
-		IOobject (
-			"alpha1", runTime.timeName(), mesh,
+		IOobject( "alpha1", runTime.timeName(), mesh,
 			IOobject::MUST_READ, IOobject::NO_WRITE ),
 		mesh );
-	alpha1.boundaryField().evaluate();
+	alpha1.boundaryFieldRef().evaluate();
 	
 //alpha1=fvc::average(fvc::interpolate(alpha1) );
 	Info<< "Reading field U\n" << endl;
@@ -52,7 +51,7 @@
 #ifndef  SINGLE_PHASE
 	Info<< "setting up interface \n" << endl;
 	// Construct interface from alpha1 distribution
-	interfaceProperties interface(alpha1, U, twoPhaseProperties);
+	interfaceProps interface(alpha1, U, twoPhaseProperties);
 	surfaceScalarField deltaS=fvc::snGrad(alpha1);	
 #endif
  

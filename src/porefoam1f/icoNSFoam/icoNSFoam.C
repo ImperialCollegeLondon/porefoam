@@ -177,8 +177,10 @@ int main(int argc, char *argv[])
 		p.write();
 	}
 
+#ifdef FOAMX
 	mesh.clearPoints();// just to print the message
 	mesh.clearNonOrtho();// just to print the message
+#endif //FOAMX
 
     Info<< "End\n" << endl;
 

@@ -1,4 +1,0 @@
-
-testBndLayerRefinement.C
-
-EXE = $(FOAM_APPBIN)/testBndLayerRefinement

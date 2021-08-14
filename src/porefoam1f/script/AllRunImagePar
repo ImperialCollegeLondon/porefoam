@@ -65,7 +65,7 @@ echo "Images: $dataFiles"
   echo "flow directions=\"$directions\" "
 
 : ${outPutFormat:=$3}
-: ${outPutFormat:=tif}
+: ${outPutFormat:=raw.gz}
   echo "outPutFormat=\"$outPutFormat\" "
 
 : ${detlaPs:="1"}
@@ -208,6 +208,7 @@ echo "p @ $direction : $p  Pa"
 	#(cd $caseName && runMPI calc_perms $nProc)
 	(cd $caseName && runMPI calc_distributions $nProc)
 
+	(cd $caseName && cp  FOAM2Voxel vxlImage.mhd vxlImage.mhd- )
 	(cd $caseName && runApp  FOAM2Voxel vxlImage.mhd "$nProc" "$outPutFormat" t)
 
 

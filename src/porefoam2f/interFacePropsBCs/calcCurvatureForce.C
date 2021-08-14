@@ -20,9 +20,8 @@
 \*-------------------------------------------------------------------------*/
 
 
-#include "interfaceProperties.H"
+#include "interfaceProps.H"
 #include "alphaContactAngleFvPatchScalarField.H"
-#include "mathematicalConstants.H"
 #include "primitivePatchInterpolation.H"
 #include "surfaceInterpolate.H"
 #include "fvcDiv.H"
@@ -50,7 +49,7 @@
 
 
 
-Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
+Foam::surfaceScalarField Foam::interfaceProps::calcCurvatureFConservative
 (
 		//surfaceVectorField& nSHatfv,
 		//const surfaceScalarField& deltaS_
@@ -117,7 +116,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 		}
 	}
 
-	syncTools::syncPointList(msh, interfPoints, maxEqOp<label>(), 0, false);
+	syncTools::syncPointList(msh, interfPoints, maxEqOp<label>(), 0);
 
 	pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, msh.points(),interfPoints);
 	//pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, msh.points(),interfPoints);
@@ -132,7 +131,7 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 	pointVectorField nHatSp = gradAlphaP/magGradAlphaP;
 	smoothNSOverInterfPoints(nHatSp, magDelS, msh.magSf(), smoothingKernel_, smoothingRelaxFactor_,interfPoints);
-	nHatSp /= mag(nHatSp) + 1e-12;
+	nHatSp /= mag(nHatSp) + dimensionedScalar(1e-12);
 
 	#include "calcInterfaceLocation.H"
 
@@ -178,8 +177,8 @@ Foam::surfaceScalarField Foam::interfaceProperties::calcCurvatureFConservative
 
 	forAll(boundary, bI)
 	{
-		vectorField&  patchCurveIntegralf = curvatureForcef.boundaryField()[bI];
-		vectorField&  nSHatfvp = nSHatfv.boundaryField()[bI];
+		vectorField&  patchCurveIntegralf = curvatureForcef.boundaryFieldRef()[bI];
+		vectorField&  nSHatfvp = nSHatfv.boundaryFieldRef()[bI];
 		const scalarField& pMagDelS = magDelS.boundaryField()[bI];
 		const scalarField& deltaS_p = deltaS_.boundaryField()[bI];
 

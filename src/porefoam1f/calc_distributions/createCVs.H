@@ -4,7 +4,7 @@
 		(	"VC",  runTime.timeName(),  mesh
 		),  mesh,  dimensionedScalar("VC",dimVolume,0.),  "fixedValue"
 	);	
-	VC.internalField()=mesh.V();
+	VC.ref()=mesh.V();
 
 
 

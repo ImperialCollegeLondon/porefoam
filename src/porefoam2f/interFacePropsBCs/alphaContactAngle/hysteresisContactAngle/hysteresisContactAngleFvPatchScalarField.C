@@ -179,7 +179,6 @@ void Foam::hysteresisContactAngleFvPatchScalarField::write(Ostream& os) const
     os.writeKeyword("thetaR") << thetaR_ << token::END_STATEMENT << nl;
     os.writeKeyword("thetaAOW") << thetaAOW_ << token::END_STATEMENT << nl;
     os.writeKeyword("thetaROW") << thetaROW_ << token::END_STATEMENT << nl;
-    writeEntry("value", os);
 }
 
 

@@ -11,7 +11,7 @@
 			scalar delU = UAk-UAkOOld;  scalar del2U = delU-(UAkOOld-UAkOOOOld);
 			scalar dUAkF= mag(del2U)>1e-18 ? -delU*delU/del2U : 0.9*delU;  
 			dUAkF = min(max(-0.1,dUAkF/max(1e-16,UAk)),0.1);
-			U *= 1+dUAkF;
+			U *= dimensionedScalar(1+dUAkF);
 			Info<<"\ndUAitkenF:"<<dUAkF<<nl<<endl; 
 		}
 		UAkOOOOld=UAkOOOld; UAkOOOld=UAkOOld;  UAkOOld=UAkOld;  UAkOld=UAk;
@@ -32,7 +32,7 @@
 		  + fvm::div(rho*phi, U)
 		  - fvm::laplacian(muEff, U)
 		);
-		UEqn().relax(pRelaxF*((corr+0.5)/(nUCorr+1)));
+		UEqn.ref().relax(pRelaxF*((corr+0.5)/(nUCorr+1)));
 
 		volScalarField rAU = 1./UEqn().A();
 		//U = rAU*UEqn().H()- rAU*fvc::grad(p-beta*fvc::div(phi));

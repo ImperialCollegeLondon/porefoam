@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 	#define labelLoop face
 
 	const pointField & points1=surf1.points();
-	const List<face> & faces=surf1.surfFaces();
+	const List<face> & faces=surf1.faces();
 	DynamicList<DynamicList<label> > pointPointsTmp(points1.size());
 	List<labelLoop> pointPoints(points1.size());
 	forAll(faces,faceI)

@@ -63,7 +63,8 @@
 
 	Info<<"average(fvc::laplacian(p)): "<<average(fvc::laplacian(p)).value()<<endl; //just to make sure Everything is computed before cleaning up below
 	Info<<"average(fvc::div(U)): "<<average(fvc::div(U)).value()<<endl; //just to make sure Everything is computed before cleaning up below
+#ifdef FOAMX // WM_LABEL_SIZE used in official openfoam
 	mesh.clearPoints();
 	mesh.clearNonOrtho();
-
+#endif //FOAMX
 

@@ -31,7 +31,6 @@ Martin J Blunt:  m.blunt@imperial.ac.uk
 #include "argList.H"
 #include "timeSelector.H"
 #include "graph.H"
-#include "mathematicalConstants.H"
 
 #include "OFstream.H"
 

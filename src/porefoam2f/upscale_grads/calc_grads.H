@@ -99,7 +99,7 @@ if(CVBounds1.size())
 		Info<<iSam<< "   Del x :"<< xSam1 <<" to "<< xSam2<< "   ";		
 
 		//clip1=0.;
-		clip=0.;
+		clip=dimensionedScalar(0.);
 		forAll(Cx,c) 
 		{ 
 				if (PPRegions[c]==CVxlVals[iSam]&& 
@@ -132,10 +132,10 @@ if(CVBounds1.size())
 
 		forAll(boundary, bi)
 		{
-			clip.boundaryField()[bi]=0.;
-			clip.boundaryField()[bi]==0.;
-			clipAlpha.boundaryField()[bi]=0.;
-			clipAlpha.boundaryField()[bi]==0.;
+			clip.boundaryFieldRef()[bi]=0.;
+			clip.boundaryFieldRef()[bi]==0.;
+			clipAlpha.boundaryFieldRef()[bi]=0.;
+			clipAlpha.boundaryFieldRef()[bi]==0.;
 		}
 		surfaceScalarField BSurafce=fvcDelta(clip);
 		surfaceScalarField AlphaInternalBoundary=fvcDelta(clipAlpha);

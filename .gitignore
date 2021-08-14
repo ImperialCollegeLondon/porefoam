@@ -26,8 +26,7 @@ log.*
 
 
 
-
-thirdparty/**/bin/
+pkgs/**/bin/
 
 
 

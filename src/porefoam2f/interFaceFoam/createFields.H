@@ -12,7 +12,7 @@
 				IOobject::MUST_READ, IOobject::AUTO_WRITE ),
 		mesh );
 	alpha1=curtailBADOFSET(alpha1,0.);
-	alpha1.boundaryField().evaluate();
+	alpha1.boundaryFieldRef().evaluate();
 
 
 	Info<< "Reading field U\n" << endl;
@@ -55,7 +55,7 @@
 
 	Info<< "setting up interface \n" << endl;
 	// Construct interface from alpha1 distribution
-	interfaceProperties interface(alpha1, U, twoPhaseProperties);
+	interfaceProps interface(alpha1, U, twoPhaseProperties);
 
  
 	// Construct incompressible turbulence model
@@ -101,11 +101,7 @@
 
 
 
-	dimensionedScalar deltaN
-	(
-		"deltaN",
-		1e-8/Foam::pow(gAverage(mesh.V()), 1./3.)
-	);
+	dimensionedScalar deltaN(1e-8/Foam::cbrt(gAverage(mesh.V())));
 	Info<<"<<deltaN.value()="<<deltaN.value()<<endl;
 
 	//pd.correctBoundaryConditions();

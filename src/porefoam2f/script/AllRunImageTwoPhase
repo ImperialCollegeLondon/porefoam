@@ -5,7 +5,7 @@
 ######################### MAIN INPUT PARAMETERS #############################
 
 # contact angle for drainage measured through phase 1 (oil)
-: ${theta0s:="150"}
+: ${theta0s:="140"}
 : ${thetaIn:=90}
 : ${thetaOut:=90}
 : ${pdMeanValue1:=0}
@@ -17,12 +17,13 @@
 # Inlet BCs, Darcy velocity (um/s) for water phase:
 : ${UD0s:="10"}
 
-# overwrides if oilFilldFracs<0, initialize from VSubElems image
-: ${VSElml:=1}
+# Used if oilFilldFracs<0, initialize from VSubElems image
+: ${VSElml:=alpha1.mhd}
+
 
 # fill a small portion of the image near the inlet with oil (onjecting phase)
-# give up to two numbers one <<1 and the other >1
-: ${oilFilldFracs:=" 0.1"} #  1.05
+# give up to two numbers one <1 and the other >1, negatives will be skiped
+: ${oilFilldFracs:=" 0.05"} #  1.05 # set to =-1 to initialize alph from alpha1.mhd
 
 # In case you want to refine the mesh increase this, or vise-versa. 
 : ${RefineLevel:=1}
@@ -31,16 +32,29 @@
 : ${nProc:=24}
 
 
+# tag mesh or decomposed/simulation case 
 : ${meshTag:=""}
 : ${caseTag:=""}
-: ${cfMshTg:="cfMesh"}
 
+: ${smoothMeshNIter:=3}
+: ${smoothMeshBoundary:=yes}
+: ${smoothMeshInternal:=yes}
+: ${smoothMeshRelax:=0.1}
+
+
+
+
+# Notes on selection of parameters:
+# for CCF pcThicknessFactor~0.1, for FSF  pcThicknessFactor~0.6
+# for coarse meshes FSF is more stable, for high-res cases CCF is more accurate
+# Drainage with low contact angles (CAw>140) is a tough job! (wetting films are left behind)
+# Simulations become impractical if inlet velocity is less than ~5% of hains jumps velocity
 
 # discretization parameters,
 # refer to http://dx.doi.org/10.1016/j.jcp.2012.04.011 for further information:
+: ${surfaceForceModel:=CCF}
 : ${pcThicknessFactor:=0.1}
 : ${cAlpha:=1.}
-: ${surfaceForceModel:=CCF}
 : ${fcCorrectTangent:=0.05}
 : ${smoothingKernel:=2}
 : ${smoothingRelaxFactor:=0.95}
@@ -54,7 +68,6 @@
 # Everything set, now do the hard work:
 #############################################################################
 
-#################       WARNING: SYNC WITH TEST CASES       #################
 
 
 #set -x
@@ -63,7 +76,7 @@
 if [ -n "$1" ]; then
     dataFiles=$1
 else
-    dataFiles=rock.mhd
+    dataFiles=$(ls *.mhd)
 fi
 
 
@@ -75,19 +88,31 @@ echo "______________________________________________________________________"
 
 
 
+# Check porefoam installation
 if ! [ -n "$msSrc" ]; then 
-	echo "Error: msSrc is not not set.";
 	guessPsDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
-	if [ -d $guessPsDIR/script ]; then 
-		echo " hint: set them by running (also add this to your ~/.bashrc file):"
-		echo "source $guessPsDIR/script/bashrc"
+	if [ -f $guessPsDIR/script/bashrc ]; then 
+		echo " msSrc is not not set, set it by running (or add to your ~/.bashrc file):"
+		echo "source $guessPsDIR/script/bashrc"; echo
+		source $guessPsDIR/script/bashrc
 	else
+		echo "Error: msSrc is not not set.";
 		echo " please set them first following the documentation, maybe by typing:"
 		echo "source ~/works/src/script/bashrc"
+		exit 1
 	fi
-	exit
 fi
 
+# Copy this script to local (PWD) folder for user edit
+scriptName=`basename "${BASH_SOURCE[0]}"`
+scriptDir=$( cd "$( dirname "${BASH_SOURCE[0]}" )/" && pwd )
+if ! [ -f $scriptName ]; then
+	cp  "${BASH_SOURCE[0]}" ./
+	sed -i s:'^[ \t]*'"guessPsDIR=".*:"	guessPsDIR=$msSrc": ./$scriptName
+	echo "please edit the input parameters in file $PWD/$scriptName and run:"
+	echo "./$scriptName $@"
+	exit
+fi
 
 
 
@@ -102,22 +127,13 @@ basedirExtra=$msSrc/porefoam2f/script/baseExtra
 # nProcSHM=8
 
 # Skip meshing near the boundaries of the image to facilitate mesh
-# generation. The value for this keyword is the distance (in
+# generation. The value for this keyword is the distance (in 
 # voxels) to the image boundaries which will be skipped
  nSkip=0
 
 
 inlet=Left
 outlet=Right
-
-scriptName=`basename "${BASH_SOURCE[0]}"`
-scriptDir=$( cd "$( dirname "${BASH_SOURCE[0]}" )/" && pwd )
-if ! [ -f $scriptName ]; then
-	cp  "${BASH_SOURCE[0]}" ./
-	echo "please edit the input parameters in file $PWD/$scriptName and run:"
-	echo "./$scriptName $@"
-	exit
-fi
 
 
 echo "cAlpha $cAlpha"
@@ -132,6 +148,7 @@ echo "wallSmoothingKernel $wallSmoothingKernel"
 echo "          UD1s: $UD1s"
 echo "          UD0s: $UD0s"
 echo "          dataFiles: $dataFiles"
+
 
 endTimeTP=$endTime;
 for dataFile in $dataFiles ; do
@@ -150,98 +167,55 @@ echo "_________________________ $dataFile  ____________________________"
 		### First run: create mesh
 
 		echo " ###########  createing mesh: $mshDir   ########## "
-		#echo ". $poreFoamBashrc"
-		#. $poreFoamBashrc 1
 
 		cp -r $basedir $mshDir
 		cp  postProcessDict_${dataFile%.*}  $mshDir/system/postProcessDict
 
-		ls $mshDir/constant/*
 
 		cp "$dataFile".mhd  $mshDir/"$dataFile"_input.mhd # for future reference
 		sed -i 's/ElementDataFile[ \t]*=[ \t]*/ElementDataFile = ..\//'  $mshDir/${dataFile}_input.mhd
 		sed -i 's/\(ElementDataFile.*\)/\1\nUnit = 1e6 /'  $mshDir/${dataFile}_input.mhd #  @scale for snappyHexMesh
-		(cd $mshDir && runApp voxelImageProcess  "$dataFile"_input.mhd   "$mshDir.mhd" && mv log.voxelImageProcess log.voxelImageProcess- )
-		#(cd $mshDir && RunUpdateBlockMeshDict ${mshDir}.mhd  2  $RefineLevel $nSkip )
-		vxlSiz="$(cat $mshDir/$mshDir.mhd | grep ElementSize | sed -e 's/[\t ]/\n/g' | grep [0-9] | head -1 )" # note `more` doesn't work, breaks piping
-		echo vxlSiz $vxlSiz
-
-		# create STL surface for SHM
-		echo " ------------------------  "
-
-
+		mkdir -p $mshDir/constant/triSurface
+		(cd $mshDir && runApp voxelImageProcess  "$dataFile"_input.mhd   "${mshDir}.mhd" )
+		(cd $mshDir && runApp voxelToFoamPar  "$dataFile"_input.mhd 1 1 1 F)
 		setValues BASENAME "$mshDir" $mshDir/system/meshingDict
+
+		#echo " ---- create surface ----  "
+		#(cd $mshDir && RunUpdateBlockMeshDict ${mshDir}.mhd  2  $RefineLevel $nSkip )	
 		#(cd $mshDir && runApp voxelToSurface  )
-		printf "\n extractBoxBoundary true\n\n" >> $mshDir/${dataFile}_input.mhd  
-		(cd $mshDir && runApp vxlToSurf  ${dataFile}_input.mhd  ${dataFile}.obj  )
-		(cd $mshDir && runApp surfaceAutoPatch ${dataFile}0.obj solidwalls.stl   100 )
 		#(cd $mshDir && runApp surfaceSmoothVP )
-		echo "$mshDir/constant/ : ";	(cd $mshDir && ls *.obj )
-		#(cd $mshDir && runApp voxelToFoamPar  ${mshDir}.mhd 1 1 1 F)
+		#echo "$mshDir/constant/triSurface : ";	(cd $mshDir && ls *.obj )
+		#(cd $mshDir/constant/triSurface && mv ../../solidwalls.obj solidwalls.obj )
+		#ls $mshDir/constant/triSurface
 		echo " ------------------------  "
+ 
+
+		# echo snappyHexMesh deactivated
+		#(cd $mshDir/system && cp snappyHexMeshDict$SHMSuffix snappyHexMeshDict )
+		#locationInMesh=$(cat "$mshDir/$mshDir".mhd_aPoreVoxel)
+		#echo "locationInMesh: $locationInMesh"
+		#setKeywordValues locationInMesh "\($locationInMesh\)" ./$mshDir/system/snappyHexMeshDict
+		#setKeywordValues castellatedMesh false ./$mshDir/system/snappyHexMeshDict
+		#setKeywordValues snap true ./$mshDir/system/snappyHexMeshDict
+		#setKeywordValues addLayers false ./$mshDir/system/snappyHexMeshDict
+		#(cd $mshDir && runApp  snappyHexMesh   -overwrite  && mv  log.snappyHexMesh log.snappyHexMesh.2)
+		#(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.3)
+		#(cd $mshDir && RunRemoveExtras)
+		#echo skip '( cd $mshDir && . $msSrc/porefoam2f/script/RunCorrectBs )'
 
 
-		(cd $mshDir/system && mv meshDict.$cfMshTg meshDict )
-		setKeywordValues maxCellSize "$(calc $vxlSiz/$RefineLevel)" $mshDir/system/meshDict
-		setKeywordValues nLayers "2" $mshDir/system/meshDict
-		setKeywordValues stopAfter "end" $mshDir/system/meshDict
-		(cd $mshDir && runApp cartesianMesh && mv log.cartesianMesh log.cartesianMesh-1)
-		(cd $mshDir && runApp ofMesh2Voxel && mv log.ofMesh2Voxel log.ofMesh2Voxel-)
-		(cd $mshDir && runApp voxelImageProcess vxlImage.mhd "$mshDir.mhd")
-		(cd $mshDir && runApp checkMesh && mv log.checkMesh log.checkMesh.0)
+		checkM() { (runApp -l log.checkMesh-$1 checkMesh &&  grep -e 'non-orthogonality Max' log.checkMesh-$1 | sed 's/Threshold.*//'); }
 
-		#(cd $mshDir && runApp  meshAddFaceLayer )
+		(cd $mshDir && checkM 1)
 
-		(cd $mshDir && runApp  smoothMesh 0.2 10 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.1)
-		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.2)
-		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.3)
-
-		(cd $mshDir && runApp  smoothMesh 0.2 10 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.4.1)
-		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.4.2)
-		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.4.3)
-
-		#setKeywordValues lastStep "templateGeneration" $mshDir/system/meshDict
-		#setKeywordValues stopAfter "end" $mshDir/system/meshDict
-		#(cd $mshDir && runApp cartesianMesh && mv log.cartesianMesh log.cartesianMesh-1)
-		#(cd $mshDir && runApp  combinePatchFaces -overwrite 50 && mv log.combinePatchFaces log.combinePatchFaces.2)
-		#(cd $mshDir && runApp  meshAddFaceLayer )
-
-
-		#(cd $mshDir && runApp cartesianMesh )
-
-		(cd $mshDir && runApp  smoothMesh 0.1 10 false && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.5-1)
-		(cd $mshDir && runApp  smoothMesh 0.3 20 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.5-2)
-		(cd $mshDir && runApp  smoothMesh 0.2 20 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.5-3)
-
-		 #remove these when adding a single layer maybe?
-		(cd $mshDir && runApp  smoothMesh 0.05 10 false && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.6-1)
-		(cd $mshDir && runApp  smoothMesh 0.3 10 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.6-2)
-		(cd $mshDir && runApp  smoothMesh 0.1 10 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.6-3)
-
-		 #remove these when adding a single layer maybe?
-		(cd $mshDir && runApp  smoothMesh 0.05 10 false && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.7-1)
-		(cd $mshDir && runApp  smoothMesh 0.3 10 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.7-2)
-		(cd $mshDir && runApp  smoothMesh 0.1 10 true && mv  log.smoothMesh log.smoothMesh-)
-		(cd $mshDir && runApp  checkMesh && mv log.checkMesh log.checkMesh.7-3)
-
-
-
-		#################################################################################################
-
+		echo "smoothMesh NIter:$smoothMeshNIter,  Boundary:$smoothMeshBoundary,  Internal:$smoothMeshInternal, Relax:$smoothMeshRelax"
+		for ((ii = 0 ; ii < $smoothMeshNIter ; ii++)); do
+			echo $ii
+			if [ "$smoothMeshBoundary" == yes ]; then
+				(cd $mshDir && runApp -l log.smoothMesh-$ii.0 smoothMesh $smoothMeshRelax 10 0 1 && checkM $ii.0); fi
+			if [ "$smoothMeshInternal" == yes ]; then 
+				(cd $mshDir && runApp -l log.smoothMesh-$ii.1 smoothMesh $smoothMeshRelax 10 4 1 && checkM $ii.1); fi
+		done
 
 
 
@@ -271,8 +245,9 @@ echo "_________________________ $dataFile  ____________________________"
 		setKeywordValues fcdFilter $fcdFilter ./$mshDir/system/fvSolution
 		setKeywordValues maxDeltaT $maxDeltaT ./$mshDir/system/controlDict
 		setKeywordValues endTime $endTime ./$mshDir/system/controlDict
-
-
+ 
+ 
+		#(cd $mshDir && runApp ofMesh2Voxel)
 
 		#printf "\ntitle $mshDir;\n" >> $mshDir/vxlImage.mhd
 		#echo "write_subElements true;" >> $mshDir/vxlImage.mhd
@@ -280,11 +255,6 @@ echo "_________________________ $dataFile  ____________________________"
 		#echo "write_cnm true; " >> $mshDir/vxlImage.mhd
 		#(cd $mshDir && runApp gnextract vxlImage.mhd)
 
-
-
-
-
-		setKeywordValues method scotch ./$mshDir/system/decomposeParDict
 	else
 		echo "Error: mesh folder exists but mesh is not there, remove $PWD/$mshDir and rerun to regenerate"
 	fi
@@ -301,13 +271,13 @@ echo "_________________________ $dataFile  ____________________________"
 	thetaR=$theta0
 	echo "theta0 $theta0"
 
-	for oilFilldFrac in $oilFilldFracs ; do
+	for oilFilldFrac in $oilFilldFracs ; do 
 		echo "oilFilldFrac:  $oilFilldFrac"
-		runDir=${mshDir}${caseTag}_Uo${UD1}w${UD0}CAw${theta0}_l$VSElml
+		runDir=${mshDir}${caseTag}_Uo${UD1}w${UD0}CAw${theta0} #_l$VSElml
 		maxS1=0.999
 		minS1=0.001
 		endTime=$endTimeTP
-		if (( $(echo "$oilFilldFrac > 1.0" | bc ) )); then
+		if (( $(echo "$oilFilldFrac > 1." | bc ) )); then
 		   runDir=${mshDir}_SP  # single-phase flow
 		   echo "oilFilldFrac $oilFilldFrac, -> singlephase :   caseTag $caseTag"
 		   endTime=0.005
@@ -358,7 +328,7 @@ echo "_________________________ $dataFile  ____________________________"
 			setKeywordValues endTime $endTime ./$runDir/system/controlDict
 
 
-			boundingBox=$(cat ./$runDir/log.checkMesh | grep ound | grep box | sed 's/.*box//g'| sed 's/[\(\)]//g' |  sed 's/[eE]/\*10\^/g' | sed -e 's/[\t ][\t ]*/\n/g')
+			boundingBox=$(cat ./$runDir/log.checkMesh | grep ound | grep box | sed 's/[a-Z][a-Z][a-Z]*//g'| sed 's/[\(\)]//g' |  sed 's/[eE]/\*10\^/g' | sed -e 's/[\t ][\t ]*/\n/g')
 			boundingBox=($boundingBox)
 			echo "UD1: $UD1,   boundingBox:  ${boundingBox[*]}"
 			QOil=$(echo "scale=18; (${boundingBox[4]}-(${boundingBox[1]}))*(${boundingBox[5]}-(${boundingBox[2]}))*$UD1*0.000001" | bc )
@@ -379,11 +349,12 @@ echo "_________________________ $dataFile  ____________________________"
 			setBoundaryCondition $outlet theta0 $thetaOut ./$runDir/0/alpha1
 
 
-			if (( $(echo "$oilFilldFrac < 0.0" | bc ) )); then 
+			if (( $(echo "$oilFilldFrac < 0." | bc ) )); then 
 			 if [ "$VSElml" == "alpha1.mhd" ] ; then
 				cp -r alpha1.* $runDir/
 				(cd $runDir && runApp  voxelAlphaFieldToFoam alpha1.mhd -nGrowAlpha 0)   #-invertAlpha
-			 else
+			 else 
+				echo '"$VSElml" != "alpha1.mhd" requires (closed-source) gnextract outputs'
 				vxlSElems=${mshDir}_VSubElems
 				cp -r $mshDir/$vxlSElems$VSElml.$ImgSufix $runDir/
 				cp -r $mshDir/${vxlSElems}0.mhd  $runDir/${vxlSElems}$VSElml.mhd
@@ -396,7 +367,7 @@ echo "_________________________ $dataFile  ____________________________"
 				xInitAlpha=$(echo "scale=10; ${boundingBox[0]}+(${boundingBox[3]}-(${boundingBox[0]}))*$oilFilldFrac" | bc )
 				echo "xInitAlpha $xInitAlpha"
 				setKeywordValues box  "    (-1. -1. -1.) ($xInitAlpha 1000 1000);" ./$runDir/system/setFieldsDict
-				(cd $runDir && rm log.setFields)
+				(cd $runDir && rm -f log.setFields)
 				(cd $runDir && runApp setFields)
 			fi
 
@@ -404,15 +375,14 @@ echo "_________________________ $dataFile  ____________________________"
 
 			setKeywordValues numberOfSubdomains $nProc ./$runDir/system/decomposeParDict
 
-			if [ -f $basedirExtra/system/decomposeParDict.$nProc ] ; then
-				(cd $runDir/system &&  cp $basedirExtra/system/decomposeParDict.$nProc decomposeParDict)
-			else
-				echo " file $basedirExtra/system/decomposeParDict.$nProc not found, decomposing mesh using single-level scotch algorithm instead."
-			fi
-			setKeywordValues method scotch ./$runDir/system/decomposeParDict
+			#if [ -f $basedirExtra/system/decomposeParDict.$nProc ] ; then
+				#(cd $runDir/system &&  cp $basedirExtra/system/decomposeParDict.$nProc decomposeParDict)
+			#else
+				echo " Decomposing mesh using single-level scotch algorithm."
+			#fi
 
 			(cd $runDir &&  runApp decomposePar)
-			(cd $runDir &&  mv log.renumberMesh log.renumberMeshSerial )
+			(cd $runDir &&  mv -f log.renumberMesh log.renumberMeshSerial )
 			(cd $runDir &&  runMPI renumberMesh $nProc -overwrite)
 			#(cd $runDir &&  rm -f log.compactFaceToFace )
 			#(cd $runDir &&  runMPI compactFaceToFace $nProc )
@@ -422,7 +392,7 @@ echo "_________________________ $dataFile  ____________________________"
 
 
 			setKeywordValues writeFormat binary ./$runDir/system/controlDict
-		 else
+		 else 
 			echo "Error: $runDir/constant/polyMesh/points missing, mesh is not available or not decomposed properly"
 		 fi
 		else
@@ -435,15 +405,15 @@ echo "_________________________ $dataFile  ____________________________"
 
 
 			if [ -f "$(which $application)" ]; then
-			if [ -f $runDir/log.$application ]; then
+			 if [ -f $runDir/log.$application ]; then
 					printf "\nlog.$application exists, press Ctrl-c to stop the new run / make a back up\n"
 				sleep 2
 				prevRunDate=$(stat -c %y $runDir/log.$application | sed 's/[ :]/-/g' | sed 's/[.+].*//g')
 				(cd $runDir && mv  log.$application log.$application$prevRunDate )
 				sleep 0.5
-		   fi
+		    fi
 
-			(cd $runDir && runMPI  $application $nProc )
+			 (cd $runDir && runMPI  $application $nProc )
 			else printf "\n\nError $application not found\n\nPATH:$PATH\npsSRC:$psSRC\n\n"
 			fi
 		fi

@@ -1,3 +1,0 @@
-generateBoundaryLayers.C
-
-EXE = $(FOAM_APPBIN)/generateBoundaryLayers

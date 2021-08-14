@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 		fvm::laplacian(p) 
 	);
 	pEqn.setReference(pRefCell, pRefValue);
-	pEqn.solve(mesh.solutionDict().solver("pcorr"));
+	pEqn.solve(mesh.solverDict("pcorr"));
 }
 
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 		fvm::laplacian(1e6/((fvc::grad(p)&fvc::grad(p))+0.001*average(fvc::grad(p)&fvc::grad(p))),p)
 	);
 	pEqn.setReference(pRefCell, pRefValue);
-	pEqn.solve(mesh.solutionDict().solver(p.name() + "Final"));
+	pEqn.solve(mesh.solverDict(p.name() + "Final"));
 }
 
 	
@@ -192,17 +192,17 @@ for (int ii=1;ii<10;++ii)
 	//	( phi.boundaryField()  // - fvOptions.relative(mesh.Sf().boundaryField() & U.boundaryField())
 	//	) / (mesh.magSf().boundaryField()*rAUf.boundaryField())	);
 
-	for(int nonOrth=0; nonOrth<=pimple.nNonOrthCorr(); nonOrth++)
+	while(pimple.correctNonOrthogonal())
 	{ 
 		fvScalarMatrix pEqn( fvm::laplacian(rAUf, p) 
 			  == rlx*fvc::div(phi) + (1.-rlx)*fvc::laplacian(rAUf,p) );
 		pEqn.setReference(pRefCell, pRefValue);
-		if (nonOrth==pimple.nNonOrthCorr())
-			pEqn.solve(mesh.solutionDict().solver(p.name() + "Final"));
+		if (pimple.finalNonOrthogonalIter())
+			pEqn.solve(mesh.solverDict(p.name() + "Final"));
 		else
-			pEqn.solve(mesh.solutionDict().solver(p.name()));
+			pEqn.solve(mesh.solverDict(p.name()));
 
-		if (nonOrth == pimple.nNonOrthCorr())
+		if (pimple.finalNonOrthogonalIter())
 			phi -= pEqn.flux();
 	}
 	U -= rAU*(fvc::grad(p));
@@ -243,16 +243,16 @@ for (int ii=1;ii<10;++ii)
 		//	( phi.boundaryField()  // - fvOptions.relative(mesh.Sf().boundaryField() & U.boundaryField())
 		//	) / (mesh.magSf().boundaryField()*rAUf.boundaryField())	);
 
-		for(int nonOrth=0; nonOrth<=pimple.nNonOrthCorr(); nonOrth++)
+		while(pimple.correctNonOrthogonal())
 		{
 			fvScalarMatrix pEqn( fvm::laplacian(rAUf, p) == fvc::div(phi) );
 			pEqn.setReference(pRefCell, pRefValue);
-			if (nonOrth==pimple.nNonOrthCorr())
-				pEqn.solve(mesh.solutionDict().solver(p.name() + "Final"));
+			if (pimple.finalNonOrthogonalIter())
+				pEqn.solve(mesh.solverDict(p.name() + "Final"));
 			else
-				pEqn.solve(mesh.solutionDict().solver(p.name()));
+				pEqn.solve(mesh.solverDict(p.name()));
 
-			if (nonOrth == pimple.nNonOrthCorr())
+			if (pimple.finalNonOrthogonalIter())
 				phi -= pEqn.flux();
 		}
 		U -= rAU*(fvc::grad(p));

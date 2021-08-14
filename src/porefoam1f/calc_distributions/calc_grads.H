@@ -122,8 +122,8 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 
 		forAll(boundary, bi)
 		{
-			clip.boundaryField()[bi]=0.;
-			clip.boundaryField()[bi]==0.;
+			clip.boundaryFieldRef()[bi]=0.;
+			clip.boundaryFieldRef()[bi]==0.;
 		}
 
 
@@ -148,7 +148,7 @@ Ali Q Raeini:    a.q.raeini@imperial.ac.uk
 
 		surfaceScalarField BSurafce=fvcDelta(clip);
 
-		volVectorField::Boundary& Ubf = U.boundaryField();
+		auto/*volVectorField::Boundary*/& Ubf = U.boundaryField();
 
 		forAll(boundary, bi) if (isA<fixedValueFvPatchVectorField>(Ubf[bi]))
 		{

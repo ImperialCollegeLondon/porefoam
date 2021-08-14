@@ -92,7 +92,7 @@ forAll(magDelS,fI)
 	{
 		const scalarField & pMagDelS = magDelS.boundaryField()[bI];
 		const scalarField & pSnGradAlphaSharp = deltaS_.boundaryField()[bI];
-		vectorField & pInterfaceSf = interfaceSf.boundaryField()[bI];
+		vectorField & pInterfaceSf = interfaceSf.boundaryFieldRef()[bI];
 		if (patches[bI].coupled())
 		{
 			forAll(pMagDelS, pfI)

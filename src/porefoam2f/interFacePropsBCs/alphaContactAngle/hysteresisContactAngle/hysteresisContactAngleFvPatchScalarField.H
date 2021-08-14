@@ -147,7 +147,7 @@ public:
   // Member functions
 	  virtual void evaluate
 	  (
-			const Pstream::commsTypes commsType=Pstream::blocking
+			const Pstream::commsTypes commsType=BLOCKING
 	  );
 
 		//- Evaluate and return dynamic contact-angle

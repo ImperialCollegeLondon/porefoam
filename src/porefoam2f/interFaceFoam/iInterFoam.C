@@ -21,7 +21,7 @@
 #include "fvCFD.H"
 #include "MULES.H"
 #include "subCycle.H"
-#include "interfaceProperties.H"
+#include "interfaceProps.H"
 #include "twoPhaseMixture.H"
 //#include "turbulenceModel.H"
 #include "pimpleControl.H"
@@ -41,6 +41,7 @@
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 #define ifMonitor  if( runTime.timeIndex()%10== 0 ) 
 #define curtailBADOFSET(a,b) (min (max((a),(b)),(1.-(b))))
+
 
 int main(int argc, char *argv[])
 {

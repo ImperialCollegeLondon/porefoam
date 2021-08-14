@@ -3,7 +3,7 @@
 	(	IOobject("VC",  runTime.timeName(),  mesh)
 		,  mesh,  dimensionedScalar("VC",dimVolume,0.),  "fixedValue"
 	);	
-	VC.internalField()=mesh.V();
+	VC.ref()=mesh.V();
 
 
 
@@ -218,7 +218,7 @@
 		const vectorField & C =	mesh.C().internalField();
 
 		label iSam=0;
-		clip==0.;
+		clip==dimensionedScalar(0.);
 		forAll(C,c) 
 		{
 				if (PPRegions[c]==CVxlVals[iSam]&& 

@@ -12,6 +12,11 @@ FoamFile
 
 solvers
 {
+    alpha1 // in case,  used in of9
+    {
+        nAlphaCorr      1;
+        nAlphaSubCycles 2;
+    }
 
     pcorr
     {

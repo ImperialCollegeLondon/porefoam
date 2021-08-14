@@ -34,7 +34,12 @@
 #include "mathematicalConstants.H"
 
 #include "OFstream.H"
-#include "foamTime.H"
+
+#ifdef FOAMX
+# include "foamTime.H"
+#else
+# include "Time.H"
+#endif
  
 #include <sys/stat.h> //mkdir
 
@@ -127,7 +132,7 @@ int main(int argc, char *argv[])
 		std::stringstream ss;  ss.str(replaceFromTo(basNam,"_", " "));  ss>>dummy>>tim;  tim *= 4.267e-7; //time conversion s/fileSecondNumber
 		scalar dt = tim-timO;   timO = tim;
 
-		runTime.setDeltaT(dt,false);
+		runTime.setDeltaT(dt);
 		runTime++;
 		Info<<endl<<"time: "<<runTime.timeName()<<"   timO: "<<timO<<"   dt: "<<dt<<endl;
 		

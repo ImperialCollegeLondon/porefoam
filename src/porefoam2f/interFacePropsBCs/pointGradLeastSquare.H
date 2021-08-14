@@ -115,7 +115,7 @@ namespace Foam
 			}
 		}
 
-		syncTools::syncPointList(msh, GG, plusEqOp<symmTensor>(), pTraits<symmTensor>::zero, false);
+		syncTools::syncPointList(msh, GG, plusEqOp<symmTensor>(), pTraits<symmTensor>::zero);
 
 
 
@@ -182,7 +182,7 @@ namespace Foam
 			 }
 		  }
 
-		syncTools::syncPointList(msh, gradAlphaP, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		syncTools::syncPointList(msh, gradAlphaP, plusEqOp<vector>(), pTraits<vector>::zero);
 
 
 

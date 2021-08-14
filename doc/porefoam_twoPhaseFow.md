@@ -1,4 +1,6 @@
-# Capillary dominated two-phase flow simulation directly on 3D images of porous media using porefoam
+# Capillary dominated two-phase flow simulation using porefoam. 
+
+Ali Q Raeini, Mosayeb Shams, Branko Bijeljic and Martin J. Blunt
 
 Prepared by   
 - Ali Q Raeini, Department of Earth Science and 
@@ -29,15 +31,15 @@ downloaded.**
 
 Except standard Linux compilers and libraries (g++, cmake and an mpi 
 library),  Other prerequisites are provided in a folder named 
-thirdparty. The thirdparty includes zlib, libtiff and a minified 
-openfoam, called foamx3m.  
+pkgs. The pkgs includes zlib, libtiff and a minified
+openfoam, called foamx4m.  
 
-Foamx3m requires a working `mpi` and `libscotch` to be installed on the 
-system. Once it is compiled, foamx3m can reside side-by-side with other 
+foamx4m requires a working `mpi` and `libscotch` to be installed on the 
+system. Once it is compiled, foamx4m can reside side-by-side with other 
 openfoam installations without any conflict. This means you can install 
 and use other openfoam versions alongside the porefoam codes, but if 
 you do so,it is recommended to delete the executables in 
-`~/porefoam/thirdparty/Foamx3m/applications` so that you don't have 
+`~/porefoam/pkgs/foamx4m/applications` so that you don't have 
 multiple copies of the same application.
 
  
@@ -96,7 +98,7 @@ as their names such as "0" or "0.1" \...
 
 Some of the input parameters are controlled through the script which are
 used to automate simulation set-up, specifically a script
-`AllRunImageTwoPhase`, placed in `~/porefoam/src/porefoam2f/script` folder,
+AllRunImageTwoPhase and AllRunImageTwoPhaseCFMesh, placed in `~/porefoam/porefoam2f/script` folder,
 which is discussed further in the next section. There are comments added
 to this file for how to set the simulation parameters, the most
 important of which are given below:

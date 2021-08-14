@@ -24,7 +24,7 @@
              vf.dimensions()
          )
      );
-     GeometricField<Type, fvsPatchField, surfaceMesh>& ssf = tssf();
+     GeometricField<Type, fvsPatchField, surfaceMesh>& ssf = tssf.ref();
  
 
      const labelList& owner = mesh.owner();
@@ -37,10 +37,10 @@
              (vf[neighbour[faceI]] - vf[owner[faceI]]);
      }
  
-     forAll(vf.boundaryField(), patchI)
+     forAll(vf.boundaryField(), bI)
      {
-         ssf.boundaryField()[patchI] = 
-              vf.boundaryField()[patchI] - vf.boundaryField()[patchI].patchInternalField();
+         ssf.boundaryFieldRef()[bI] = 
+              vf.boundaryField()[bI] - vf.boundaryField()[bI].patchInternalField();
      }
  
      return tssf;

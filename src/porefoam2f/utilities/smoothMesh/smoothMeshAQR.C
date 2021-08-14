@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
 	argList::validArgs.append("relax");
 	argList::validArgs.append("nIter");
 	argList::validArgs.append("strictOnBoundary");
+	argList::validArgs.append("boundaryAttractionFactor");
 
 #   include "setRootCase.H"
 #   include "createTime.H"
@@ -52,15 +53,14 @@ int main(int argc, char *argv[])
 	scalar relax = args.argRead<scalar>(1);
 
 	label nIter = args.argRead<label>(2);
-	bool strictOnBoundary = args.argRead<bool>(3);
+	label strictOnBoundary = args.argRead<label>(3);
+	scalar boundaryAttractionFactor = args.argRead<scalar>(4);
 
-	Info<<"  relax:"<<relax <<"  nIter:"<<nIter <<endl;
-	//tensor T = rotationTensor(n1, n2);
+	Info<<"  relax:"<<relax <<"  nIter:"<<nIter  
+	    <<"  strictOnBoundary:"<<strictOnBoundary  <<"  boundaryAttractionFactor:"<<boundaryAttractionFactor <<endl;
 
-	pointIOField points
-	(
-		IOobject
-		(
+	pointIOField points (
+		IOobject (
 			 "points",
 			 runTime.findInstance(polyMesh::meshSubDir, "points"),
 			 polyMesh::meshSubDir,
@@ -80,7 +80,49 @@ int main(int argc, char *argv[])
 
 
 
+	scalarField pointWeis(points.size(), 1.);
+	labelList   pointOnBondry(points.size(), 0);
+	{
+		
+		int nPoints = points.size();
+		const labelListList&  pointfaces = mesh.pointFaces ();
+		const labelListList&  pointPoints = mesh.pointPoints ();
+		const label        nInteFaces = mesh.nInternalFaces();
 
+		//OMPFor()
+		for(int pI=0; pI<nPoints; ++pI)  {
+			const auto& facs=pointfaces[pI];
+			forAll(facs,j)  {
+				label fJ=facs[j];
+				if(fJ>=nInteFaces) {
+					pointOnBondry[pI] = 1;  pointWeis[pI]=boundaryAttractionFactor; } ///SYNC11
+			}
+		}
+
+		for(int i=0;i<3;++i){// smooth pointWeis  the results are sensitive to nIter=3 used here
+			scalarField pointWeisTmp = pointWeis;
+			//OMPFor()
+			for(int pI=0; pI<nPoints; ++pI)
+			{
+				scalar PwBSum(1.*pointWeis[pI]);
+				scalar wPwBSum(1.);
+				const labelList& 	neiPoints = pointPoints[pI];
+				forAll(neiPoints, ppI) 
+				{
+				 label pJ = neiPoints[ppI];
+				 //if(pointOnBondry[pJ])
+				 {
+					wPwBSum += 1.; 
+					PwBSum += pointWeisTmp[pJ]; 
+				 }
+				}
+				//if(pointOnBondry[pI]) 	pointWeis[pI]=0.9*PwBSum/wPwBSum;///SYNC11
+				//else	   				
+					pointWeis[pI]=PwBSum/wPwBSum;
+			}
+		}
+
+	}
 
 
 
@@ -90,52 +132,67 @@ int main(int argc, char *argv[])
 	for (int i=0; i<nIter;++i)
 	{
 
-		const labelList& 	owns = mesh.owner();
-		const labelList& 	neis = mesh.neighbour();
-		const labelListList& 	pointfaces = mesh.pointFaces ();
-		const labelListList& 	pointPoints = mesh.pointPoints ();
-		const pointField pointsOrig = points;
-		const vectorField& cellCentres = mesh.cellCentres();    
-		vectorField faceNormals = mesh.faceAreas();  
-		const scalarField magAfs = mag(faceNormals)+1e-32; 
+		const labelList& 	    owns = mesh.owner();
+		const labelList& 	    neis = mesh.neighbour();
+		const labelListList&  pointfaces = mesh.pointFaces ();
+		const labelListList&  pointPoints = mesh.pointPoints ();
+		const pointField      pointsOrig = points;
+		const vectorField&    cellCentres = mesh.cellCentres();    
+		vectorField           faceNormals = mesh.faceAreas();  
+		const scalarField     magAfs = mag(faceNormals)+1e-32; 
 		faceNormals/=magAfs;
-		vectorField pNorms(points.size(), vector::zero);
+		vectorField           pNorms(points.size(), vector::zero);
 
-		const scalarField& Vols = mesh.cellVolumes(); 
-		const scalar& VavgInv = 1./gAverage(Vols); 
+		const scalar       VavgInv = 1./gAverage(mesh.cellVolumes()); 
+		const scalarField  Vols = max(mesh.cellVolumes(),0.1/VavgInv);
 		const vectorField& Cfs = mesh.faceCentres(); 
-		const label nInteFaces = mesh.nInternalFaces();
-		vectorField avgPCellCntrs(points.size(), vector::zero);
-		vectorField avgPPoints(points.size(), vector::zero);
+		const label        nInteFaces = mesh.nInternalFaces();
+		vectorField        avgPCellCntrs(points.size(), vector::zero);
+		vectorField        avgPPoints(points.size(), vector::zero);
 
-		scalarField pointWeis(points.size(), 1.);
-		labelList pointOnBoundary(points.size(), 1);
 		vectorField avgPFCentres(points.size(), vector::zero);
+		
+		int nPoints = points.size();
+
+		//OMPFor()
+		for(int pI=0; pI<nPoints; ++pI)
 		{
-			scalarField nPointFaces(points.size(), 1e-64);
-			forAll(Cfs, fI)
-			{
-				const face& 	f = mesh.faces()[fI];
-				vector CCSum(Cfs[fI]);
-				scalar wei = VavgInv*(fI<nInteFaces ?  //Warning 1e15 should be replaced by 1/AvgVolCell
-												(Vols[owns[fI]]+Vols[neis[fI]]) : 
-												6.*Vols[owns[fI]]);//*(magAfs[fI])
-				forAll(f, fpI)
-				{
-						label pI = f[fpI];
-						avgPFCentres[pI] += wei*CCSum; 
-						nPointFaces[pI]+=wei;
-						pointOnBoundary[pI]=fI<nInteFaces ? 0 : 1; // WAS ALWAYS 1
-						pointWeis[pI]=fI<nInteFaces ? 1. : 27.;
-				}
+			const auto& facs=pointfaces[pI];
+			vector avgFcntr(points[pI]*0.001);  double sumWfc=0.001;
+			vector pointNrm(vector::zero); int sumWnr=0;
+			forAll(facs,j)  {
+				label fJ=facs[j];
+				if(fJ>=nInteFaces) {
+					pointNrm+= faceNormals[fJ]; ++sumWnr;}
+				
+				scalar wei = max(0.2, VavgInv*(fJ<nInteFaces ?  
+												(Vols[owns[fJ]]+Vols[neis[fJ]]) : 6.*Vols[owns[fJ]])); 
+				avgFcntr += wei*Cfs[fJ]; 
+				sumWfc+=wei;
 			}
-			avgPFCentres/=nPointFaces;
+			if(sumWnr) {
+				avgFcntr=(points[pI]*0.001);  sumWfc=0.001;
+				forAll(facs,j)
+				{
+					label fJ=facs[j];
+					if(fJ>=nInteFaces) {
+						scalar wei = max(0.2, 6.*Vols[owns[fJ]]); 
+						avgFcntr += wei*Cfs[fJ]; 
+						sumWfc+= wei; }
+				}
+				vector disp=avgFcntr/sumWfc-points[pI];
+				pointNrm/=sumWnr;
+				pNorms[pI]=pointNrm;
+				avgPFCentres[pI]=points[pI]+(1+relax)*disp-(disp&pointNrm)*pointNrm;
+			}
+			else 
+				avgPFCentres[pI]=avgFcntr/sumWfc;
 		}
 
-
-		forAll(pointsOrig, pI)
+		//OMPFor()
+		for(int pI=0; pI<nPoints; ++pI)
 		{
-			  const labelList& 	pointCells = mesh.pointCells(pI);
+			const labelList& 	pointCells = mesh.pointCells(pI);
 			vector CCSum(vector::zero);
 			scalar WSum(1e-64);
 			  forAll(pointCells, pcI)
@@ -149,38 +206,21 @@ int main(int argc, char *argv[])
 			  avgPCellCntrs[pI]=CCSum/WSum;
 		}
 
-		{
-			scalarField pointWeisTmp = pointWeis;
-			forAll(pointWeisTmp, pI)
-			{
-				scalar PwBSum(0.);
-				scalar wPwBSum(0.);
-				const labelList& 	neiPoints = pointPoints[pI];
-				forAll(neiPoints, ppI) 
-				{
-				 label pII = neiPoints[ppI];
-				 if(pointOnBoundary[pII])
-				 {
-					wPwBSum += 1.; 
-					PwBSum += pointWeisTmp[pII]; 
-				 }
-				}
-				if(!pointOnBoundary[pI])	pointWeis[pI]=(PwBSum+2.*pointWeis[pI])/(2.+wPwBSum);
-			}
-		}
 
-		{
-			forAll(pointsOrig, pI)
+		{ //avgPPoints
+
+			//OMPFor()
+			for(int pI=0; pI<nPoints; ++pI)
 			{
 				const labelList& 	neiPoints = pointPoints[pI];
 				vector CCSum(vector::zero);
 				scalar WSum(1e-64);
-				label  pIOnB=pointOnBoundary[pI];
+				label  pIOnB=pointOnBondry[pI];
 				forAll(neiPoints, ppI)
 				{
 					label pII = neiPoints[ppI];
 					scalar w=pointWeis[pII];//1.;//(pointsOrig[pI]-pointsOrig[pII]);
-					if(pIOnB && pointOnBoundary[pII]!=pIOnB)  w = 1e-64;
+					if(pIOnB && pointOnBondry[pII]!=pIOnB)  w = 1e-64;
 
 					CCSum += w*pointsOrig[pII]; 
 					WSum+=w;
@@ -191,45 +231,26 @@ int main(int argc, char *argv[])
 
 
 
-		 //syncTools::syncPointList
-		 //( mesh, avgPCellCntrs,
-			  //plusEqOp<point>(),  // combine op
-			  //vector::zero        // null value
-		 //);
-		 //syncTools::syncPointList
-		 //( mesh, avgPPoints,
-				//plusEqOp<point>(),  // combine op
-			  //vector::zero        // null value
-		 //);
+		 //syncTools::syncPointList ( mesh, avgPCellCntrs, plusEqOp<point>(), vector::zero   );
+		 //syncTools::syncPointList ( mesh, avgPPoints, plusEqOp<point>(),  vector::zero   );
 
-		 forAll(points, pI)
-		 {
-			if (!pointOnBoundary[pI])
+		//OMPFor()
+		for(int pI=0; pI<nPoints; ++pI)
+		{
+			if (!pointOnBondry[pI])
 			  points[pI]= relax*(0.4*avgPCellCntrs[pI] + 0.3*avgPPoints[pI] +0.3*avgPFCentres[pI]) 
 			        + (1-relax)*pointsOrig[pI];
-			else
+			else if(!(strictOnBoundary&4))
 			{
-				vector disp=relax*(0.5*avgPCellCntrs[pI] + 0.2*avgPPoints[pI] +0.3*avgPFCentres[pI] - pointsOrig[pI])
-				;
+				vector disp=relax*(0.4*avgPCellCntrs[pI] + 0.3*avgPPoints[pI] +0.3*avgPFCentres[pI] - pointsOrig[pI]);
 
-
-				vector normbfs(0.,0.,0.);
-				forAll(pointfaces[pI],j)
-				{
-					if (pointfaces[pI][j]>=nInteFaces)
-					{
-						normbfs += faceNormals[pointfaces[pI][j]];
-					}
-				}
-				normbfs/=mag(normbfs)+1e-28;
-				pNorms[pI] = normbfs;
-				disp=disp-(disp&normbfs)*normbfs;
+				disp=disp-(disp&pNorms[pI])*pNorms[pI];
 				
-				disp+=0.1*relax*((avgPPoints[pI] - pointsOrig[pI])&normbfs)*normbfs;
+				if (!(strictOnBoundary&2)){
+						disp+=0.2*relax*(avgPFCentres[pI] - pointsOrig[pI]);
+				}
 
-
-				if (strictOnBoundary)
-				{
+				if (strictOnBoundary&1) {
 					forAll(pointfaces[pI],j)
 					{
 						if (pointfaces[pI][j]>=nInteFaces)
@@ -263,12 +284,12 @@ int main(int argc, char *argv[])
 		vectorField  displacements(points-pointsOrig);
 		//Info<< " -> "<<max(mag(displacements)); cout.flush();
 
-		for(int iter3=0;iter3<2;iter3++)
+		for(int iter3=0;iter3<3;iter3++)
 		{
 			  vectorField dispTmp(displacements);
-			  forAll(pointOnBoundary, pI)
+			  forAll(pointOnBondry, pI)
 			  {
-					if (pointOnBoundary[pI])
+					if (pointOnBondry[pI])
 					{
 						vector avgDispV(displacements[pI]);
 						scalar sumWeights(1.0000000001);
@@ -286,12 +307,12 @@ int main(int argc, char *argv[])
 				}
 		 }
 		 
-		forAll(pointOnBoundary, pI)
-			if (pointOnBoundary[pI])    points[pI] -= 1.0625*(displacements[pI]& pNorms[pI]) * pNorms[pI];
+		forAll(pointOnBondry, pI)
+			if (pointOnBondry[pI])    points[pI] -= 1.001*(displacements[pI]& pNorms[pI]) * pNorms[pI];
 
 
 
-		Info<< " -> "<<max(mag(displacements)); cout.flush();
+		Info<< " -> "<<max(mag(displacements))<<"  "; cout.flush();
 
 
 

@@ -40,23 +40,11 @@ bool Foam::alphaContactAngleFvPatchScalarField::reset = false;
 //bool Foam::alphaContactAngleFvPatchScalarField::reset2 = false;
 
 template<>
-const char* Foam::NamedEnum
-<
-    Foam::alphaContactAngleFvPatchScalarField::limitControls,
-    4
->::names[] =
-{
-    "none",
-    "gradient",
-    "zeroGradient",
-    "alpha"
-};
+const char* Foam::NamedEnum < Foam::alphaContactAngleFvPatchScalarField::limitControls, 4>::names[] = {
+		"none",  "gradient", "zeroGradient", "alpha" };
 
-const Foam::NamedEnum
-<
-    Foam::alphaContactAngleFvPatchScalarField::limitControls,
-    4
-> Foam::alphaContactAngleFvPatchScalarField::limitControlNames_;
+const Foam::NamedEnum< Foam::alphaContactAngleFvPatchScalarField::limitControls, 4 > 
+	Foam::alphaContactAngleFvPatchScalarField::limitControlNames_;
 
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
@@ -210,6 +198,7 @@ void Foam::alphaContactAngleFvPatchScalarField::write
         << limitControlNames_[limit_] << token::END_STATEMENT << nl;
     os.writeKeyword("transitionFactor")
         << transitionFactor_ << token::END_STATEMENT << nl;
+	    writeEntry("value", os);
 }
 
 

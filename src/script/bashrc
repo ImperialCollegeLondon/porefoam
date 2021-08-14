@@ -31,9 +31,11 @@ else
 	export PATH=$PATH:$msBinDir
 
 
-	if ! [ -d $msBinDir ]; then  mkdir -p $msBinDir;   fi
-	if ! [ -d $msLibDir ]; then  mkdir -p $msLibDir;   fi
-	if ! [ -d $msIncDir ]; then  mkdir -p $msIncDir;   fi
+	if ! [ -d $msBinDir ]; then  
+		mkdir -p $msBinDir;   
+		mkdir -p $msLibDir; 
+		mkdir -p $msIncDir;   
+	fi
 
 
 
@@ -43,11 +45,11 @@ else
 		#export WM_NCOMPPROCS=28
 		#export FOAM_INST_DIR=$(cd $myUpperDIR/../pkgs && pwd)
 		export FOAM_INST_DIR=$msRoot/pkgs
-		source $FOAM_INST_DIR/foamx3m/etc/bashrc
+		source $FOAM_INST_DIR/foamx4m/etc/bashrc
 	else
-		printf "\n *** OpenFOAM:  $WM_PROJECT_DIR \n *** Suggestion: Deactivate this old OF installation and recompile, in a new terminal.\n\n"
+		printf "\n *** Using OpenFOAM:  $WM_PROJECT_DIR,  If you meant to use foamx4m instead, deactivate this and re-source in a new terminal.\n\n"
 	fi
-	export myOFBinDir=$msBinDir/foamx3m
+	export myOFBinDir=$msBinDir/foamx4m
 	export PATH=$PATH:$myOFBinDir
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$myOFBinDir
 	export FOAM_ABORT=1

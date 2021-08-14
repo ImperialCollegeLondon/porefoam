@@ -3,7 +3,7 @@
 
 	U = rAU*(UEqn().H());
   
-	if (pimple.nCorrPISO() <= 1)
+	if (pimple.nCorrPiso() <= 1)
 	{
 		UEqn.clear();
 	}
@@ -27,7 +27,7 @@
 
 		pEqn.solve
 		(
-			mesh.solutionDict().solver(p.select(pimple.finalInnerIter()))
+			mesh.solverDict(p.select(pimple.finalInnerIter()))
 		);
 
 		if (pimple.finalNonOrthogonalIter())

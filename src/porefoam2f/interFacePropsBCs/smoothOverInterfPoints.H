@@ -19,7 +19,7 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
 
-void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
+void Foam::interfaceProps::smoothOverInterfPointsNotUsed
 (
 	surfaceVectorField& curvatureForcefDiff, 
 	const surfaceScalarField& magDelS, 
@@ -58,8 +58,8 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 	for(int i=0;i<smoothingKernel;++i)
 	{
 
-		pointForce*=0.;
-		interfPointArea*=0.;
+		pointForce*=dimensionedScalar(0);
+		interfPointArea*=dimensionedScalar(0);
 
 
 		forAll(magDelS,fI) if (magDelS[fI] > CONTRAST_FACTOR)
@@ -94,8 +94,8 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 			 else		 {			 }
 		}
 
-		syncTools::syncPointList(msh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero, false);
-		syncTools::syncPointList(msh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
+		syncTools::syncPointList(msh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero);
+		syncTools::syncPointList(msh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero);
 
 
 
@@ -121,7 +121,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 			if (patches[bI].coupled())
 			{
 				label pStart=patches[bI].patch().start();
-				vectorField & pCurvatureForcef = curvatureForcefDiff.boundaryField()[bI];
+				vectorField & pCurvatureForcef = curvatureForcefDiff.boundaryFieldRef()[bI];
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
 					pCurvatureForcef[pfI] *= 1.-smoothingRelaxFactor;
@@ -151,7 +151,7 @@ void Foam::interfaceProperties::smoothOverInterfPointsNotUsed
 
 
 
-void Foam::interfaceProperties::smoothNSOverInterfPoints
+void Foam::interfaceProps::smoothNSOverInterfPoints
 (
 	pointVectorField& nHatSp, 
 	const surfaceScalarField& magDelS, 
@@ -275,15 +275,15 @@ void Foam::interfaceProperties::smoothNSOverInterfPoints
     }
 
 		//syncTools::syncPointList(msh, interfFaceArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
-		syncTools::syncPointList(msh, interfFaceNSpS, plusEqOp<vector>(), pTraits<vector>::zero, false);
+		syncTools::syncPointList(msh, interfFaceNSpS, plusEqOp<vector>(), pTraits<vector>::zero);
 
 
 
 
 
-	nHatSp = (1.-smoothingRelaxFactor)*nHatSp + smoothingRelaxFactor*interfFaceNSpS/ (mag(interfFaceNSpS) + 1e-18);
+	nHatSp = (1.-smoothingRelaxFactor)*nHatSp + smoothingRelaxFactor*interfFaceNSpS/ (mag(interfFaceNSpS) + dimensionedScalar(1e-18));
 	
-	nHatSp/=mag(nHatSp)+1e-14;
+	nHatSp/=mag(nHatSp)+dimensionedScalar(1e-14);
 	correctForContactAngle(alpha1_,U_,nw_,nHatSp,interfPoints);
 
 

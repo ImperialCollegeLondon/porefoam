@@ -1,0 +1,23 @@
+#!/bin/bash
+cd ${0%/*} || exit 1    # run from this directory
+
+if [ "$WM_PROJECT_DIR" == "" ] ; then
+   source etc/bashrc
+   echo "$WM_PROJECT_DIR"
+fi
+
+if [ "$PWD" != "$WM_PROJECT_DIR" ] ; then
+    echo "Error: Current directory is not \$WM_PROJECT_DIR"
+    echo "    The environment variable are not consistent with the installation."
+    echo "    Check the OpenFOAM entries in your dot-files and (un)source them."
+    exit 1
+fi
+
+
+echo "Warning Assuming msRoot == '${msRoot}' == ../.."
+
+mkdir -p ../../bin/foamx4m
+mkdir -p ../../lib
+
+cp  $FOAM_APPBIN/*  ../../bin/foamx4m   || echo "not built"
+cp  $FOAM_LIBBIN/*  ../../lib/          || echo "not built"

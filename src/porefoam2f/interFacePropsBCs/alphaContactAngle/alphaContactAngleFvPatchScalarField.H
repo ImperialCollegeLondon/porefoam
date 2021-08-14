@@ -67,7 +67,11 @@ SourceFiles
 #include "fvsPatchFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
+#ifndef FOAMX // used in official openfoam
+ #define BLOCKING Pstream::commsTypes::blocking
+#else
+ #define BLOCKING Pstream::blocking
+#endif
 namespace Foam
 {
 
@@ -155,7 +159,7 @@ public:
         //- Evaluate the patch field
         virtual void evaluate
         (
-            const Pstream::commsTypes commsType=Pstream::blocking
+            const Pstream::commsTypes commsType=BLOCKING
         );
 
         //- Write

@@ -1,0 +1,15 @@
+include $(RULES)/mplib$(WM_MPLIB)
+
+EXE_INC = \
+    $(PFLAGS) $(PINC) \
+    -I$(PARMETIS_INCLUDE_DIR) \
+    -I../decompositionMethods/lnInclude \
+	-I../metisDecomp/lnInclude \
+	-I../scotchDecomp/lnInclude
+
+LIB_LIBS = \
+	-L$(METIS_LIB_DIR) -lmetis \
+	-L$(PARMETIS_LIB_DIR) -lmetis -lparmetis \
+	-l:libdecompositionMethods.$(SO) \
+	-lmetisDecomp \
+	-L$(OPENMPI_DIR)/lib -lmpi

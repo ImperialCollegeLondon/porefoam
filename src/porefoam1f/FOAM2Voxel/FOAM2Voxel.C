@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
 			pVoxel.writeNoHdr("./p"+imgExt());
 			if(writeVoltage) peVoxel.writeNoHdr("./psi"+imgExt());
 			vximage.writeNoHdr("./vxlImage"+imgExt());
-			vximage.writeHeader("./vxlImage-"+imgExt());
+			vximage.writeHeader("./vxlImage"+imgExt());
 		}
 
 

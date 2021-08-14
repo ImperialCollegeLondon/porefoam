@@ -20,16 +20,16 @@ vector viscInterf_1(0.,0.,0.);
 	//volScalarField clipAlpha=alphaSh*clip;
     //forAll(boundary, bi)
     //{//if (isA<fixedValueFvPatchVectorField>(Ubf[bi]))
-			//clip.boundaryField()[bi]=0.;
-			//clip.boundaryField()[bi]==0.;
-			//clipAlpha.boundaryField()[bi]=0.;
-			//clipAlpha.boundaryField()[bi]==0.;
+			//clip.boundaryFieldRef()[bi]=0.;
+			//clip.boundaryFieldRef()[bi]==0.;
+			//clipAlpha.boundaryFieldRef()[bi]=0.;
+			//clipAlpha.boundaryFieldRef()[bi]==0.;
 	//}
 
 	surfaceScalarField BSurafce=fvcDelta(clip);
 	surfaceScalarField AlphaInsidBoundary=fvcDelta(clipAlpha);
 	
-	volVectorField::Boundary& Ubf = U.boundaryField();
+	auto& Ubf = U.boundaryField();
 
     forAll(boundary, bi) if (isA<fixedValueFvPatchVectorField>(Ubf[bi]))
     {		

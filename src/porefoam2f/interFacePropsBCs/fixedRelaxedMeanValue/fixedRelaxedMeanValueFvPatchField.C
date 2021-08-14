@@ -24,7 +24,6 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "mathematicalConstants.H"
 #include "volFields.H"
 #include "surfaceFields.H"
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

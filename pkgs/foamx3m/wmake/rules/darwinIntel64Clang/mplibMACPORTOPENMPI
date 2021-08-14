@@ -1,3 +1,0 @@
-PFLAGS     = -DOMPI_SKIP_MPICXX
-PINC       = $(shell mpicc-openmpi-mp --showme:compile)
-PLIBS      = $(shell mpicc-openmpi-mp --showme:link)

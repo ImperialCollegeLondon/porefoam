@@ -28,7 +28,12 @@ License
 #include "addToRunTimeSelectionTable.H"
 #include "fvPatchFieldMapper.H"
 #include "volMesh.H"
+
+#ifdef FOAMX
 #include "foamTime.H"
+#else
+# include "Time.H"
+#endif
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -153,7 +158,6 @@ void Foam::dynamicAlphaContactAngleFvPatchScalarField::write(Ostream& os) const
     os.writeKeyword("uTheta") << uTheta_ << token::END_STATEMENT << nl;
     os.writeKeyword("thetaA") << thetaA_ << token::END_STATEMENT << nl;
     os.writeKeyword("thetaR") << thetaR_ << token::END_STATEMENT << nl;
-    writeEntry("value", os);
 }
 
 

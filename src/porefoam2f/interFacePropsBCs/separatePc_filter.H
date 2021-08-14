@@ -24,7 +24,7 @@
 	volScalarField magGradAlpha = (mag(gradAlpha) + 0.0001*deltaN_); 
 	volVectorField nS = gradAlpha/magGradAlpha;
 	surfaceVectorField nHatfv = fvc::interpolate(gradAlpha)/fvc::interpolate(magGradAlpha); nHatfv/=mag(nHatfv)+1e-15;
-	//correctContactAngle(nHatfv.boundaryField(),gradAlpha.boundaryField(),nS.boundaryField(),alpha1S_.boundaryField(), a1a2.boundaryField());
+	//correctContactAngle(nHatfv.boundaryFieldRef(),gradAlpha.boundaryFieldRef(),nS.boundaryFieldRef(),alpha1S_.boundaryFieldRef(), a1a2.boundaryFieldRef());
 	nHatf_ = nHatfv & Sf;
 
 	surfaceScalarField dInterf=(mag(deltaS_)/(mag(deltaS_)+1e-4*deltaN_));
@@ -95,7 +95,7 @@
 	sgPcErr_=dInterf*(min(2.*(1.4-mag(nHatf_)/msh.magSf()), 1.)*(sgPcErr_+fcCorrectTangent_*(gPcllInterface& msh.Sf())) );//  *( 1.-(mag(nHatf_)/msh.magSf()) )   ); /*aSolid_cPcCorrRelax_* */ 
 
 
-	long long sgPcErr_checkErrs=0;
+	//label sgPcErr_checkErrs=0;
 	forAll(sgPcErr_,i)
 	{
 		if (sgPc_[i]*sgPcErr_[i] < -1e-6*stfTypicalLow[i])  sgPcErr_[i]  *= 0.99;
@@ -105,12 +105,12 @@
 	{
 		if (!boundary[bI].coupled())
 		{
-			sgPcErr_.boundaryField()[bI] = 0.;
+			sgPcErr_.boundaryFieldRef()[bI] = 0.;
 		}
 		else
 		{
-			Field<scalar> & psgPcErr_ = sgPcErr_.boundaryField()[bI];
-			Field<scalar> & psgPc_ = sgPc_.boundaryField()[bI];
+			Field<scalar> & psgPcErr_ = sgPcErr_.boundaryFieldRef()[bI];
+			Field<scalar> & psgPc_ = sgPc_.boundaryFieldRef()[bI];
 			forAll(psgPcErr_,i)
 			{
 				if(psgPc_[i]*psgPcErr_[i] < -1e-6*stfTypicalLow[i])  psgPcErr_[i] *= 0.99;
@@ -120,7 +120,7 @@
 	}
 
 
-	if(sgPcErr_checkErrs)  Info<<"\n\n sgPcErr_checkErrs: "<<sgPcErr_checkErrs<<endl<<endl;
+	//if(sgPcErr_checkErrs)  Info<<"\n\n sgPcErr_checkErrs: "<<sgPcErr_checkErrs<<endl<<endl;
 
 	//stfThreshold=0.5*(stfThreshold+(1.*fcdFilter_)*mag(stf));
 	stfThreshold=((1.*fcdFilter_)*( mag(stf)+ mag((sigma_*0.1)*deltaS_*deltaS_*msh.magSf()) ));

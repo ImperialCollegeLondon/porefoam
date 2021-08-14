@@ -1,0 +1,153 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | foam-extend: Open Source CFD
+   \\    /   O peration     | Version:     4.1
+    \\  /    A nd           | Web:         http://www.foam-extend.org
+     \\/     M anipulation  | For copyright notice see file Copyright
+-------------------------------------------------------------------------------
+License
+	This file is part of foam-extend.
+
+	foam-extend is free software: you can redistribute it and/or modify it
+	under the terms of the GNU General Public License as published by the
+	Free Software Foundation, either version 3 of the License, or (at your
+	option) any later version.
+
+	foam-extend is distributed in the hope that it will be useful, but
+	WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with foam-extend.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "fvPatchFields.H"
+#include "timeVaryingAlphaContactAngleFvPatchScalarField.H"
+#include "addToRunTimeSelectionTable.H"
+#include "volMesh.H"
+#include "foamTime.H"
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::timeVaryingAlphaContactAngleFvPatchScalarField::
+timeVaryingAlphaContactAngleFvPatchScalarField
+(
+	const fvPatch& p,
+	const DimensionedField<scalar, volMesh>& iF
+)
+:
+	alphaContactAngleFvPatchScalarField(p, iF),
+	t0_(0.0),
+	thetaT0_(0.0),
+	te_(0.0),
+	thetaTe_(0.0)
+{}
+
+
+Foam::timeVaryingAlphaContactAngleFvPatchScalarField::
+timeVaryingAlphaContactAngleFvPatchScalarField
+(
+	const timeVaryingAlphaContactAngleFvPatchScalarField& gcpsf,
+	const fvPatch& p,
+	const DimensionedField<scalar, volMesh>& iF,
+	const fvPatchFieldMapper& mapper
+)
+:
+	alphaContactAngleFvPatchScalarField(gcpsf, p, iF, mapper),
+	t0_(gcpsf.t0_),
+	thetaT0_(gcpsf.thetaT0_),
+	te_(gcpsf.te_),
+	thetaTe_(gcpsf.te_)
+{}
+
+
+Foam::timeVaryingAlphaContactAngleFvPatchScalarField::
+timeVaryingAlphaContactAngleFvPatchScalarField
+(
+	const fvPatch& p,
+	const DimensionedField<scalar, volMesh>& iF,
+	const dictionary& dict
+)
+:
+	alphaContactAngleFvPatchScalarField(p, iF),
+	t0_(readScalar(dict.lookup("t0"))),
+	thetaT0_(readScalar(dict.lookup("thetaT0"))),
+	te_(readScalar(dict.lookup("te"))),
+	thetaTe_(readScalar(dict.lookup("thetaTe")))
+{
+	evaluate();
+}
+
+
+Foam::timeVaryingAlphaContactAngleFvPatchScalarField::
+timeVaryingAlphaContactAngleFvPatchScalarField
+(
+	const timeVaryingAlphaContactAngleFvPatchScalarField& gcpsf,
+	const DimensionedField<scalar, volMesh>& iF
+)
+:
+	alphaContactAngleFvPatchScalarField(gcpsf, iF),
+	t0_(gcpsf.t0_),
+	thetaT0_(gcpsf.thetaT0_),
+	te_(gcpsf.te_),
+	thetaTe_(gcpsf.thetaTe_)
+{}
+
+
+// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
+
+Foam::tmp<Foam::scalarField>
+Foam::timeVaryingAlphaContactAngleFvPatchScalarField::theta
+(
+	const fvPatchVectorField&,
+	const fvsPatchVectorField&
+) const
+{
+	scalar t = patch().boundaryMesh().mesh().time().value();
+	scalar theta0 = thetaT0_;
+
+	if (t < t0_)
+	{
+		theta0 = thetaT0_;
+	}
+	else if (t > te_)
+	{
+		theta0 = thetaTe_;
+	}
+	else
+	{
+		theta0 = thetaT0_ + (t - t0_)*(thetaTe_ - thetaT0_)/(te_ - t0_);
+	}
+
+	return tmp<scalarField>(new scalarField(size(), theta0));
+}
+
+
+void Foam::timeVaryingAlphaContactAngleFvPatchScalarField::write
+(
+	Ostream& os
+) const
+{
+	fvPatchScalarField::write(os);
+	os.writeKeyword("t0") << t0_ << token::END_STATEMENT << nl;
+	os.writeKeyword("thetaT0") << thetaT0_ << token::END_STATEMENT << nl;
+	os.writeKeyword("te") << te_ << token::END_STATEMENT << nl;
+	os.writeKeyword("thetaTe") << thetaTe_ << token::END_STATEMENT << nl;
+	writeEntry("value", os);
+}
+
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+namespace Foam
+{
+	makePatchTypeField
+	(
+		fvPatchScalarField,
+		timeVaryingAlphaContactAngleFvPatchScalarField
+	);
+}
+
+// ************************************************************************* //

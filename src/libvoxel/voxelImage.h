@@ -90,8 +90,8 @@ template <typename T> class voxelField  //! 3D voxel data, on Cartesian uniform 
 	void readMicroCT(std::string);
 	bool readAscii(std::string);
 	void readAscii(std::ifstream& in);
-	bool readBin(std::string fileName, int nSkipBytes=0);
-	bool readBin(std::string fileName,int iBgn,int iEndp1 , int jBgn,int jEndp1 , int kBgn,int kEndp1, int nSkipBytes=0);
+	int  readBin(std::string fileName, int nSkipBytes=0);
+	int  readBin(std::string fileName,int iBgn,int iEndp1 , int jBgn,int jEndp1 , int kBgn,int kEndp1, int nSkipBytes=0);
 	void writeNoHdr(std::string fileName) const;
 	void writeBin(std::string fileName) const;
 	void writeBin(std::string fileName,int iBgn,int iEndp1 , int jBgn,int jEndp1 , int kBgn,int kEndp1 ) const;

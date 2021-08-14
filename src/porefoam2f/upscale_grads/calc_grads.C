@@ -31,16 +31,13 @@
  
  
 #include "argList.H"
-#include "interpolationCellPoint.H"
-#include "primitivePatchInterpolation.H"
-//#include "sampledPlane.H"
 #include "timeSelector.H"
 #include "graph.H"
-#include "mathematicalConstants.H"
 #include "twoPhaseMixture.H"
-#include "interfaceProperties.H"
+#include "interfaceProps.H"
 #include "alphaContactAngleFvPatchScalarField.H"
-
+#include "interpolationCellPoint.H"
+#include "primitivePatchInterpolation.H"
  #include "voxelImage.h"
  #include "AverageData.h"
  #include "myFVC.H"

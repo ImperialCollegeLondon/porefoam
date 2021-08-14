@@ -1,0 +1,77 @@
+#!/bin/sh
+cd ${0%/*} || exit 1    # run from this directory
+
+if [ "$PWD" != "$WM_PROJECT_DIR/src" ]
+then
+    echo "Error: Current directory in not \$WM_PROJECT_DIR/src"
+    echo "    The environment variable are not consistent with the installation."
+    echo "    Check the FOAM entries in your dot-files and source them."
+    exit 1
+fi
+
+set -x
+
+# update foam version strings if required
+#wmakePrintBuild -check || /bin/rm -f foam/Make/$WM_OPTIONS/global.? 2>/dev/null
+
+wmakeLnInclude foam
+wmakeLnInclude meshTools
+wmakeLnInclude OSspecific/$WM_OSTYPE
+#Pstream/Allwmake
+
+wmake libo  OSspecific/$WM_OSTYPE
+wmake libso foam
+
+# Decomposition methods needed by meshTools
+decompositionMethods/AllwmakeLnInclude
+decompositionMethods/Allwmake
+
+wmake libso lagrangian/basic
+
+wmake libso edgeMesh
+wmake libso surfMesh
+
+wmake libso meshTools
+wmake libso finiteVolume
+#wmake libso finiteArea
+
+#wmake libso lduSolvers
+#wmake libso VectorN
+
+#wmake libso tetFiniteElement
+wmake libso decompositionMethods/decomposeReconstruct
+
+# Make dynamicMesh tools
+dynamicMesh/AllwmakeLnInclude
+dynamicMesh/Allwmake
+
+#wmake libso coupledMatrix
+#wmake libso sampling
+
+#wmake libso ODE
+#wmake libso POD
+#wmake libso randomProcesses
+mesh/Allwmake
+
+#thermophysicalModels/Allwmake
+transportModels/Allwmake
+#turbulenceModels/Allwmake
+#lagrangian/Allwmake
+#postProcessing/Allwmake
+#conversion/Allwmake
+
+#wmake libso errorEstimation
+
+#fvAgglomerationMethods/Allwmake
+
+#wmake libso engine
+
+#wmake libso equationReader
+#wmake libso multiSolver
+
+#wmake libso solidModels
+#wmake libso dbns
+
+#( cd cudaSolvers ; ./Allwmake )
+
+# ----------------------------------------------------------------- end-of-file

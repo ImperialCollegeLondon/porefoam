@@ -41,7 +41,7 @@
 	{
 
 		//scalar SumForces = 0.;
-		cellForce*=0.;
+		cellForce*=dimensionedScalar(0.);
 		volScalarField interfCellArea=0.*fvc::average(magSf);
 
 
@@ -104,7 +104,7 @@
 				vectorField pCellNybrForce = cellForce.boundaryField()[bI].patchNeighbourField();
 				scalarField pCellOwnrArea = interfCellArea.boundaryField()[bI].patchInternalField();
 				scalarField pCellNybrArea = interfCellArea.boundaryField()[bI].patchNeighbourField();
-				vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[bI];
+				vectorField & pCurvatureForcef = curvatureForcef.boundaryFieldRef()[bI];
 
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{

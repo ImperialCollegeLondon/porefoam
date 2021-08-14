@@ -28,7 +28,7 @@ License
 #include "addToRunTimeSelectionTable.H"
 #include "fvPatchFieldMapper.H"
 #include "volMesh.H"
-#include "foamTime.H"
+
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -137,7 +137,6 @@ void Foam::timeVaryingAlphaContactAngleFvPatchScalarField::write
 	os.writeKeyword("thetaT0") << thetaT0_ << token::END_STATEMENT << nl;
 	os.writeKeyword("te") << te_ << token::END_STATEMENT << nl;
 	os.writeKeyword("thetaTe") << thetaTe_ << token::END_STATEMENT << nl;
-	writeEntry("value", os);
 }
 
 

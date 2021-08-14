@@ -40,8 +40,8 @@
 	for(int i=0;i<smoothingKernel_;++i)
 	{
 
-		pointForce*=0.;
-		interfPointArea*=0.;
+		pointForce*=dimensionedScalar(0.);
+		interfPointArea*=dimensionedScalar(0.);
 
 
 		forAll(magDelS,fI) if (magDelS[fI] > CONTRAST_FACTOR)
@@ -76,8 +76,8 @@
 			 else		 {			 }
 		}
 
-		syncTools::syncPointList(msh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero, false);
-		syncTools::syncPointList(msh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero, false);
+		syncTools::syncPointList(msh, pointForce, plusEqOp<vector>(), pTraits<vector>::zero);
+		syncTools::syncPointList(msh, interfPointArea, plusEqOp<scalar>(), pTraits<scalar>::zero);
 
 
 
@@ -102,7 +102,7 @@
 			if (patches[bI].coupled())
 			{
 				label pStart=patches[bI].patch().start();
-				vectorField & pCurvatureForcef = curvatureForcef.boundaryField()[bI];
+				vectorField & pCurvatureForcef = curvatureForcef.boundaryFieldRef()[bI];
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
 					pCurvatureForcef[pfI] *= 1.-smoothingRelaxFactor_;

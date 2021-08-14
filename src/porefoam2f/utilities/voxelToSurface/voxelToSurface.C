@@ -304,7 +304,7 @@ inline int collectManifoldFaces(label meshPI, label connectingFace ,DynamicList<
 	const labelListList& pEdges = surf1.pointEdges();
 	const labelListList& eFaces = surf1.edgeFaces();
 	const List<edge>& edges = surf1.edges();
-	const List<face>& faces = surf1.surfFaces();
+	const List<face>& faces = surf1.faces();
 	const pointField& points = surf1.points();
 	const labelList& meshPoints = surf1.meshPoints();
 
@@ -398,7 +398,7 @@ void correct( faceList & faces, DynamicField<point> & points, bool handlemultipl
 	const labelListList& pFaces = surf1.pointFaces();
 	const labelList& meshPoints = surf1.meshPoints();
 
-	const List<face>& Sfaces = surf1.surfFaces();
+	const List<face>& Sfaces = surf1.faces();
 
 
 

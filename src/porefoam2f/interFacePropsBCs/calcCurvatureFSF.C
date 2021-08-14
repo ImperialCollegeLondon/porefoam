@@ -17,9 +17,8 @@
  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 \*-------------------------------------------------------------------------*/
 
-#include "interfaceProperties.H"
+#include "interfaceProps.H"
 #include "alphaContactAngleFvPatchScalarField.H"
-#include "mathematicalConstants.H"
 #include "primitivePatchInterpolation.H"
 #include "surfaceInterpolate.H"
 #include "fvcDiv.H"
@@ -35,7 +34,7 @@
 // The dynamic contact angle is calculated from the component of the
 // velocity on the direction of the interface, parallel to the wall.
 
-void Foam::interfaceProperties::correctContactAngle
+void Foam::interfaceProps::correctContactAngle
 (
     surfaceVectorField::Boundary& nsb,
     volVectorField::Boundary& gradAlphab,
@@ -77,8 +76,7 @@ void Foam::interfaceProperties::correctContactAngle
 			
 			//vectorField nsp0 = nsb[bI];
 			vectorField nf = nw_.boundaryField()[bI];
-			scalarField theta =
-			convertToRad*acap.theta(U_.boundaryField()[bI], nsp, nf);
+			scalarField theta = (3.14159265358979324/180.)*acap.theta(U_.boundaryField()[bI], nsp, nf);
 
 			// vectorField nf = boundary[bI].nf();
 			// Reset nsp to correspond to the contact angle
@@ -111,7 +109,7 @@ void Foam::interfaceProperties::correctContactAngle
 
 
 
-void Foam::interfaceProperties::calcCurvatureFSF
+void Foam::interfaceProps::calcCurvatureFSF
 (
 		surfaceScalarField&  stf,
 		const surfaceScalarField& delS,
@@ -135,7 +133,7 @@ void Foam::interfaceProperties::calcCurvatureFSF
 
 	volVectorField nS_ = a1a2*gradAlpha/magGradAlpha; nS_ = nS_/(mag(nS_) + 1e-8);
 	surfaceVectorField nHatfv = fvc::interpolate(nS_,"smoothScheme"); nHatfv/=mag(nHatfv)+1e-12;
-	correctContactAngle(nHatfv.boundaryField(),gradAlpha.boundaryField(),nS_.boundaryField(), alpha1S_.boundaryField());    
+	correctContactAngle(nHatfv.boundaryFieldRef(),gradAlpha.boundaryFieldRef(),nS_.boundaryFieldRef(), alpha1S_.boundaryFieldRef());    
 
 
 
@@ -155,7 +153,7 @@ void Foam::interfaceProperties::calcCurvatureFSF
 
 		nHatfv = fvc::interpolate(nS_,"smoothScheme");
 		nHatfv = nHatfv/(mag(nHatfv) + 1e-12);
-		correctContactAngle(nHatfv.boundaryField(),gradAlpha.boundaryField(),nS_.boundaryField(),alpha1S_.boundaryField()	);
+		correctContactAngle(nHatfv.boundaryFieldRef(),gradAlpha.boundaryFieldRef(),nS_.boundaryFieldRef(),alpha1S_.boundaryFieldRef()	);
 
 	}
 	nS_ = nS_/(mag(nS_) + 1e-12);

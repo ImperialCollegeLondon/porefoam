@@ -26,6 +26,21 @@ solvers
         mergeLevels     1;
         maxIter         100;
     }
+    pcorrFinal
+    {
+        solver          GAMG;
+        tolerance       1e-8;
+        relTol          0.0001;
+        smoother        GaussSeidel;
+        nPreSweeps      0;
+        nPostSweeps     2;
+        nFinestSweeps   2;
+        cacheAgglomeration on;
+        nCellsInCoarsestLevel 8;
+        agglomerator    faceAreaPair;
+        mergeLevels     1;
+        maxIter         100;
+    }
 
 
     p

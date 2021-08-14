@@ -8,11 +8,11 @@
 
  - A GNU Linux operating system (at least for compilation), tested on Ubuntu 18.04
  - GNU make, cmake, and a c++11 compiler (available in most Linux distributions or can be installed through their package manager)
- - MPI message passing interface.   In Ubuntu (18.04) MPI another foamx3m prerequisites can be installed by typing in a terminal:    
+ - MPI message passing interface.   In Ubuntu (18.04) MPI another foamx4m prerequisites can be installed by typing in a terminal:    
       `sudo apt install mpi-default-dev  flex libscotch-dev`    
  - [libvoxel] (included) and its prerequisies:    
        `sudo apt install libjpeg-dev liblzma-dev`    
- - A costomized foam-extend, [foamx3m] (included)     
+ - A costomized foam-extend, [foamx4m] (included)     
  - [libtiff] and [zlib] (optional, both dependancies of libvoxel, included)    
  - [script] for convenient compilation (included)    
 
@@ -57,7 +57,7 @@ License:
 
 [Imperial College pore-scale modelling website]: https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling
 [libvoxel]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/src/libvoxel 
-[foamx3m]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx3m    
+[foamx4m]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx4m    
 [libtiff]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/libtiff    
-[zlib]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx3m    
-[script]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx3m   
+[zlib]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx4m    
+[script]: https://github.com/aliraeini/poreFoam-singlePhase/tree/master/pkgs/foamx4m   

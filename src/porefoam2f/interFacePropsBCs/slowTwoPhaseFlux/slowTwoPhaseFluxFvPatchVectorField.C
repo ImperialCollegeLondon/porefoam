@@ -26,7 +26,12 @@
 #include "volFields.H"
 #include "surfaceFields.H"
 #include "primitivePatchInterpolation.H"
+
+#ifdef FOAMX
 #include "foamTime.H"
+#else
+# include "Time.H"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

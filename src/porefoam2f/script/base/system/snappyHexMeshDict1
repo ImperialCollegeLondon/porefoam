@@ -32,7 +32,7 @@ addLayers       false;
 geometry
 {
 
-    solidwalls.vtk
+    solidwalls.obj
     {
         type triSurfaceMesh;
         name Grainwalls;
@@ -509,6 +509,7 @@ addLayersControls
         // Stop layer growth on highly warped cells
         maxFaceThicknessRatio 0.5;
 
+			minMedianAxisAngle 45;
 
     // Patch displacement
 
@@ -649,6 +650,8 @@ meshQualityControls
 
 // Merge tolerance. Is fraction of overall bounding box of initial mesh.
 // Note: the write tolerance needs to be higher than this.
-mergeTolerance 1e-6;
+mergeTolerance 1e-5;
+
+debug   1; 
 
 //---------------------------------------------------------------------'

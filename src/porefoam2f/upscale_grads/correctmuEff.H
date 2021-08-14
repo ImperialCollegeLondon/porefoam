@@ -4,7 +4,7 @@
 
 	gradP=	fvc::grad(pd); 
 
-    volVectorField::Boundary& Ubf = U.boundaryField();
+    auto& Ubf = U.boundaryField();
 
     const fvBoundaryMesh& bndrys = mesh.boundary();
     forAll(bndrys, bi)
@@ -14,7 +14,7 @@
 //				Info<<bndrys[bi].name()<<" "<<gAverage(muEff.boundaryField()[bi])<<  " - ";
 
 			 //muEff.boundaryField()[bi]+=cBC*mag(Ubf[bi].patchInternalField())*mag(bndrys[bi].delta());
-			 muEff.boundaryField()[bi]*=1+
+			 muEff.boundaryFieldRef()[bi]*=1+
 			 cBC* //1.0526315789474;
 			 (mag(gradP.boundaryField()[bi].patchInternalField()
 			 -interface.gPc().boundaryField()[bi].patchInternalField()
@@ -22,7 +22,7 @@
 			 (mag(Ubf[bi].patchInternalField())+1e-16)/(1000.*muEff.boundaryField()[bi]);
 
 //				Info<<bndrys[bi].name()<<" "<<gAverage(muEff.boundaryField()[bi])<<  " ,       ";
-			 muEff.boundaryField()[bi]*=1./bndrys[bi].deltaCoeffs()/
+			 muEff.boundaryFieldRef()[bi]*=1./bndrys[bi].deltaCoeffs()/
 						(1./bndrys[bi].deltaCoeffs()+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
 
 						
@@ -60,9 +60,9 @@
 				//Info<<min(apS)<<" "<<max(apS)<<" "<<average((1./bndrys[bi].deltaCoeffs())/
 						//(1./bndrys[bi].deltaCoeffs()+lambdaS*4.*a12S))<<endl;
 				//Info<<min(apS)<<" "<<max(apS)<<" "<<average(a12S)<<endl;
-				//alpha1.boundaryField()[bi]=a12S;
-				//alpha1.boundaryField()[bi]==a12S;
-			muEff.boundaryField()[bi]*=(1./bndrys[bi].deltaCoeffs())/
+				//alpha1.boundaryFieldRef()[bi]=a12S;
+				//alpha1.boundaryFieldRef()[bi]==a12S;
+			muEff.boundaryFieldRef()[bi]*=(1./bndrys[bi].deltaCoeffs())/
 						(1./bndrys[bi].deltaCoeffs()+lambdaS*4.*a12S);//(1.-cSlip*4.*(apS*(1-apS)));
 		}
 		
