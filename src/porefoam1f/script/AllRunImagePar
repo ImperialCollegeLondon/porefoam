@@ -207,7 +207,6 @@ echo "p @ $direction : $p  Pa"
 	#(cd $caseName && runMPI calc_perms $nProc)
 	(cd $caseName && runMPI calc_distributions $nProc)
 
-	(cd $caseName && cp  FOAM2Voxel vxlImage.mhd vxlImage.mhd- )
 	(cd $caseName && runApp  FOAM2Voxel vxlImage.mhd "$nProc" "$outPutFormat" t)
 
 

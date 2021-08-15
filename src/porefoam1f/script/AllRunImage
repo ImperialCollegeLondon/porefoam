@@ -35,8 +35,6 @@ echo
 
 
 
-myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
-: ${msSrc:=$myCurrentDIR} ; export msSrc
 
 #dataFiles="Berea.mhd"
 if [ -n "$1" ]; then  dataFiles=$1
@@ -49,24 +47,31 @@ echo "Images: $dataFiles"
   echo "flow directions=\"$directions\" "
 
 : ${outPutFormat:=$3}
-: ${outPutFormat:=tif}
+: ${outPutFormat:=raw.gz}
   echo "outPutFormat=\"$outPutFormat\" "
+
+: ${detlaPs:="1"}
+  echo "detlaPs=\"$detlaPs\" "
 
 
 #~ maxDeltaT="2e-5"
 endTime=.1
 
 
-ps=" 1"
 
+myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
+: ${msSrc:=$myCurrentDIR} ; export msSrc
+[ -n "$WM_PROJECT" ] || echo "WM_PROJECT not set, sourcing $msSrc/script/bashrc"
+[ -n "$WM_PROJECT" ] || source $msSrc/script/bashrc
 
-. $msSrc/script/initbash
+source $msSrc/script/initbash
 
 
 
 for datFile in $dataFiles
 do
-dataFile=${datFile%.*}
+dataFile=${datFile%.gz}
+dataFile=${dataFile%.*}
 
 prefix="$dataFile/"
 mkdir $prefix
@@ -76,11 +81,11 @@ for direction in $directions
 do
 echo "direction $direction"
 
-for p in $ps
+for p in $detlaPs
 do
 echo "p @ $direction : $p  Pa"
 
-  caseName="$prefix""$dataFile-$p""-$direction"
+  caseName="$prefix$dataFile$tag-$p-$direction"
   if  ! [ -d $caseName ]; then
 	#~ LAM_MPI_SESSION_SUFFIX="$(echo $caseName | sed 's/\///g')"
 	#~ echo $LAM_MPI_SESSION_SUFFIX
@@ -120,25 +125,28 @@ echo "p @ $direction : $p  Pa"
 	  echo ""  >>   $cpymhd
 	  echo "ElementDataFile = ../../$datFile"  >>   $cpymhd
 	  echo ""  >>   $cpymhd
-	elif [ -f $dataFile.tif ]; then
+	elif [ -f $dataFile.tif ] ||  [ -f $dataFile.am ] ; then 
 	  echo "ObjectType =  Image" >   $cpymhd
 	  echo "NDims =       3"     >>   $cpymhd
 	  echo "ElementType = MET_UCHAR"  >>   $cpymhd	  
 	  echo ""  >>   $cpymhd
 	  echo "ElementDataFile = ../../$datFile"  >>   $cpymhd
-	  echo ""  >>   $cpymhd
-	  echo "#ElementSize =  1  1  1 " >>   $cpymhd
-	  echo "#Offset = 0 0 0" >>   $cpymhd
 
 	  echo "Please check the content of $cpymhd if not correct, provide "
 	  echo "a similar but correct .mhd file in the current directory, i.e:"
-	  echo " cp $cpymhd $caseName.mhd     &&    rm $caseName"
-	  echo "and try again"
+	  echo " cp $cpymhd $caseName.mhd   &&   rm -r $caseName/"
+	  echo "and try again if not correct"
+	elif echo  "$cpymhd" | grep .*[0-9]*_[0-9]*_[0-9]*_.*; then
+		echo "ElementDataFile =  NO_READ" >   $cpymhd
+		echo "read ../../$datFile" >>   $cpymhd
 	else
-	  echo "can not find the file  $dataFile.mhd nor  $dataFile.nhdr nor  $dataFile.tif"
+	  echo "can not find the file  $dataFile.mhd/.nhdr/.tif/.am"
 	  exit
 	fi
 
+	if [ -n "$voxelCommands" ]; then 
+		printf "\n\n$voxelCommands\n" >> $cpymhd
+	fi
 
 
 	(cd $caseName && runApp voxelToFoam  ${dataFile}_input.mhd )
