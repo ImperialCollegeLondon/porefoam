@@ -91,8 +91,10 @@ def runSh(resDir, script, logfile=None, envs={}):
 	if not logfile and len(oNam)>3 and oNam[0].isalnum():  
 		oNam=resDir+'/'+oNam+'.log'; 
 		logfile = open(oNam,'wb'); 
+		oNam=os.path.abspath(oNam)
+	else: oNam=''
 	myenv = msEnv.copy();	myenv.update(envs) 
-	disp(f'Running {script} in {resDir}, envs: {envs or ""} >> {oNam or ""}');
+	disp(f'Running {script} in {resDir}, envs: {envs or ""} >> {oNam}');
 	return subprocess.run(script, stdout=logfile, stderr=logfile, shell=True, cwd=resDir, env=myenv)
 
 

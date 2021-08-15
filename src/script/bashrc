@@ -49,9 +49,7 @@ else
 	elif [[ "$WM_PROJECT_DIR" != "$msRoot/"*"/foamx4m" ]]; then
 		printf "\n *** Using OpenFOAM:  $WM_PROJECT_DIR,  If you meant to use foamx4m instead, deactivate this and re-source in a new terminal.\n\n"
 	fi
-	export myOFBinDir=$msBinDir/foamx4m
-	export PATH=$PATH:$myOFBinDir
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$myOFBinDir
+	export PATH=$PATH:$msBinDir/foamx4m
 	export FOAM_ABORT=1
 
 	export PYTHONPATH=$msSrc/script:$msSrc/pylib:$PYTHONPATH
