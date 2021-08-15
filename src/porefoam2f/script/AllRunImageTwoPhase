@@ -328,7 +328,8 @@ echo "_________________________ $dataFile  ____________________________"
 			setKeywordValues endTime $endTime ./$runDir/system/controlDict
 
 
-			boundingBox=$(cat ./$runDir/log.checkMesh | grep ound | grep box | sed 's/[a-Z][a-Z][a-Z]*//g'| sed 's/[\(\)]//g' |  sed 's/[eE]/\*10\^/g' | sed -e 's/[\t ][\t ]*/\n/g')
+			boundingBox=$(cat ./$runDir/log.checkMesh | grep ound | grep box | sed 's:[a-zA-Z][a-zA-Z][a-zA-Z]*::g' \
+			                  | sed 's:[\(\)]::g' |  sed 's:[eE]:\*10\^:g' | sed -e 's:[\t ][\t ]*:\n:g')
 			boundingBox=($boundingBox)
 			echo "UD1: $UD1,   boundingBox:  ${boundingBox[*]}"
 			QOil=$(echo "scale=18; (${boundingBox[4]}-(${boundingBox[1]}))*(${boundingBox[5]}-(${boundingBox[2]}))*$UD1*0.000001" | bc )
