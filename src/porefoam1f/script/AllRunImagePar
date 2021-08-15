@@ -47,13 +47,6 @@ echo "resetX0: $resetX0 #keep/reset X0/Offset"
 echo "keepBCs: $keepBCs #keep/remove vv_* (slip) boundary conditions"
  
 
-
-myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
-: ${msSrc:=$myCurrentDIR} ; export msSrc
-
-[ -n "$WM_PROJECT" ] || echo "WM_PROJECT not set, sourcing $msSrc/script/bashrc"
-[ -n "$WM_PROJECT" ] || source $msSrc/script/bashrc
-
 #dataFiles="Berea.mhd" 
 if [ -n "$1" ]; then  dataFiles=$1
 else                  dataFiles="$(ls *.mhd)"
@@ -75,6 +68,12 @@ echo "Images: $dataFiles"
 #~ maxDeltaT="2e-5"
 endTime=.1
 
+
+
+myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
+: ${msSrc:=$myCurrentDIR} ; export msSrc
+[ -n "$WM_PROJECT" ] || echo "WM_PROJECT not set, sourcing $msSrc/script/bashrc"
+[ -n "$WM_PROJECT" ] || source $msSrc/script/bashrc
 
 source $msSrc/script/initbash
 
