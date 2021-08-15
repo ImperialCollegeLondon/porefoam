@@ -46,7 +46,7 @@ else
 		#export FOAM_INST_DIR=$(cd $myUpperDIR/../pkgs && pwd)
 		export FOAM_INST_DIR=$msRoot/pkgs
 		source $FOAM_INST_DIR/foamx4m/etc/bashrc
-	else
+	elif [[ "$WM_PROJECT_DIR" != "$msRoot/"*"/foamx4m" ]]; then
 		printf "\n *** Using OpenFOAM:  $WM_PROJECT_DIR,  If you meant to use foamx4m instead, deactivate this and re-source in a new terminal.\n\n"
 	fi
 	export myOFBinDir=$msBinDir/foamx4m
