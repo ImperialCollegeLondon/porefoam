@@ -2,7 +2,7 @@
 cd ${0%/*} || exit 1    # run from this directory
 set -x
 
-wmake libso autoMesh
+#wmake libso autoMesh
 wmake libso cfMesh
 
 # ----------------------------------------------------------------- end-of-file
