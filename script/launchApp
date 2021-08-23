@@ -1,0 +1,54 @@
+#!/bin/bash
+
+usage()
+{	echo "usage:"
+	scriptName=`basename "${BASH_SOURCE[0]}"`
+	printf "$scriptName interFaceFoam PathToCaseFolder\n\n "
+	printf "$scriptName calc_grads PathToCaseFolder\n\n "
+	echo "Arguments (all optional):"
+	echo "  arg1: name of solver/app" 
+	echo "  arg2: name of openfoam case (folder) to continue its simulation, default is current directory"
+}
+if [ "$1" == "-h" ]; then usage; exit; fi
+if [ "$1" == "--help" ]; then usage; exit; fi
+if ! [ -n "$1" ]; then usage; exit; fi
+
+
+
+if [ -n "$1" ]; then  application=$1 ;  else  application="NO_APP_GIVEN"; fi
+if [ -n "$2" ] ; then  caseName=$2 ; shift; shift;  else  caseName="." ; shift;  fi
+
+myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
+: ${msSrc:=$myCurrentDIR} ; export msSrc
+. $msSrc/script/initbash
+
+
+
+
+if [ -f $caseName/system/controlDict ]; then 
+	echo ".................. ......................."
+	echo "running $application on  $(dirname $caseName/) in parallel"
+
+	sleep 1
+
+
+	processorDirs="$(cd $caseName/ && ls -d processo*[0-9])"	
+	arr=($processorDirs)
+	IFS=$'\n'
+	nProc=$(( $(echo "${arr[*]}" | sed 's/processor//g' | sort -nr | head -1)+1 ))
+
+
+	LastLog=$(cd  $caseName && ls log.$application* | sed 's/log.$application-//g' | sed 's/log.$application//g' |  sort -n | tail -1)
+	destLogNomber=${application#*/}
+	destLogNomber=${destLogNomber%-*}
+	destLogNomber=$(($destLogNomber + 1))
+	(cd $caseName && mv log.$application log.$application-$destLogNomber)
+
+
+	(cd $caseName && runMPI $application $nProc $@)
+
+
+	echo "...... End: $application on $caseName ......"
+else
+	echo "can not find $caseName/system/controlDict"
+fi

@@ -1,0 +1,32 @@
+//-*-  C++  -*----------------------------------------------------------
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      postProcessDict;
+}
+//----------------------------------------------------------------------
+
+
+
+CVxBounds1 (0 0 0 0   0 0 0 0);
+CVxBounds2 (1 1 1 1   1 1 1 1);
+ 
+CVyBounds1 (0 0 0 0   0 0 0 0);
+CVyBounds2 (1 1 1 1   1 1 1 1);
+
+CVzBounds1 (0 0 0 0   0 0 0 0);
+CVzBounds2 (1 1 1 1   1 1 1 1);
+
+//***************************************
+relativeBounds true ; //default is true
+//***************************************
+
+
+
+//nGrowCVs 1;
+CVoxelValues (121 122 123 124  151 152 153 154);
+labelImage "vxlImage_VSubElems0.mhd";
+

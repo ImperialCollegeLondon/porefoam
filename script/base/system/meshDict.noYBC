@@ -1,0 +1,122 @@
+//-*- C++ -*-
+FoamFile
+{
+    version   2.;
+    format    ascii;
+    class     dictionary;
+    location  "system";
+    object    meshDict;
+}
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+surfaceFile "solidwalls.stl";
+
+maxCellSize 0.4;
+
+//boundaryCellSize 2.;
+//additionalRefinementLevels 1;
+//keepCellsIntersectingBoundary 0;
+
+objectRefinement
+{
+}
+
+localRefinement
+{
+
+
+    //solidwalls.stl
+    //{
+        //cellSize 0.1;
+    //}
+
+
+    //"orifice01.*"
+    //{
+        //cellSize 0.1;
+    //} 
+
+
+}
+
+boundaryLayers
+{//! Note nLayers less than 1 leads to bad quality mesh
+    nLayers 2; // reset from AllRun...
+    optimiseLayer 0;
+    maxFirstLayerThickness 0.4;
+    untangleLayers 0;
+    optimisationParameters
+    {
+		relThicknessTol  0.5;
+	}
+}
+
+
+renameBoundary
+{
+    //defaultName		fixedWalls;
+    //defaultType		wall;
+
+
+    newPatchNames
+    {
+        //OpenSCAD_Model
+        //{
+            //newName     Grainwalls;
+            //newType     patch;
+        //}
+
+        "Back.*"
+        {
+            newName     Back;
+            newType     patch;
+        }
+        "Front.*"
+        {
+            newName     Front;
+            newType     patch;
+        }
+        "Left.*"
+        {
+            newName     Left;
+            newType     patch;
+        }
+        "Right.*"
+        {
+            newName     Right;
+            newType     patch;
+        }
+
+        "(patch.*)|(Top.*)|(Bottom.*)"
+        {
+            newName     Grainwalls;
+            newType     wall;
+        }
+    }
+}
+
+
+workflowControls
+{
+//stopAfter templateGeneration;
+//stopAfter surfaceTopology;
+//stopAfter surfaceProjection;
+//stopAfter patchAssignment;
+//stopAfter edgeExtraction;
+//stopAfter boundaryLayerGeneration;
+//stopAfter meshOptimisation;
+stopAfter end; // end
+
+lastStep        start;
+
+skipSteps  0 (  );
+
+// skipSteps   9 ( start templateGeneration surfaceTopology surfaceProjection 
+//               patchAssignment edgeExtraction boundaryLayerGeneration 
+//               meshOptimisation boundaryLayerRefinement );
+
+restartFromLatestStep yes;
+}
+     
+// ************************************************************************* //

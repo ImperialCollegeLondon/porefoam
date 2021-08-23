@@ -1,0 +1,77 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      decomposeParDict;
+}
+//----------------------------------------------------------------------
+
+
+numberOfSubdomains 36;
+
+  method  multiLevel; 
+
+
+
+multiLevelCoeffs
+{
+    level0
+    {
+        numberOfSubdomains  3;
+        method  scotch; 
+    }    
+
+    level1
+    {
+        numberOfSubdomains  12;
+		method  multiLevel; 
+			multiLevelCoeffs
+			{
+				level0
+				{
+					method  scotch; 
+					numberOfSubdomains  4;
+				}
+				level1
+				{
+					method  scotch; 
+					numberOfSubdomains  3;
+				}
+			}
+    }
+}
+
+
+
+simpleCoeffs
+{
+    n               ( 4 3 3 );
+    delta           0.005;
+}
+
+hierarchicalCoeffs
+{
+    n               ( 4 3 3 );
+    delta           0.005;
+    order           xyz;
+}
+
+metisCoeffs
+{
+//    processorWeights ( 1 1 1 1 );
+}
+
+manualCoeffs
+{
+    dataFile        "";
+}
+
+distributed     no;
+
+roots           ( );
+
+
+//---------------------------------------------------------------------'

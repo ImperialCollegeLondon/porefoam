@@ -1,0 +1,44 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      meshingDict;
+}
+//----------------------------------------------------------------------
+
+headerName BASENAME.mhd;
+inputName BASENAME.tif;
+outputSurface  BASENAME0.obj;
+outputFormat binary;
+scaleVxlImage 1e6;
+
+
+
+surfaceSmoothing
+{
+	///inputSurface should be same as outputSurface above
+	inputSurface       BASENAME0.obj;  
+	outputSurface      "solidwalls.obj";
+	nIterations        50;
+	
+	/// kernelRadius ignored for now, , to check
+	kernelRadius       7; 
+	relaxationFactor   0.2;
+}
+
+
+perforationDepth 0;
+perforationWidth 0;
+perforationLengthFraction 0.5;
+nAddLayers  5;    // outside the background mesh
+nCopyLayersX  4;   // inside the background mesh
+nCopyLayersYZ 2;   // inside the background mesh
+
+nSmoothBegin (5 5 5); // counted after above iteration 
+nSmoothEnd (5 5 5);   // counted after above iteration 
+nSmoothing 2;         // for outside of the image
+
+//---------------------------------------------------------------------'

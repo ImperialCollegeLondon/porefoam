@@ -1,0 +1,181 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+//----------------------------------------------------------------------
+
+
+solvers
+{
+    alpha1 // in case,  used in of9
+    {
+        nAlphaCorr      1;
+        nAlphaSubCycles 2;
+    }
+
+    pcorr
+    {
+		solver          GAMG;
+		tolerance       1e-8;
+		relTol          0.00001;
+		smoother        GaussSeidel;
+		nPreSweeps      0;
+		nPostSweeps     2;
+		nFinestSweeps   2;
+		cacheAgglomeration on;
+		nCellsInCoarsestLevel 10;
+		agglomerator    faceAreaPair;
+		mergeLevels     1;
+    }
+
+    pd
+    {
+		solver          GAMG;
+		tolerance       1e-7;
+		relTol          0.001;
+		smoother        GaussSeidel;
+		nPreSweeps      0;
+		nPostSweeps     2;
+		nFinestSweeps   2;
+		cacheAgglomeration on;
+		nCellsInCoarsestLevel 10;
+		agglomerator    faceAreaPair;
+		mergeLevels     1;
+    }
+
+    pdFinal
+    {
+		solver          GAMG;
+		tolerance       1e-7;
+		relTol          0.001;
+		smoother        GaussSeidel;
+		nPreSweeps      0;
+		nPostSweeps     2;
+		nFinestSweeps   2;
+		cacheAgglomeration on;
+		nCellsInCoarsestLevel 10;
+		agglomerator    faceAreaPair;
+		mergeLevels     1;
+    }
+
+    pc
+    {
+		solver          GAMG;
+		tolerance       1e-7;
+		relTol          0.001;
+		smoother        GaussSeidel;
+		nPreSweeps      0;
+		nPostSweeps     2;
+		nFinestSweeps   2;
+		cacheAgglomeration on;
+		nCellsInCoarsestLevel 10;
+		agglomerator    faceAreaPair;
+		mergeLevels     1;
+    }
+    pcFinal
+    {
+		solver          GAMG;
+		tolerance       1e-7;
+		relTol          0.001;
+		smoother        GaussSeidel;
+		nPreSweeps      0;
+		nPostSweeps     2;
+		nFinestSweeps   2;
+		cacheAgglomeration on;
+		nCellsInCoarsestLevel 10;
+		agglomerator    faceAreaPair;
+		mergeLevels     1;
+    }
+    pcRes
+    {
+		solver          GAMG;
+		tolerance       1e-7;
+		relTol          0.001;
+		smoother        GaussSeidel;
+		nPreSweeps      0;
+		nPostSweeps     2;
+		nFinestSweeps   2;
+		cacheAgglomeration on;
+		nCellsInCoarsestLevel 10;
+		agglomerator    faceAreaPair;
+		mergeLevels     1;
+    }
+
+
+
+    U
+    {
+		solver          PCG;
+		preconditioner  DIC;
+		tolerance       1e-08;
+		relTol          0;
+    }
+    UFinal
+    {
+		solver          PBiCG;
+		preconditioner  DILU;
+		tolerance       1e-08;
+		relTol          0.001;
+    }
+
+
+}
+
+PIMPLE
+{
+	pdRefCell 21;
+	pdRefValue 0;
+	pcRefCell 21;
+	pcRefValue 0;
+
+	surfaceForceModel  CCF;
+
+	pcThicknessFactor  .1; 
+	fcCorrectTangent   .05; 
+	fcCorrectTangentRelax 1.;
+	smoothingKernel   2; 
+	smoothingRelaxFactor   0.7; // high vaqlue leads to alpha leakage
+
+	wallSmoothingKernel  2; 
+	fcdFilter   0.01; 
+
+	cAlpha  1; 
+    alphafModel   interpolate; 
+
+	cBC   250;//250;//500;
+
+	lambda   0;
+	lambdaS  0;
+	cSSlip   0.05;
+	nSlip    1.;
+
+	UBoundByUSmoothFactor 2.;
+
+	nUCorr 0;
+	beta              beta [ 1 -1 -1 0 0 0 0 ] 0.001;
+
+	momentumPredictor no;
+	nCorrectors    1; 
+	npcCorrectors     1;
+	nOuterCorrectors    1;
+	nNonOrthogonalCorrectors 1;
+	nPcNonOrthCorr 0;
+	nAlphaCorr      1;
+	nAlphaSubCycles 1;
+}
+
+
+
+
+relaxationFactors
+{
+    //U               0.3;
+      //  pd               0.3;
+}
+
+//---------------------------------------------------------------------'

@@ -1,0 +1,30 @@
+//----------------------------- -*- C++ -*- ---------------------------.
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      setFieldsDict;
+}
+//----------------------------------------------------------------------
+
+defaultFieldValues
+(
+    volScalarFieldValue alpha1 0
+);
+
+regions
+(
+    boxToCell
+    {
+        box (0.00000 0.00000 0.00000) (1. 1. 0.000102);
+        fieldValues
+        (
+            volScalarFieldValue alpha1 1
+        ); 
+    }
+);
+
+
+//---------------------------------------------------------------------'
