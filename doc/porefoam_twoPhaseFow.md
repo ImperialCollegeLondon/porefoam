@@ -2,10 +2,6 @@
 
 Ali Q Raeini, Mosayeb Shams, Branko Bijeljic and Martin J. Blunt
 
-Prepared by   
-- Ali Q Raeini, Department of Earth Science and 
-  Engineering, Imperial College London, UK, SW7 2AZ, 
-  email: a.q.raeini@imperial.ac.uk
 
 # Summary
 
@@ -632,35 +628,21 @@ which averages the data to produce relative permeability curves.
     pressure-velocity-surface-tension coupling algorithm and several new
     boundary conditions,
 
-# References 
+# References
 
-For more technical detail on the direct single and two-phase flow
-solvers, please refer to the following papers.
 
-**Two-phase direct simulation:**
+ - M Shams, A Q Raeini, M J Blunt, B Bijeljic, “A numerical model of two-phase flow at the micro-scale using the volume-of-fluid method”, J Comp. Phys. 357:159–82 (2018) https://doi.org/10.1016/j.jcp.2017.12.027
 
-Raeini, A.Q., Blunt, M. J. and Bijeljic B. (2012). Modelling
-Two-Phase Flow in Porous Media at the Pore Scale Using the
-Volume-of-Fluid Method, Journal of Computational Physics, 231, 5653-5668
-<http://dx.doi.org/10.1016/j.jcp.2012.04.011>.
+ - A Q Raeini, M J Blunt, and B Bijeljic, “Modelling two-phase flow in porous media at the pore scale using the volume-of-fluid method”,  J Comp. Phys. 231:5653–68 (2012) https://doi.org/10.1016/j.jcp.2012.04.011
 
-Raeini, A.Q. , Bijeljic B and Blunt, M. J. (2014). Numerical Modelling
-of Sub-pore Scale Events in Two-Phase Flow in Porous Media, Transport in
-Porous Media, 101, 191-213, <http://dx.doi.org/10.1007/s11242-013-0239-6>.
 
-Raeini, A.Q., M.J. Blunt, B. Bijeljic, "Direct simulations of two-phase
-flow on micro-CT images of porous media and upscaling of pore-scale
-forces", Advances in Water Resources 74 116--126, (2014)
-<http://dx.doi.org/10.1016/j.advwatres.2014.08.012>
+This code has been used in the following works:
 
-A.Q. Raeini, B. Bijeljic and M.J. Blunt, "Modelling capillary trapping
-using finite-volume simulation of two-phase flow directly on micro-CT
-images", Advances in Water Resources, 83, 102-110 (2015)
-<http://dx.doi.org/10.1016/j.advwatres.2015.05.008>
+ - M Shams, K Singh, B Bijeljic, M J Blunt, “Direct Numerical Simulation of Pore-Scale Trapping Events During Capillary-Dominated Two-Phase Flow in Porous Media”, Transp Porous Med (2021). https://doi.org/10.1007/s11242-021-01619-w
 
-For more information and recent publications, please refer to our
-website:
+ - A Q Raeini, B Bijeljic, M J Blunt, “Generalized network modelling: Capillary-dominated two-phase flow”, Phys. Rev. E,  97(2):023308, (2018). https://doi.org/10.1103/physreve.97.023308
 
-<https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling>
+Note that the scripts used in papers above, which used snappyHexMesh for mesh generation, has been depricated and not included in this repository.
 
+For more information, visit [Imperial College Consortium on Pore-scale  Modelling Imaging](https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling).
 
