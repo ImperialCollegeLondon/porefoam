@@ -22,9 +22,9 @@ You can follow the series of commands run by `make test` in a copy of folder src
 The sample simulation run with the command `make test` shows a significant level of stick-slip behaviour. 
 This test case shall be updated to minimize these artefacts.
 
-TODO: add another test case based on the star-shaped geometry used in  Raeini et al (2014). 
+<!-- TODO: add another test case based on the star-shaped geometry used in  Raeini et al (2014). -->
 
-TODO: porefoam2f documentation is incomplete and probably out of date.
+<!-- TODO: porefoam2f documentation is incomplete and probably out of date. -->
 
 
 
@@ -47,6 +47,10 @@ For other relavant publications, see:
 https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/publications/
 
 ### Credit
+  
+ - Ali Q. Raeini -- developer of filtered surface force (FSF) formulation
+
+ - Mosayeb Shams -- developer of contour-level surface force (CLSF) formulation
 
  - Prof. Stephane Zaleski:  supervision -- tracking interface and interfacial force computation.
 
@@ -58,10 +62,6 @@ https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-mod
 
 
 ### Contacts
-
-For any queries, contact:     
- - Ali Q. Raeini, email: a.q.raeini@imperial.ac.uk
- - Mosayeb Shams, email: m.shams14@imperial.ac.uk
 
 For more information and contacts details, see:  
 https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling
