@@ -18,8 +18,8 @@ See also README files for other modules which are located in their own directori
 ### Contact and References ###
 
 For contacts and references please see:    
+
 https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling/    
-or contact:    
- Ali Q. Raeini, email: a.q.raeini@imperial.ac.uk     
- Mosayeb Shams, email: m.shams14@imperial.ac.uk     
+
+or raise an [issue](https://github.com/ImperialCollegeLondon/porefoam/issues) and mention [@aliraeini](https://github.com/aliraeini) to notify the (former) maintainer of this repository.
 
