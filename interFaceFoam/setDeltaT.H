@@ -5,15 +5,12 @@ if (adjustTimeStep)
 
 
     scalar maxDeltaTFactRe = maxCo/(CoNum + SMALL);
-    
+
     scalar maxDeltaTFactCa=maxAlphaCo/(alphaCoNum + SMALL);
 
     scalar maxDeltaTFact = min(maxDeltaTFactCa, maxDeltaTFactRe);
-        
-    
-    
-    
-    
+
+
     if( maxDeltaTFact>1.2 && (CoNum < CoNumOld*deltaTFact || maxDeltaTFact > 1.5) )
     {
         deltaTFact = min(min(maxDeltaTFact, 1. + 0.1*(maxDeltaTFact-1.)), 1.3);
@@ -32,19 +29,15 @@ if (adjustTimeStep)
 
         runTime.setDeltaT
         (
-            min
-            (
-                deltaTFact*runTime.deltaT().value(),
-                maxDeltaT
-            )
+            max( minDeltaT, min(deltaTFact*runTime.deltaT().value(), maxDeltaT) )
         );
     }
     else
     {
         deltaTFact = 1.;
     }
-        
-    CoNumOld=CoNum;   
+
+    CoNumOld=CoNum;
 
 
     Info<< "deltaT = " <<  runTime.deltaT().value() << endl;

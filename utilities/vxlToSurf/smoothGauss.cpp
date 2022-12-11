@@ -1,8 +1,8 @@
 /*-------------------------------------------------------------------------*\
- Volume-preserving Gaussian smoothing 
+ Volume-preserving Gaussian smoothing
  This is part of surfLib, a library for working with surface files and data
 
- Copyright (C) 2018-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2018-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 	Info<< "kernel radius:" << kernelRadius << endl;
 	Info<< "Iters:" << nIters << endl;
 
-	ensure(relaxCL<=0.00000001,"relaxCL does not produce good results",0); // 
+	ensure(relaxCL<=0.00000001,"relaxCL does not produce good results",0); //
 
 	labelList pMarks(pointsAll.size(),0);
 	for(const auto& facezs:facezsZ) for(const auto& fac:facezs) for(const auto& pI:fac) // this only guaranties up to  3faces contact lines work ok
@@ -49,9 +49,9 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 
 	for(int iter = 0; iter < nIters; iter++)  {///    Volume-preserving Gaussian smoothing
 	 if(iter==nIters-1) writeSurfaceFiles(facezsZ,pointsAll, "dumpSurfSmooth.vtk");
-	  //for_(facezsZ, ifcs) 
+	  //for_(facezsZ, ifcs)
 	 for (int ifcs=facezsZ.size()-1; ifcs>=0; --ifcs) if(facezsZ[ifcs].size()) {
-		const auto& facezs=facezsZ[ifcs]; 
+		const auto& facezs=facezsZ[ifcs];
 		vars<point> newPoints(pointsAll);
 
 
@@ -71,21 +71,21 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 
 		//vectorField pNs(pNeips.size(),dbl3(0,0,0));
 
-		 for(const auto& fac:facezs) {  //for(const auto& facezs:facezsZ) 
-		 
+		 for(const auto& fac:facezs) {  //for(const auto& facezs:facezsZ)
+
 			dbl3 cf = centre(fac,newPoints);
 			for_(fac, pI)  {   int e0=fac[pI], e1=fac[(pI+1)%4];
-				dbl3 Ce=0.5*(newPoints[e0] + newPoints[e1]); 
+				dbl3 Ce=0.5*(newPoints[e0] + newPoints[e1]);
 
-				 dbl3 pNE=0.5*((newPoints[e0]-cf) ^ (Ce-cf)); 
+				 dbl3 pNE=0.5*((newPoints[e0]-cf) ^ (Ce-cf));
 				  pNw[e0] += pNE;
-				 //if( pMarks[e0]==fac.zone ) {    pNw[e0] += pNE;     }// pNs[e0] += pNE;  
+				 //if( pMarks[e0]==fac.zone ) {    pNw[e0] += pNE;     }// pNs[e0] += pNE;
 				 //else if( fac.zone != OWInd )        pNw[e0] += pNE;
 				 //else                                pNs[e0] += pNE;
 
 				 pNE=0.5*((newPoints[e1]-cf) ^ (Ce-cf));
-				  pNw[e1] -= pNE; 
-				 //if( pMarks[e1]==fac.zone ) {    pNw[e1] -= pNE;    } // pNs[e1] -= pNE;  
+				  pNw[e1] -= pNE;
+				 //if( pMarks[e1]==fac.zone ) {    pNw[e1] -= pNE;    } // pNs[e1] -= pNE;
 				 //else if( fac.zone != OWInd )        pNw[e1] -= pNE;
 				 //else                                pNs[e1] -= pNE;//2.*pNE-mag(pNE)*fNorms[faceI];
 			}
@@ -114,7 +114,7 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 				else
 					pAreas[pI]=(0.9*avgA+0.1*pAreas[pI]);
 			}
-		}//for_(pFaces, pI) 
+		}//for_(pFaces, pI)
 		fNorms/=(mag(fNorms)+1e-32);
 	  }
 
@@ -129,7 +129,7 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 		 vectorField displac(newPoints.size(),dbl3(0.,0.,0.));
 		 dbls        sumWeis(newPoints.size(),1e-64);
 		 double wt;
-		 for_(facezs, fI)   //for(const auto& facezs:facezsZ) 
+		 for_(facezs, fI)   //for(const auto& facezs:facezsZ)
 		 {	const auto& fac=facezs[fI];
 			for_(fac, pI)  {	int e0=fac[pI], e1=fac[(pI+1)%4];
 				dbl3 delp=newPoints[e1]-newPoints[e0];
@@ -167,7 +167,7 @@ int  smoothSurf(InputFile& inp, facePieceList& facezsZ, piece<point> pointsAll) 
 		 //dbls        sumWeis(newPoints.size(),1e-64);
 		 dbls        sumWeis(pAreas.size(),1e-64);
 		 dispAvg *= sumWeis;
-		 for_(facezs, fI)   //for(const auto& facezs:facezsZ) 
+		 for_(facezs, fI)   //for(const auto& facezs:facezsZ)
 		 {	const auto& fac=facezs[fI];
 			double wt;
 			for_(fac, pI)  {	int e0=fac[pI], e1=fac[(pI+1)%4];

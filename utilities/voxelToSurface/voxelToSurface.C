@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@
 #include "MeshedSurfaces.H"
 
 #include "voxelImage.h"
+#include "voxelImageI.h"
 #include "createSurface.h"
 
 using namespace Foam;
@@ -93,8 +94,8 @@ int main(int argc, char *argv[])
    vximage.cropD(int3(nCopyLyrsYZ, nCopyLyrsYZ,nCopyLyrsX),n-int3(nCopyLyrsYZ,nCopyLyrsYZ,nCopyLyrsX));//         XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 	vximage.growBox(nAddLyrs +nCopyLyrsYZ+nCopyLyrsX);
 
-	labelVector nSmoothBegin(meshingDict.lookup("nSmoothBegin")) ;
-	labelVector nSmoothEnd((meshingDict.lookup("nSmoothEnd"))) ;
+	labelVector nSmoothBegin(meshingDict.lookup("nSmoothBegin"));
+	labelVector nSmoothEnd(meshingDict.lookup("nSmoothEnd"));
 
 	n = vximage.size3();
 
@@ -102,7 +103,7 @@ int main(int argc, char *argv[])
 
 	voxelImage SmoothedVoxels=vximage;
 
-	vximage.cropD( int3(&nSmoothBegin[0])+2 ,n-int3(&nSmoothEnd[0])-1, 0, 0 );    
+	vximage.cropD( int3(&nSmoothBegin[0])+2 ,n-int3(&nSmoothEnd[0])-1, 0, 0 );
 
 
 	scalar perforationDepth(readScalar(meshingDict.lookup("perforationDepth"))) ;
@@ -119,12 +120,12 @@ int main(int argc, char *argv[])
 		label beginSkip_1=(1.-perforationLengthFraction1)*0.5*n[1];
 		label begin2_0=n[0]-beginSkip_0-perforationWidth;
 		label begin2_1=n[1]-beginSkip_1-perforationWidth;
-		
- 
+
+
 		voxelImage tmp1(perforationLengthFraction0*n[0],perforationWidth,perforationDepth,0);
 		SmoothedVoxels.setBlock	( 1+beginSkip_0, 1+beginSkip_1, 2, tmp1 );
 		SmoothedVoxels.setBlock	( 1+beginSkip_0, 1+begin2_1, 2, tmp1 );
-		
+
 		voxelImage tmp2(perforationWidth,perforationLengthFraction1*n[1],perforationDepth,0);
 		SmoothedVoxels.setBlock	( 1+beginSkip_0, 1+beginSkip_1, 2, tmp2 );
 		SmoothedVoxels.setBlock	( 1+begin2_0, 1+beginSkip_1, 2, tmp2 );
@@ -429,7 +430,7 @@ void correct( faceList & faces, DynamicField<point> & points, bool handlemultipl
 				bool PreviouslyModified=false;
 				forAll(group1,gfI)   if (findPos(modifiedFacesIndices,group1[gfI])>=0)	PreviouslyModified=true;
 
-				
+
 				if( (nCollectedTotal<myFaces.size()-2) &&  (nCollectedTotal>2) && !PreviouslyModified)
 				{   nProblemPoints++;
 

@@ -18,17 +18,17 @@
 		forAll(boundary, bi) if(!boundary[bi].coupled())  {
 			alphaSm.boundaryFieldRef()[bi]==alphaSm.boundaryField()[bi].patchInternalField();	}
 
-	surfaceVectorField gradAlphaf = fvc::interpolate(fvc::grad(alphaSm)); 
+	surfaceVectorField gradAlphaf = fvc::interpolate(fvc::grad(alphaSm));
 									//forAll(boundary, bi)if(!boundary[bi].coupled()) { gradAlphaf.boundaryField()[bi]*=0.;	}
-	gradAlphaf = gradAlphaf+0.1*fvc::interpolate(fvc::average(gradAlphaf)); 
-	gradAlphaf = gradAlphaf+0.1*fvc::interpolate(fvc::average(gradAlphaf)); 
+	gradAlphaf = gradAlphaf+0.1*fvc::interpolate(fvc::average(gradAlphaf));
+	gradAlphaf = gradAlphaf+0.1*fvc::interpolate(fvc::average(gradAlphaf));
 	surfaceScalarField nHatf = (gradAlphaf& mesh.Sf())/(mag(gradAlphaf)+interface.deltaN()); // nHatfv/=mag(nHatfv)+1e-12;
-	
+
 
 	surfaceScalarField phic = mag(phi/mesh.magSf());
-	phic = phic+fvc::interpolate(fvc::average(phic*interface.Internalfaces1())/interface.AvgInternFaces1(),"localMax"); 
-	phic = phic+fvc::interpolate(fvc::average(phic*interface.Internalfaces1())/interface.AvgInternFaces1(),"localMax"); 
-	//phic = 0.5*phic+0.5*fvc::interpolate(fvc::average(phic),"localMax"); 
+	phic = phic+fvc::interpolate(fvc::average(phic*interface.Internalfaces1())/interface.AvgInternFaces1(),"localMax");
+	phic = phic+fvc::interpolate(fvc::average(phic*interface.Internalfaces1())/interface.AvgInternFaces1(),"localMax");
+	//phic = 0.5*phic+0.5*fvc::interpolate(fvc::average(phic),"localMax");
 	//phic =  cAlpha*phic*(1.+interface.BInternalfs()) ;
 	//phic = min(cAlpha*phic*(1.+interface.BInternalfs()), 1.01*max(phic));
 	forAll(boundary, bi) if(!boundary[bi].coupled()) { phic.boundaryFieldRef()[bi]*=0.;	}
@@ -41,7 +41,7 @@
 
 	///. to test the effect of 1.00 ;  ?-> 0.80
 	//scalar cPcpEps=0.2;
-	//volScalarField 
+	//volScalarField
 	//alphaSpread=(1./(cPcpEps*2.))*(alpha1-curtailBADOFSET(alpha1,cPcpEps))+(0.5*1.00);//+(1.00-0.20)*alpha1;
 	//alphaSpread.correctBoundaryConditions();
 
@@ -76,15 +76,3 @@
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-

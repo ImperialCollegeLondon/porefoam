@@ -20,12 +20,12 @@ scaleVxlImage 1e6;
 surfaceSmoothing
 {
 	///inputSurface should be same as outputSurface above
-	inputSurface       BASENAME0.obj;  
+	inputSurface       BASENAME0.obj;
 	outputSurface      "solidwalls.obj";
 	nIterations        50;
-	
+
 	/// kernelRadius ignored for now, , to check
-	kernelRadius       7; 
+	kernelRadius       7;
 	relaxationFactor   0.2;
 }
 
@@ -37,8 +37,8 @@ nAddLayers  5;    // outside the background mesh
 nCopyLayersX  4;   // inside the background mesh
 nCopyLayersYZ 2;   // inside the background mesh
 
-nSmoothBegin (5 5 5); // counted after above iteration 
-nSmoothEnd (5 5 5);   // counted after above iteration 
+nSmoothBegin (5 5 5); // counted after above iteration
+nSmoothEnd (5 5 5);   // counted after above iteration
 nSmoothing 2;         // for outside of the image
 
 //---------------------------------------------------------------------'

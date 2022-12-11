@@ -4,13 +4,13 @@ const double minZfrac=0.00;
 const double maxZfrac=1.;
 
 
-	
-class snapShot_zt 
+
+class snapShot_zt
 {
 	scalarField data_;
  public:
-	
- 
+
+
     scalar& alpha(){return data_[0];};
     scalar& q(){return data_[1];};
     scalar& vol(){return data_[2];};
@@ -23,10 +23,10 @@ class snapShot_zt
     scalar& viscz_1(){return data_[9];};
     scalar& phiu(){return data_[10];};
     scalar& phiu_1(){return data_[11];};
-    
+
     scalar& delPdelZ(){return data_[12];};
     scalar& delPcelZ(){return data_[13];};
-    
+
     scalar& viscInterf_1(){return data_[14];};
 
 
@@ -46,56 +46,56 @@ class snapShot_zt
     scalar& Pc(){return data_[24];};
     scalar& zDropAvg(){return data_[25];};
     scalar& zDrop1(){return data_[26];};
-    scalar& zDrop2(){return data_[27];};       
+    scalar& zDrop2(){return data_[27];};
     scalar& x1(){return data_[28];};
-    scalar& x2(){return data_[29];};       
+    scalar& x2(){return data_[29];};
     scalar& mu1(){return data_[30];};
-    scalar& mu2(){return data_[31];};       
+    scalar& mu2(){return data_[31];};
 
     //scalar f_2(){return 1-f_1();};
-    //scalar dpcdz_2(){return dpddz()-dpcdz_1();};	
-    //scalar dpddz_2(){return dpcdz()-dpddz_1();};	
-    //scalar viscz_2(){return viscz()-dpddz_1();};	
+    //scalar dpcdz_2(){return dpddz()-dpcdz_1();};
+    //scalar dpddz_2(){return dpcdz()-dpddz_1();};
+    //scalar viscz_2(){return viscz()-dpddz_1();};
 
 
-	scalarField& data(){return data_;};	
-	
-	snapShot_zt();   
+	scalarField& data(){return data_;};
+
+	snapShot_zt();
 };
 
 void writePostProcHeader(std::string fnam, int nSlices)  {
 	std::string Names[32]={
-	"alpha", 
-	"U", 
-	"vol", 
-	"f_1", 
-	"dpddz", 
-	"dpcdz", 
-	"dpcdz_1", 
-	"dpddz_1", 
-	"viscz", 
-	"viscz_1", 
-	"phiu", 
-	"phiu_1", 
-	"delPdelZ", 
-	"delPcelZ", 
-	"viscInterf_1", 
-	"viscE", 
-	"viscE_1", 
-	"dpEc", 
-	"dpEc_1", 
-	"dpEd", 
-	"dpEd_1", 
-	"phiE", 
-	"phiE_1", 
-	"ZERO", 
-	"Pc", 
-	"xDropAvg", 
-	"xDrop1", 
-	"xDrop2", 
-	"x1", 
+	"alpha",
+	"U",
+	"vol",
+	"f_1",
+	"dpddz",
+	"dpcdz",
+	"dpcdz_1",
+	"dpddz_1",
+	"viscz",
+	"viscz_1",
+	"phiu",
+	"phiu_1",
+	"delPdelZ",
+	"delPcelZ",
+	"viscInterf_1",
+	"viscE",
+	"viscE_1",
+	"dpEc",
+	"dpEc_1",
+	"dpEd",
+	"dpEd_1",
+	"phiE",
+	"phiE_1",
+	"ZERO",
+	"Pc",
+	"xDropAvg",
+	"xDrop1",
+	"xDrop2",
+	"x1",
 	"x2",
-	"mu1", 
+	"mu1",
 	"mu2"
 	}	;
 
@@ -115,7 +115,7 @@ void writePostProcHeader(std::string fnam, int nSlices)  {
 	out << "Dpc ";
 	out << "pcAvg ";
 	out << "ADarcy ";
-	for (int i=0; i<nSlices; ++i) 
+	for (int i=0; i<nSlices; ++i)
 	{
 	 for(int j=0; j<32; ++j)   out << "S"<<i+1<<"-"<<Names[j]<<" ";
 	}
@@ -127,7 +127,7 @@ void writePostProcHeader(std::string fnam, int nSlices)  {
 
 snapShot_zt::snapShot_zt() : data_(32,0.) {	};
 
-class snapShot_t 
+class snapShot_t
 {
  public:
     double t;
@@ -143,7 +143,7 @@ class snapShot_t
     scalar Dpc;
     scalar pcAvg;
     scalar ADarcy;
-    
+
     List<snapShot_zt> slices;
 
 	snapShot_t()	{ };
@@ -166,7 +166,7 @@ class snapShot_t
 		ADarcy=0.;
 		slices=List<snapShot_zt>(numSlices);
 	};
-	
+
 	void read(std::ifstream& in)
 	{
 		in >> t;
@@ -182,7 +182,7 @@ class snapShot_t
 		in >> Dpc;
 		in >> pcAvg;
 		in >> ADarcy;
-		for (int i=0; i<slices.size(); ++i)    
+		for (int i=0; i<slices.size(); ++i)
 		 forAll( slices[i].data(), j )    in >> slices[i].data()[j];
 	}
 	void write(std::ofstream& out)
@@ -200,23 +200,23 @@ class snapShot_t
 		out << Dpc<<",";
 		out << pcAvg<<",";
 		out << ADarcy<<",";
-		for (int i=0; i<slices.size(); ++i) 
+		for (int i=0; i<slices.size(); ++i)
 		{
 		 forAll( slices[i].data(), j )   out << slices[i].data()[j]<<",";
 		}
 		out << std::endl ;
-		
+
 	}
 
 
 };
 
 // not being used anymore, but kept in case
-class tzData 
+class tzData
 {
  public:
     List<snapShot_t> timeData;
- 
+
 
     tzData(label size, label numSlices);
     void smoothData()
@@ -224,7 +224,7 @@ class tzData
 		Info<<"Smoothing over Time and z using Gaussian kernel";
 		for(label i=1; i<timeData.size()-1; ++i)
 		for(label j=1; j<timeData[0].slices.size()-1; ++j)
-		{ 
+		{
 			timeData[i].slices[j].data()=0.125*
 				(
 					4*timeData[i].slices[j].data()+
@@ -240,7 +240,7 @@ class tzData
 		Info<<"Smoothing over Time and z using Gaussian kernel";
 		for(label i=1; i<timeData.size()-1; ++i)
 		for(label j=1; j<timeData[0].slices.size()-1; ++j)
-		{ 
+		{
 			timeData[i].slices[j].data()=0.25*
 				(
 					2*timeData[i].slices[j].data()+
@@ -254,7 +254,7 @@ class tzData
 		Info<<"Smoothing over Time and z using Gaussian kernel";
 		for(label i=1; i<timeData.size()-1; ++i)
 		for(label j=1; j<timeData[0].slices.size()-1; ++j)
-		{ 
+		{
 			timeData[i].slices[j].data()=0.25*
 				(
 					2*timeData[i].slices[j].data()+
@@ -263,7 +263,7 @@ class tzData
 				);
 		};
 	};
-	
+
 	void read()
 	{
 		std::ifstream myFile ("data_out_for_plot");
@@ -278,7 +278,7 @@ class tzData
 	void write(std::string name)
 	{
 		writePostProcHeader(name+"_header",timeData[0].slices.size());
-		
+
 		std::ofstream myFile (name);
 		forAll(timeData,i)
 		{
@@ -286,7 +286,7 @@ class tzData
 			Info<<"wrote "<< name <<endl;
 		}
 	};
-	
+
 
 
 };
@@ -295,12 +295,3 @@ tzData::tzData(label size, label numSlices):
 {
 	forAll(timeData, i) timeData[i].reset(numSlices);
 };
-
-
-
-
-
-
-
-
-

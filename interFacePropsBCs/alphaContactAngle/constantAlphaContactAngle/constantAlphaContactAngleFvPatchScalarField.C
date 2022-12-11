@@ -102,7 +102,7 @@ Foam::constantAlphaContactAngleFvPatchScalarField::theta
 (
 	const vectorField&,
 	const vectorField &,
-	const vectorField & 
+	const vectorField &
 ) const
 {
     return tmp<scalarField>(new scalarField(size(), theta0_));

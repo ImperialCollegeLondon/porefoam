@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 #else
 # include "Time.H"
 #endif
- 
+
 #include <sys/stat.h> //mkdir
 
 using namespace Foam;
@@ -51,7 +51,7 @@ using namespace Foam;
 template<typename T1,typename T2> void setEq(T1& v1,const T2& v2) { v1 = v2; }
 template<typename T1> void setEq(T1& v1,const float3& v2) { v1[0]=v2[0];   v1[1]=v2[1]; v1[2]=v2[2]; }
 
-template<typename ImgT, typename Type> 
+template<typename ImgT, typename Type>
 void convertToFoamWrite
 (
 	const word& alpha1Header ,
@@ -98,7 +98,7 @@ void convertToFoamWrite
 	forAll(boundary, bi)
 		Vfield.boundaryFieldRef()[bi]==Vfield.boundaryField()[bi].patchInternalField();
 
-	
+
 	OFstream AOF(Vfield.time().timeName()+"/"+name);
 	Vfield.writeHeader(AOF);
 	Vfield.writeData(AOF);
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
 		runTime.setDeltaT(dt);
 		runTime++;
 		Info<<endl<<"time: "<<runTime.timeName()<<"   timO: "<<timO<<"   dt: "<<dt<<endl;
-		
+
 		::mkdir(runTime.timeName().c_str(), 0733);
 
 		convertToFoamWrite<float,Foam::scalar>(basNam+"_alpha.mhd", "alpha1", runTime,mesh);

@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2018-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2018-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
 \*-------------------------------------------------------------------------*/
 
 /// Description:
-///   post-processing code Calculates energy losses for control 
-///   volumes given in postprossingDict file in $case/system directory. 
-///   
-///   Note: Parallel case post-processing is added to the code, no need to 
+///   post-processing code Calculates energy losses for control
+///   volumes given in postprossingDict file in $case/system directory.
+///
+///   Note: Parallel case post-processing is added to the code, no need to
 ///   reconstract parallel cases anymore.
 
 
@@ -76,8 +76,8 @@ if(CVBounds1.size())
 
 	data.QIn=gSum(U.boundaryField()[iBack]&U.boundaryField()[iBack].patch().Sf());
 	data.QOut=gSum(U.boundaryField()[iFront]&U.boundaryField()[iFront].patch().Sf());
-	
-	
+
+
 	data.Dp=(gAverage(pd.boundaryField()[iBack])-gAverage(pd.boundaryField()[iFront]));
 	data.Dpc=(gAverage(pc.boundaryField()[iBack])-gAverage(pc.boundaryField()[iFront]));
 	Info <<"DPc"<< data.Dpc << endl;
@@ -90,21 +90,21 @@ if(CVBounds1.size())
 
 
 
-	for (int iSam=0;iSam<CVxlVals.size();iSam++)   
-	{ 
+	for (int iSam=0;iSam<CVxlVals.size();iSam++)
+	{
 		snapShot_zt & slice = data.slices[iSam];
 		double xSam1=CVBounds1[iSam];
 		double xSam2=CVBounds2[iSam];
 
-		Info<<iSam<< "   Del x :"<< xSam1 <<" to "<< xSam2<< "   ";		
+		Info<<iSam<< "   Del x :"<< xSam1 <<" to "<< xSam2<< "   ";
 
 		//clip1=0.;
 		clip=dimensionedScalar(0.);
-		forAll(Cx,c) 
-		{ 
-				if (PPRegions[c]==CVxlVals[iSam]&& 
-					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
-					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
+		forAll(Cx,c)
+		{
+				if (PPRegions[c]==CVxlVals[iSam]&&
+					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] &&
+					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] &&
 					 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
 				   clip[c]=1.;
 		}
@@ -115,10 +115,10 @@ if(CVBounds1.size())
 		slice.mu1()=mu1Avg.value();
 		slice.mu2()=mu2Avg.value();
 
-		slice.x1()=xSam1;		
+		slice.x1()=xSam1;
 		slice.x2()=xSam2;
 		scalar delX=xSam2-xSam1;
-		Info<<"   ->         "<<slice.x1()<<"  "<<slice.x2()<<endl;		
+		Info<<"   ->         "<<slice.x1()<<"  "<<slice.x2()<<endl;
 
 
 		slice.zDropAvg()=gAverage((Cx.internalField())*(clip*(1-alphaSh))->internalField());
@@ -145,8 +145,8 @@ if(CVBounds1.size())
 
 		scalar vol=sum(clipVC).value();
 
-		
-		if(mag(vol)<1e-31) 
+
+		if(mag(vol)<1e-31)
 		{
 			Info<<"Error in post-processing: CV volume is zero: label "<<CVxlVals[iSam]<<endl;
 			vol=1e-31;
@@ -165,7 +165,7 @@ if(CVBounds1.size())
 
 
 		slice.viscz()=viscF[2]/vol;
-		slice.viscz_1()=viscF1[2]/vol; 
+		slice.viscz_1()=viscF1[2]/vol;
 		slice.phiu()=rhoPhiU[2]/vol;
 		slice.phiu_1()=rhoPhiU1[2]/vol;
 		slice.delPdelZ()=gPd[2]/vol;
@@ -185,9 +185,9 @@ if(CVBounds1.size())
 
 
 		Info<< "viscE phiE dpEd dpEc:  "
-			 << slice.viscE()*vol/(slice.q()*vol/delX)<< "    " 
-			 << slice.phiE()*vol/(slice.q()*vol/delX)   << "      " 
-			 << slice.dpEd()*vol/(slice.q()*vol/delX)   << "    " 
+			 << slice.viscE()*vol/(slice.q()*vol/delX)<< "    "
+			 << slice.phiE()*vol/(slice.q()*vol/delX)   << "      "
+			 << slice.dpEd()*vol/(slice.q()*vol/delX)   << "    "
 			 << slice.dpEc()*vol/(slice.q()*vol/delX)   <<endl;
 
 
@@ -207,8 +207,4 @@ if(CVBounds1.size())
 	}
 
 	Info<<endl;
-} 
-
-
-
-
+}

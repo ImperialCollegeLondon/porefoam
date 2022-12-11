@@ -19,12 +19,12 @@ gradSchemes
 	//default         leastSquares;
 	default    faceMDLimited leastSquares 0.5;
 
-//fourth leastSquares Gauss cellLimited	cellMDLimited extendedLeastSquares faceLimited faceMDLimited 
+//fourth leastSquares Gauss cellLimited	cellMDLimited extendedLeastSquares faceLimited faceMDLimited
 
 }
 divSchemes
 {
-    div(rho*phi,U)    Gauss   limitWith upwind SFCD; 
+    div(rho*phi,U)    Gauss   limitWith upwind SFCD;
     div(phi,alpha)  Gauss vanLeer;
     div(phirb,alpha) Gauss vanLeer;
 }
@@ -32,29 +32,29 @@ divSchemes
 
 
 interpolationSchemes
-{ 
+{
     default         linear;
     smoothScheme    cubic;
     smoothSchemeK   linear;
-    localMax   	    localMax;    
-    limitedScheme   localMin;    
+    localMax   	    localMax;
+    limitedScheme   localMin;
 }
 
-// linear          quadraticUpwindFit      limitedCubic            limitedLinear 
+// linear          quadraticUpwindFit      limitedCubic            limitedLinear
 // downwind        localMax                Gamma                   interfaceCompression
-// MC              quadraticFit            outletStabilised        reverseLinear 
+// MC              quadraticFit            outletStabilised        reverseLinear
 // blended         limitWith               linearPureUpwindFit     limitedLimitedLinear
 // vanLeer         limitedCubic01          linearUpwind            quadraticLinearUpwindFit
 // limitedGamma    Minmod                  limitedVanLeer          cubic
 // SuperBee        filteredLinear3         biLinearFit             quadraticLinearFit
 // QUICK           limitedMUSCL            UMIST                   limitedLimitedCubic
 // weighted        skewCorrected           armonic                 midPoint
-// localMin        vanLeer01               linearFit               limitedLinear01     
-// fixedBlended    vanAlbada               OSPRE                   MUSCL 
+// localMin        vanLeer01               linearFit               limitedLinear01
+// fixedBlended    vanAlbada               OSPRE                   MUSCL
 // upwind          clippedLinear           filteredLinear2         localBlended
-// Gamma01         SFCD                    cubicUpwindFit          filteredLinear 
+// Gamma01         SFCD                    cubicUpwindFit          filteredLinear
 // MUSCL01
- 
+
 laplacianSchemes
 {
    default         Gauss linear uncorrected;

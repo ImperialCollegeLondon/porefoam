@@ -3,7 +3,7 @@
  Interface reconstruction using gradient of alpha
 
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 \*-------------------------------------------------------------------------*/
 
 //! This file is part of calcCurvatureForce.C
- 
+
 
 
 	//distPointInterface_ =	dimensionedVector("distPointInterface_",dimLength,vector::zero);
@@ -55,7 +55,7 @@
 			}
 		}
 		else distPointInterface_[pi]*=0.;
-			
+
 	}
 
 	// calculate the distance between interface and point
@@ -88,7 +88,5 @@
 				}
 			}
 			else forAll(patchPoints, ppI) distPointInterface_[patchPoints[ppI]]=vector::zero;
-			
+
 		}
-
-

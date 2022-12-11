@@ -9,10 +9,10 @@ FoamFile
 //----------------------------------------------------------------------
 
 // Name of set to work on
- name  Grainwalls; 
+ name  Grainwalls;
 
 // One of clear/new/invert/add/delete|subset/list
- action  new; 
+ action  new;
 
 // Actions to apply to pointSet. These are all the topoSetSource's ending
 // in ..ToFace (see the meshTools library).
@@ -69,7 +69,7 @@ topoSetSources
     //// All faces of patch
     patchToFace
     {
- name  Grainwalls; 
+ name  Grainwalls;
     }
     //patchToFace
     //{
@@ -97,11 +97,11 @@ topoSetSources
     //}
     patchToFace
     {
- name  Grainwalls; 
+ name  Grainwalls;
     }
     patchToFace
     {
- name  Grainwalls; 
+ name  Grainwalls;
     }
 
     //// All faces of faceZone
@@ -115,7 +115,7 @@ topoSetSources
     //{
         //box   (0.000214 0.0002145 0.0002137) (0.0012834 0.0012835 0.0016025);
         //
-    //} 
+    //}
 
     // Faces with normal to within certain angle aligned with vector.
     //normalToFace

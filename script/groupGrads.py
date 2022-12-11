@@ -1,5 +1,5 @@
-# converting porefoam two-phase flow results (grads.csv) to 
-# relative permeability and capillary pressures 
+# converting porefoam two-phase flow results (grads.csv) to
+# relative permeability and capillary pressures
 # developed by Ali Q Raeini
 
 
@@ -335,4 +335,3 @@ if __name__ == "__main__":
 	relPrems = gradsToRelPermSwPcKrwKroTRev(Names,volInt,SinglePhaseRes,np.arange(1,nCntrlVols),10) #cas1Ncors[i][k]/2+
 	relPrems[1][:] *= 1/0.03
 	np.savetxt(caseName+'_relPerms.tsv', relPrems, delimiter='\t')
-

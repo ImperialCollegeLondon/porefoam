@@ -2,7 +2,7 @@
  Interface force and capillary pressure computation library
 
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ Foam::interfaceProps::interfaceProps
     pc_(IOobject("pc", timeName(), mesh(),  IOobject::MUST_READ, IOobject::AUTO_WRITE), mesh() ),
 
     deltaS_(IOobject( "deltaS", timeName(), mesh()), fvc::snGrad(alpha1, "uncorrected")),
-    alphaSh_(IOobject("alphaSh", timeName(), mesh()),  mesh(),  dimensionedScalar("alphaSh", dimless, 0.),  pc_.boundaryField().types()),    
+    alphaSh_(IOobject("alphaSh", timeName(), mesh()),  mesh(),  dimensionedScalar("alphaSh", dimless, 0.),  pc_.boundaryField().types()),
 
     //K_
     //(
@@ -101,9 +101,9 @@ Foam::interfaceProps::interfaceProps
         IOobject( "nw",  timeName(),  mesh() ),
         mesh(),     dimensionedVector("nw", dimless, vector(0.,0.,0.))
     ),
-    
+
     edgemarks_(mesh().edges().size(),0),
-    
+
     Internalfaces1_
     (
         IOobject( "Internalfaces1",  timeName(), mesh() ),
@@ -192,7 +192,7 @@ Foam::interfaceProps::interfaceProps
 				nw_.boundaryFieldRef()[bi]=boundary[bi].nf();
 				nw_.boundaryFieldRef()[bi]==boundary[bi].nf();//tomakesure
 			}
-		}	
+		}
 
 
 		forAll(boundary, bi)
@@ -218,7 +218,7 @@ Foam::interfaceProps::interfaceProps
 			//}
 		}
 
-		nw_.ref().field() = fvc::interpolate(fvc::average(nw_))->internalField();		
+		nw_.ref().field() = fvc::interpolate(fvc::average(nw_))->internalField();
 		nw_ /=  mag(nw_) + 1e-15;
 
 
@@ -234,7 +234,7 @@ Foam::interfaceProps::interfaceProps
 {// collect faces neighbour to boundary patches boundaryInternalFaces_
 	const labelListList & faceEdges=msh.faceEdges();
 	//const edgeList & edges=msh.edges();
-	const fvBoundaryMesh& patches = msh.boundary(); 
+	const fvBoundaryMesh& patches = msh.boundary();
 	forAll(patches, bI) if (!patches[bI].coupled())
 	{
 		Internalfaces1_.boundaryFieldRef()[bI] ==0.000000001;
@@ -242,7 +242,7 @@ Foam::interfaceProps::interfaceProps
 		forAll(CApfs, pfI)
 		{
 			const labelList& fes = faceEdges[patches[bI].patch().start()+pfI];
-			forAll(fes, eI)  edgemarks_[fes[eI]] = 1.; 
+			forAll(fes, eI)  edgemarks_[fes[eI]] = 1.;
 		}
 	}
 	AvgInternFaces1_.ref()=fvc::average(Internalfaces1_);
@@ -250,14 +250,14 @@ Foam::interfaceProps::interfaceProps
 	//BInternalfs_=0.*nHatf_;
 	forAll(BInternalfs_, fI)
 	{
-		const labelList& fes = faceEdges[fI];	  
+		const labelList& fes = faceEdges[fI];
 		forAll(fes, eI)
 		{
 			BInternalfs_[fI] = max( BInternalfs_[fI], 1.*edgemarks_[fes[eI]] );
 		}
 	}
 
-	forAll(patches, bI) 
+	forAll(patches, bI)
 		for(auto cI:patches[bI].faceCells()) IsRefCandid_[cI]=0;
 	//const auto& neis=mesh().neighbour();
 	//const auto& owns=mesh().owner();
@@ -299,14 +299,14 @@ Foam::interfaceProps::interfaceProps
     {
         if (!boundary[bI].coupled())
         {
-				
+
 				boundaryCorr_.boundaryField()[bI] =
 
 					( (corrS1.boundaryField()[bI].patchInternalField())-
 					  (corrS2.boundaryField()[bI].patchInternalField()) )
 					/(boundaryCorr_.boundaryField()[bI].patchInternalField());
-				
-				
+
+
 				boundaryCorr_.boundaryField()[bI] ==
 					( (corrS1.boundaryField()[bI].patchInternalField())-
 					  (corrS2.boundaryField()[bI].patchInternalField()) )
@@ -314,11 +314,11 @@ Foam::interfaceProps::interfaceProps
         }
     }
     boundaryCorr_.internalField()=0;
-    
-    
-    
 
-	
+
+
+
+
 }
 
 */
@@ -381,7 +381,7 @@ void Foam::interfaceProps::correct(scalar relaxDelS)
 
     const fvMesh& msh = mesh();
     const surfaceVectorField& Sf = msh.Sf();
-    const fvBoundaryMesh& boundary = msh.boundary(); 
+    const fvBoundaryMesh& boundary = msh.boundary();
 
 
 
@@ -404,7 +404,7 @@ void Foam::interfaceProps::correct(scalar relaxDelS)
 
 	a1a2 = 2.*sqrt(alpha1Stmp*(1.-alpha1Stmp));
 
-	alpha1Stmp = a1a2*alpha1Stmp + (1.-a1a2)*fvc::average(fvc::interpolate(alpha1Stmp)*Internalfaces1_)/fvc::average(Internalfaces1_); 
+	alpha1Stmp = a1a2*alpha1Stmp + (1.-a1a2)*fvc::average(fvc::interpolate(alpha1Stmp)*Internalfaces1_)/fvc::average(Internalfaces1_);
 	alpha1Stmp.correctBoundaryConditions();
 
 	alpha1Stmp = 0.99*alpha1Stmp + 0.01*fvc::average(fvc::interpolate(alpha1Stmp)*Internalfaces1_)/fvc::average(Internalfaces1_);
@@ -430,7 +430,7 @@ void Foam::interfaceProps::correct(scalar relaxDelS)
 	}
 	else
 	{
-		stf=sigma_*calcCurvatureFConservative(); 
+		stf=sigma_*calcCurvatureFConservative();
 	}
 
 
@@ -442,4 +442,3 @@ void Foam::interfaceProps::correct(scalar relaxDelS)
 
 
 }
-

@@ -16,4 +16,3 @@ USE_VXIMG=1
 USE_OMP=1
 USE_msMAKE=1
 include  ${msSrc}/script/Makefile.in
-

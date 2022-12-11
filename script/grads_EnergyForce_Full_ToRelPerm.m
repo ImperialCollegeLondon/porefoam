@@ -37,21 +37,21 @@ ihas=[1 2 3 4 5 6 7 8];
 for iiCV=1:length(ihas)
 	iha=ihas(iiCV);
 	iCV=ihas(iiCV);
-	
+
 	t=groupTime(volInt,[1], nGroup  ) ;
 	Volume=groupTimeSum(volInt,Names,(['vol']),iha, nGroup  ) ;
 	alpha1=groupTimeAvg(volInt,Names,(['alpha']),iha, nGroup  ) ;
 	alpha2=1.-alpha1;
 	Volume1=Volume.*alpha1;
 	Volume2=Volume-Volume1;
-	
+
 	z1=groupTimeMin(volInt,Names,(['x1']),iha, nGroup  ) ;
 	z2=groupTimeMax(volInt,Names,(['x2']),iha, nGroup  ) ;
 	xDropAvg=groupTimeAvg(volInt,Names,(['xDropAvg']),iha, nGroup  ) ;
 	xDrop1=groupTimeMin(volInt,Names,(['xDrop1']),iha, nGroup  ) ;
 	xDrop2=groupTimeMax(volInt,Names,(['xDrop2']),iha, nGroup  ) ;
-	
-	
+
+
 	Volume=Volume+1e-18;
 	Volume1=Volume1+1e-18;
 	Volume2=Volume2+1e-18;
@@ -97,7 +97,7 @@ for iiCV=1:length(ihas)
 
 
 	viscEV=groupTimeAvg(volInt,Names,(['viscE']),iha, nGroup  ) ;
-	viscEV1=groupTimeAvg(volInt,Names,(['viscE_1']),iha, nGroup  ) 
+	viscEV1=groupTimeAvg(volInt,Names,(['viscE_1']),iha, nGroup  )
 	viscEV2=viscEV-viscEV1-1e-12
 	dpEc =groupTimeAvg(volInt,Names,(['dpEc']),iha, nGroup  ) ;
 	dpEc1 =groupTimeAvg(volInt,Names,(['dpEc_1']),iha, nGroup  ) ;
@@ -115,33 +115,33 @@ for iiCV=1:length(ihas)
 
 
 	if (0)
-		
+
 		viscFzV=groupTimeAvg(volInt,Names,(['viscz']),iha, nGroup  ) ;
 		viscFzV1=groupTimeAvg(volInt,Names,(['viscz_1']),iha, nGroup  ) ;
 		viscFzV2=viscFzV-viscFzV1 ;
 		viscInterf_1=groupTimeAvg(volInt,Names,(['viscInterf_1']),iha, nGroup  ) ;
-		
+
 		% dPdxV =-groupTime(volInt,VolI(Names,'gPd:0'));
 		% dPdyV =-groupTime(volInt,VolI(Names,'gPd:1'));
 		dPdzV =groupTimeAvg(volInt,Names,(['dpddz']),iha, nGroup  ) ;
 		dPdzV1 =groupTimeAvg(volInt,Names,(['dpddz_1']),iha, nGroup  ) ;
 		dPdzV2 =dPdzV-dPdzV1;
 		% dPdzV1 =-surfInt(1:end,SrfI('pxN:2'));
-		
+
 		% dPcxV =groupTime(volInt,VolI(Names,'gPc:0'));
 		% dPcyV =groupTime(volInt,VolI(Names,'gPc:1'));
 		dPczV =groupTimeAvg(volInt,Names,(['dpcdz']),iha, nGroup  ) ;
 		dPczV1 =groupTimeAvg(volInt,Names,(['dpcdz_1']),iha, nGroup  ) ;
 		dPczV2 =dPczV-dPczV1;
 		% dPczV1 =-surfInt(1:end,SrfI('PcxN:2'));
-		
+
 		% phiUxS =-1000*surfInt(1:end,SrfI('phiU:0')) ;
 		% phiUyS =-1000*surfInt(1:end,SrfI('phiU:1')) ;
 		phiUzS =groupTimeAvg(volInt,Names,(['phiu']),iha, nGroup  ) ;
 		phiUzS1 =groupTimeAvg(volInt,Names,(['phiu_1']),iha, nGroup  ) ;
 		phiUzS1 =phiUzS-phiUzS1;
-		
-		
+
+
 		% dlmwrite(['plotTotalForce" ".csv"], ["CV" num2str(iCV) ":"], '-append') ;
 		% dlmwrite(["plotTotalForce"  ".csv"], t', '-append') ;
 		% dlmwrite(["plotTotalForce"  ".csv"], viscFzV', '-append') ;
@@ -158,13 +158,13 @@ for iiCV=1:length(ihas)
 		% plot(t*10^3,((viscEV+dpEc+dpEd+phiE).*Volume./((UzAvg.*AreaCross)))./Pc_ref,Colours(6,:),'LineWidth',2,'markersize',2);
 		% max(viscFzV)
 		plot(t*10^3, 1-alpha1*1.,Colours(5,:),'LineWidth',2);
-		
+
 		disp('________________TOTAL______________-');
-		
-		
+
+
 		% xlim([0.00,900])
 		% ylim([-2,2])
-		
+
 		% yMin=0;yMax=-100000;
 		% meanTmp=mean(dPdzV1/10000.);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
 		% meanTmp=mean(dPczV1/10000.);     yMin=min(meanTmp,yMin); yMax=max(yMax,meanTmp);
@@ -174,19 +174,19 @@ for iiCV=1:length(ihas)
 		% yMax=ceil(yMax*10)/10;
 		% yMin=floor(10*yMin)/10;
 		%afactor=yMax;
-		
+
 		% delPcelZ =-groupTimeAvg(volInt,Names,(["-delPcelZ"]),iha, nGroup  ) ;
 		% plot(t, (viscFzV1+dPdzV1+dPczV1)/10000.,Colours(5,:),'LineWidth',2);
 		%
 		% plot(t, (viscFzV2+dPdzV2+dPczV2)/10000.,Colours(6,:),'LineWidth',2);
-		
+
 		% xlim([0 10000])
 		% ylim([-0.03 0.06])
-		
+
 		% set (gca, "interpreter", "latex")
 		% set(gca,'FontSize',14);
 		% set(gca,'FontName',"LMRoman10");
-		
+
 		set (gca, "xminortick", "on", "yminortick", "on", "xgrid", "on", "ygrid", "on") ;
 		% axis([0 8e-11 -4000  4000 ]);
 		% xlim([0.00,0.01])
@@ -206,21 +206,21 @@ for iiCV=1:length(ihas)
 		'{/LMRomanUnsl10 S_{w}}  ',...
 		% % 'Visc 2\n',...
 		'Location','southeast');
-		
-		
+
+
 		% FL1= findall(Leg,'-property','Spacing');
 		% set(FL1,'Spacing',2);
 		% set (h, "interpreter", "tex")
 		% legend boxon
 		% set(gca,"keypos", 2)
 		% % title (num2str(iCV));
-		
+
 		% print(["plotTotalForce" num2str(iCV) ".png"],"-dpng","-r90","-FLMRoman10:14")  ;
 		% print(["plotTotalForce" num2str(iCV) ".eps"], "-deps", "-color","-FLMRoman10:14")  ;
 		print2pdflatex("1",["plotTotalForce" num2str(iCV)]);
-		
+
 		hold off
-		
+
 	end
 
 
@@ -307,7 +307,7 @@ for iiCV=1:length(ihas)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   222222222  EACH PHASEnoxs1 22222222 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	if (0)
-		
+
 		plot(t*10^3,( dpEd1.*Volume./(Uz1Avg.*AreaCross))./Pc_ref,Colours(1,:),'LineWidth',2,'markersize',2);
 		hold on
 		plot(t*10^3,( dpEd2.*Volume./(Uz2Avg.*AreaCross))./Pc_ref,Colours(2,:),'LineWidth',2,'markersize',2);
@@ -505,7 +505,7 @@ function  returnedDataInd=    VolI(Names,Name)
 			% x_a1(iS2)=xx_a1(iS_)/n_a1(iS_);
 			% y_a1(iS2)=yy_a1(iS_)/n_a1(iS_);
 			% iS2=iS2+1;
-		% end	
+		% end
 	% end
 end
 
@@ -531,29 +531,29 @@ function  xx_aMin= groupTimeMin(xxx,Names,VarName,indexes,delNGroup)
 	index=VolI(Names,["S" num2str(indexes(1)) "-" VarName]);
 	xx_aMin=groupTime(xxx,index,delNGroup);
 	for i=2:length(indexes)
-		index=VolI(Names,["S" num2str(indexes(i)) "-" VarName]);	
+		index=VolI(Names,["S" num2str(indexes(i)) "-" VarName]);
 		xx_aMin=min(xx_aMin,groupTime(xxx,index,delNGroup));
 		minz=min(xx_aMin)
 	end
 end
 
 function  xx_a1Max= groupTimeMax(xxx,Names,VarName,indexes,delNGroup)
-	index=VolI(Names,["S" num2str(indexes(1)) "-" VarName]);		
+	index=VolI(Names,["S" num2str(indexes(1)) "-" VarName]);
 	xx_a1Max=groupTime(xxx,index,delNGroup);
 	for i=2:length(indexes)
-		index=VolI(Names,["S" num2str(indexes(i)) "-" VarName]);	
+		index=VolI(Names,["S" num2str(indexes(i)) "-" VarName]);
 		xx_a1Max=max(xx_a1Max,groupTime(xxx,index,delNGroup));
 		maxz=max(xx_a1Max)
 	end
 end
 
 function  xx_a1Sum= groupTimeSum(xxx,Names,VarName,indexes,delNGroup)
-	index=VolI(Names,["S" num2str(indexes(1)) "-" VarName]);		
+	index=VolI(Names,["S" num2str(indexes(1)) "-" VarName]);
 	xx_a1Sum=groupTime(xxx,index,delNGroup);
 	for i=2:length(indexes)
-		index=VolI(Names,["S" num2str(indexes(i)) "-" VarName]);	
+		index=VolI(Names,["S" num2str(indexes(i)) "-" VarName]);
 		xx_a1Sum=(xx_a1Sum+groupTime(xxx,index,delNGroup));
-		xx_Sum=max(xx_a1Sum)		
+		xx_Sum=max(xx_a1Sum)
 	end
 end
 
@@ -593,15 +593,3 @@ function print2pdflatex (option,file)
  	system(['convert -density 150 -flatten -crop +2+2 ' file '.pdf ' file '.jpg'] );
 
 end
-
-
-
-
-
-
-
-
-
-
-
-

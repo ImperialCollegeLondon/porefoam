@@ -97,15 +97,15 @@ public:
 		  lcZeroGradient,
 		  lcAlpha
 		};
-    
+
 		static bool reset;
-		//static bool reset2; 
+		//static bool reset2;
 
 		static const NamedEnum<limitControls, 4> limitControlNames_;
 		limitControls limit_;
 
 		scalar transitionFactor_;
-    
+
     // Constructors
 
         //- Construct from patch and internal field
@@ -164,7 +164,7 @@ public:
 
         //- Write
         virtual void write(Ostream&) const;
-        
+
 		void noLimit() {limit_ = lcNone;}
 };
 

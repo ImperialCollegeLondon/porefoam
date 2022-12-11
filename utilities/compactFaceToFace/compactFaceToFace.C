@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-License: 
+License:
 	Same as the files #included below.
 
 Description
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
          )
      );
 
-     
+
      faceIOList faces
      (
          IOobject
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
          ),
         facesCompact
      );
-     
+
      faces.write();
 
     Info<< "end" << endl;

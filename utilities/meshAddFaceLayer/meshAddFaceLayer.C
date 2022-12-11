@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 \*-------------------------------------------------------------------------*/
 
 //! Description:
-//!   Add a face layer between internal faces and boundary faces such that 
+//!   Add a face layer between internal faces and boundary faces such that
 //!     no two internal faces touch a single boundary edge, retired, thanks to cfMesh
 
 
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 	forAll(grainpts, ip)		pointLbls[grainpts[ip]]=2^1;
 
 	//forAll(edges, ie)		e1s[ie]=edges[ie].fi
-	
+
 	//labelList meshEdges(gwPatch.meshEdges(mesh.edges(), mesh.pointEdges()));
 	labelList 	cellNNeutral(mesh.cells().size(),0);
 	labelList 	cellNBoundary(mesh.cells().size(),0);
@@ -152,9 +152,9 @@ int main(int argc, char *argv[])
 	{	const labelList& efs = edgesFs[ei];
 		int nedgeNBoundaryFaces = 0;
 		forAll(efs, fI)
-			if (efs[fI]<nInFaces)	
+			if (efs[fI]<nInFaces)
 				++BedgesNInternalFaces[ei];
-			else                       	
+			else
 				++nedgeNBoundaryFaces;
 		if(nedgeNBoundaryFaces==0) BedgesNInternalFaces[ei]=0;
 	}
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
 		{	pointNewPoints[ej.start()] = points.size()+(++iNewP);  ++pointNNewFaces[ej.start()  ];}
 		else                                                      ++pointNNewFaces[ej.start()  ];
 	}///\\\///\\\///\\\///\\\///
-		
+
 	Info<<points.size()<<"  +  "<<iNewP+1<<" new points"<<Foam::endl;
 	Info<<faces.size()<<"  +  "<<iNewF+1<<" new faces"<<Foam::endl;
 
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 	forAll(BedgesNInternalFaces, ei)	if (BedgesNInternalFaces[ei]>1)
 	{
 		++iNewF;
-		label ownnei[2], iownnei(-1);  
+		label ownnei[2], iownnei(-1);
 		const labelList efs = edgesFs[ei];
 		forAll(efs, efi)
 		{	label fI=efs[efi];
@@ -202,12 +202,12 @@ int main(int argc, char *argv[])
 		forAll(ecs, eci)
 		{	label cI=ecs[eci];
 			double weight=0.5;
-			if (cI!=ownnei[0] && cI!=ownnei[1]) 
+			if (cI!=ownnei[0] && cI!=ownnei[1])
 			{
 				edgeNeutC[ei]=cI;
 				++cellNNeutral[cI];
 				weight=2.;
-				
+
 			}
 			//else
 			{
@@ -257,7 +257,7 @@ int main(int argc, char *argv[])
 
 		}
 
-		
+
 	}
 
 
@@ -267,7 +267,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
   // {   const labelList& fEdges = mesh.faceEdges(facei);		label edgeI = startEdgeI,  vertI = startVertI;
 		//for (label iter = 0; iter < nEdges; iter++)  {  edgeI = otherEdge(mesh, fEdges, edgeI, vertI);   vertI = mesh.edges()[edgeI].otherVertex(vertI);  }
 		//return edgeI; }
-  
+
 	forAll(faces, fI)
 	{
 		const face& ff = faces[fI];
@@ -280,7 +280,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 			label pI=ff[pi];
 			label pIPrv=ff[ff.rcIndex(pi)];
 			label pINxt=ff[ff.fcIndex(pi)];
-			
+
 			label niuF0 = pointNiuFac0[pI];
 			label niuF1 = pointNiuFac1[pI];
 			label niuF2 = pointNiuFac2[pI];
@@ -297,20 +297,20 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 			 if ( niuF2>=0 && ( ( newNeibrs[niuF2]==nibr ) || newNeibrs[niuF2]==ownr || newOwners[niuF2]==ownr  ) )
 				{	label tmp = niuF1; niuF1 = niuF2; niuF2 = tmp;  }
 
-			//if   (pointNewPoints[pI]>=0) 	
+			//if   (pointNewPoints[pI]>=0)
 				//sharedps[++iownnei] = ff[pi];
 		//}
 		//for(int nn=0;nn<=iownnei;++nn)
 		//{
 			if( pointNewPoints[pIPrv]>=0 && BedgesNInternalFaces[fEdges[fI][ff.rcIndex(pi)]]>1 && BedgesNInternalFaces[fEdges[fI][pi            ]]<=1)
-			{		
+			{
 				//if (1) cout<<1;
 				//if ( fI>=nInFaces && ( pointNNewFaces[pI]==3 ) && ( (pointNNewFaces[pINxt]==0)) )
 				//{
-					 //ffnew[ipn] = pointNewPoints[pI];			
+					 //ffnew[ipn] = pointNewPoints[pI];
 				//}
 			}
-			else 
+			else
 			if( BedgesNInternalFaces[fEdges[fI][pi]]>1 ) //fcIndex
 			{
 				if(fI<nInFaces)
@@ -344,8 +344,8 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 					if (   ( (BedgesNInternalFaces[fEdges[fI][ff.rcIndex(pi)]]<=1 && BedgesNInternalFaces[fEdges[fI][ff.fcIndex(pi)]]<=1) /*&& ((BedgesNInternalFaces[fEdges[fI][ff.rcIndex(pi)]]==1 || BedgesNInternalFaces[fEdges[fI][ff.fcIndex(pi)]]==1)  )*/)
 						 //&& ( (pointNNewFaces[pI]!=2) || (pointNNewFaces[pINxt]!=2) )
 						 //&& ( ( pointNNewFaces[pI]>1 && ( newOwners[niuF0]==ownr || newNeibrs[niuF0]==nibr /*|| newOwners[niuF0]==nibr || newNeibrs[niuF0]==ownr*/ )   //)
-														  //&& ( /*newOwners[niuF1]==ownr || newNeibrs[niuF1]==nibr ||*/ newOwners[niuF1]==nibr || newNeibrs[niuF1]==ownr 
-														  //|| (niuF2>0 && ( /*newOwners[niuF2]==ownr || newNeibrs[niuF2]==nibr ||*/ newOwners[niuF2]==nibr || newNeibrs[niuF2]==ownr ) ) 
+														  //&& ( /*newOwners[niuF1]==ownr || newNeibrs[niuF1]==nibr ||*/ newOwners[niuF1]==nibr || newNeibrs[niuF1]==ownr
+														  //|| (niuF2>0 && ( /*newOwners[niuF2]==ownr || newNeibrs[niuF2]==nibr ||*/ newOwners[niuF2]==nibr || newNeibrs[niuF2]==ownr ) )
 														  //)     //|| newOwners[niuF1]==nibr || newNeibrs[niuF1]==ownr )
 							//)
 						 //|| ( pointNNewFaces[pINxt]>1 && ( newOwners[niuF0Nxt]==ownr || newNeibrs[niuF0Nxt]==nibr /*|| newOwners[niuF0Nxt]==nibr || newNeibrs[niuF0Nxt]==ownr*/ )   //)
@@ -354,7 +354,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 														     //)  //|| newOwners[niuF1Nxt]==nibr || newNeibrs[niuF1Nxt]==ownr)
 							//)
 							 //)
-						 &&( ( pointNNewFaces[pI]>1 
+						 &&( ( pointNNewFaces[pI]>1
 							&& ( newOwners[niuF0]==ownr || newNeibrs[niuF0]==ownr || newOwners[niuF1]==ownr || newNeibrs[niuF1]==ownr || (niuF2>0 && ( newOwners[niuF2]==ownr || newNeibrs[niuF2]==ownr ) ) )
 							&& ( newOwners[niuF0]==nibr || newNeibrs[niuF0]==nibr || newOwners[niuF1]==nibr || newNeibrs[niuF1]==nibr || (niuF2>0 && ( newOwners[niuF2]==nibr || newNeibrs[niuF2]==nibr ) ) )
 							  )
@@ -378,7 +378,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 										//&& (niuF1<0 || newOwners[niuF1]==ownr || newNeibrs[niuF1]==nibr )
 										//&& (niuF2<0 || newOwners[niuF2]==ownr || newNeibrs[niuF2]==nibr )
 										//;
-						if(cond)	
+						if(cond)
 						{
 							ffnew[ipn] = pointNewPoints[pI];
 							ffnew[++ipn] = pointNewPoints[pINxt];
@@ -408,12 +408,12 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 				//}
 					//++ipn; ++pi;
 			}
-			else if( ( fI<nInFaces &&  ( newOwners[niuF0]==nibr || newNeibrs[niuF0]==nibr 
+			else if( ( fI<nInFaces &&  ( newOwners[niuF0]==nibr || newNeibrs[niuF0]==nibr
 													|| (niuF1>0 && ( newOwners[niuF1]==nibr || newNeibrs[niuF1]==nibr ) )
 													|| (niuF2>0 && ( newOwners[niuF2]==nibr || newNeibrs[niuF2]==nibr ) )
 												)
 						)
-						|| 
+						||
 						( (fI<nInFaces || pointNNewFaces[pI]==1) &&
 														 (
 															               (  ( newOwners[niuF0]==ownr || newNeibrs[niuF0]==ownr ) )
@@ -421,7 +421,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 															||  (niuF2>0 && ( newOwners[niuF2]==ownr || newNeibrs[niuF2]==ownr ) )
 														 )
 						)
-						
+
 					) //pointNNewFaces[pI]==1 &&
 			{
 				face fftmp =ffnew;
@@ -430,7 +430,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 
 					//bool cond = ( fI<nInFaces &&            (newOwners[niuF0]==nibr  || newNeibrs[niuF0]==nibr || (niuF1<0 && newNeibrs[niuF1]==nibr) ) )
 				           //||  ( pointNNewFaces[pI]==1 && ( (newOwners[niuF0]==owns[fI] && dblIEdgeEnd[pI]) || (newNeibrs[niuF0]==owns[fI] && !dblIEdgeEnd[pI]) ) );
-					
+
 					bool cond =  ( fI<nInFaces && BedgesNInternalFaces[fEdges[fI][pi]]==0 )
 									//( fI<nInFaces && (( (newOwners[niuF0]==nibr && dblIEdgeEnd[pI])  || (newNeibrs[niuF0]==nibr&& !dblIEdgeEnd[pI] ) )
 									//|| ( niuF1>0 && ( (newOwners[niuF1]==nibr && !dblIEdgeEnd[pI]) || (newNeibrs[niuF1]==nibr&& dblIEdgeEnd[pI] ))  ) ))
@@ -442,9 +442,9 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 			}
 			else if ( (fI<nInFaces || pointNNewFaces[pI]==1 ) )
 			{
-					 ffnew[ipn] = pointNewPoints[pI];			
+					 ffnew[ipn] = pointNewPoints[pI];
 			}
-			
+
 		}
 
 
@@ -466,10 +466,10 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 //{
 
 	std::cout <<"writing points";std::cout.flush();
-	std::ofstream pointFile("constant/polyMesh/points");	
+	std::ofstream pointFile("constant/polyMesh/points");
 	std::vector<int>  newPointsMap(iNewP+1, -1);
 	cout<<"nNewPoints: "<<newPointsMap.size()<<std::endl;
-	for (unsigned int pi=0;pi<pointNewPoints.size();++pi) 	if (pointNewPoints[pi]>=0) 
+	for (unsigned int pi=0;pi<pointNewPoints.size();++pi) 	if (pointNewPoints[pi]>=0)
 		newPointsMap[pointNewPoints[pi]-points.size()]=pi;;
 
 
@@ -481,7 +481,7 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 	"	object	  points;\n"
 	"}\n\n";
 	pointFile<<newPointsMap.size()+points.size()<<"\n("<<std::endl;
-	
+
 	forAll(points, pi) pointFile<< "("<<points[pi][0]<< ' '<<points[pi][1]<<' '<<points[pi][2]<<")\n";
 	//for(const auto pi :  newPointsMap) { pointFile<< "("<<0<< ' '<<0<<' '<<0<<")\n"; }
 	for(const auto pi :  newPointsMap) { pointFile<< "("<<points[pi][0]<< ' '<<points[pi][1]<<' '<<points[pi][2]<<")\n"; }
@@ -510,11 +510,11 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 	{
 		const Foam::polyPatch&  bi = mesh.boundary()[bpi].patch();
 		boundary<<
-		"	"<<  bi.name()							<<std::endl<<		
-		"	{"													<<std::endl<<			
-		"		type			"<<"patch"/*bi.physicalType()*/<<";\n"	<<	
-		"		nFaces		  "<<bi.size()<<";\n"	  	<<		
-		"		startFace	   "<<bi.start()+newFaces.size()<<";\n"<<	
+		"	"<<  bi.name()							<<std::endl<<
+		"	{"													<<std::endl<<
+		"		type			"<<"patch"/*bi.physicalType()*/<<";\n"	<<
+		"		nFaces		  "<<bi.size()<<";\n"	  	<<
+		"		startFace	   "<<bi.start()+newFaces.size()<<";\n"<<
 		"	}"												 <<std::endl;
 	}
 	boundary<<")"   <<std::endl;
@@ -559,34 +559,34 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
 
 
 	facfile<<faces.size()+newOwners.size()<<"\n("<<std::endl;
-	for (int fI=0;fI<nInFaces;++fI)	
+	for (int fI=0;fI<nInFaces;++fI)
 	{  const face& ff = faces[fI];
 	   facfile<<'(';  forAll(ff,i) { facfile<<ff[i]<<" "; }  facfile<<")\n";  }
-	for (unsigned int fI=0;fI<newFaces.size();++fI)	
+	for (unsigned int fI=0;fI<newFaces.size();++fI)
 	{  const face& ff = newFaces[fI];
 	   facfile<<'(';  forAll(ff,i) { facfile<<ff[i]<<" "; }  facfile<<")\n";  }
-	for (int fI=nInFaces;fI<faces.size();++fI)	
+	for (int fI=nInFaces;fI<faces.size();++fI)
 	{  const face& ff = faces[fI];
 	   facfile<<'(';  forAll(ff,i) { facfile<<ff[i]<<" "; }  facfile<<")\n";  }
 	facfile<<")"<<std::endl;
 	facfile.close();
 
-	owner<<faces.size()+newOwners.size()<<"\n("<<std::endl;	
-	for (int fI=0;fI<nInFaces;++fI)	
-		owner<<owns[fI]<<"\n"; 
-	for (unsigned int fI=0;fI<newOwners.size();++fI)	
-		owner<<newOwners[fI]<<"\n"; 
-	for (int fI=nInFaces;fI<faces.size();++fI)	
-		owner<<owns[fI]<<"\n"; 
+	owner<<faces.size()+newOwners.size()<<"\n("<<std::endl;
+	for (int fI=0;fI<nInFaces;++fI)
+		owner<<owns[fI]<<"\n";
+	for (unsigned int fI=0;fI<newOwners.size();++fI)
+		owner<<newOwners[fI]<<"\n";
+	for (int fI=nInFaces;fI<faces.size();++fI)
+		owner<<owns[fI]<<"\n";
 	owner<<")"<<std::endl;
 	owner.close();
 
 
 	neighbour<<nInFaces+newNeibrs.size()<<"\n("<<std::endl;
-	for (int fI=0;fI<nInFaces;++fI)	
-		neighbour<<neis[fI]<<"\n"; 
-	for (unsigned int fI=0;fI<newNeibrs.size();++fI)	
-		neighbour<<newNeibrs[fI]<<"\n"; 
+	for (int fI=0;fI<nInFaces;++fI)
+		neighbour<<neis[fI]<<"\n";
+	for (unsigned int fI=0;fI<newNeibrs.size();++fI)
+		neighbour<<newNeibrs[fI]<<"\n";
 	neighbour<<")"<<std::endl;
 	neighbour.close();
 
@@ -596,6 +596,6 @@ Info <<" max(cellNNeutral)  "<< max(cellNNeutral)<<Foam::endl;
     Info<< "\nEnd.\n" << Foam::endl;
 
     return 0;
-	
+
 }
 // ************************************************************************* //

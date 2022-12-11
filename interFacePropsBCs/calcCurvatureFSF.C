@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------*\
  Compute surface force using CSF/SSF/FCF algorithms
 
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ void Foam::interfaceProps::correctContactAngle
 					  (abf[bI])
 				 );
 
-			
+
 
 			gradAlphab[bI] = gradAlphab[bI].patchInternalField();
 			gradAlphab[bI] == gradAlphab[bI].patchInternalField();
@@ -66,14 +66,14 @@ void Foam::interfaceProps::correctContactAngle
 			vectorField gAlphaS = gradAlphab[bI];
 			primitivePatchInterpolation pinterpolator(msh.boundaryMesh()[bI]);
 			for (int i=0; i<1;i++)
-			{	
+			{
 				gAlphaS = 0.1*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(gAlphaS) )  //+0.5*alpha2sqrtp*gradAlphab[bI];
 							 + 0.9*gradAlphab[bI];
 			}
 			vectorField nsp = gAlphaS/(mag(gAlphaS) + deltaN_.value());
 
 
-			
+
 			//vectorField nsp0 = nsb[bI];
 			vectorField nf = nw_.boundaryField()[bI];
 			scalarField theta = (3.14159265358979324/180.)*acap.theta(U_.boundaryField()[bI], nsp, nf);
@@ -96,7 +96,7 @@ void Foam::interfaceProps::correctContactAngle
 
 			alphaContactAngleFvPatchScalarField& alphaSbCap =
 				 const_cast<alphaContactAngleFvPatchScalarField&>
-				 ( refCast<const alphaContactAngleFvPatchScalarField>(alphaSb[bI]) );            
+				 ( refCast<const alphaContactAngleFvPatchScalarField>(alphaSb[bI]) );
 			alphaSbCap.gradient() = (boundary[bI].nf() & nsp)*mag(gAlphaS);
 			alphaSbCap.gradient() == (boundary[bI].nf() & nsp)*mag(gAlphaS);
 			gradAlphab[bI] == nsp*mag(gradAlphab[bI]);
@@ -119,7 +119,7 @@ void Foam::interfaceProps::calcCurvatureFSF
 
     const fvMesh& msh = stf.mesh();
     const surfaceVectorField& Sf = msh.Sf();
-    
+
 	const dictionary pimple = msh.solutionDict().subDict("PIMPLE");
 
 	smoothingKernel_ = readLabel( pimple.lookup("smoothingKernel") )%10;
@@ -129,11 +129,11 @@ void Foam::interfaceProps::calcCurvatureFSF
 	volVectorField gradAlpha = fvc::reconstruct(fvc::snGrad(alpha1S_)*msh.magSf());//fvc::grad(alpha1S_,"smoothScheme");
 	//volVectorField gradAlpha = fvc::grad(alpha1S_);//fvc::grad(alpha1S_,"smoothScheme");
 	gradAlpha.correctBoundaryConditions();
-	volScalarField magGradAlpha = mag(gradAlpha) + deltaN_; 
+	volScalarField magGradAlpha = mag(gradAlpha) + deltaN_;
 
 	volVectorField nS_ = a1a2*gradAlpha/magGradAlpha; nS_ = nS_/(mag(nS_) + 1e-8);
 	surfaceVectorField nHatfv = fvc::interpolate(nS_,"smoothScheme"); nHatfv/=mag(nHatfv)+1e-12;
-	correctContactAngle(nHatfv.boundaryFieldRef(),gradAlpha.boundaryFieldRef(),nS_.boundaryFieldRef(), alpha1S_.boundaryFieldRef());    
+	correctContactAngle(nHatfv.boundaryFieldRef(),gradAlpha.boundaryFieldRef(),nS_.boundaryFieldRef(), alpha1S_.boundaryFieldRef());
 
 
 
@@ -144,11 +144,11 @@ void Foam::interfaceProps::calcCurvatureFSF
 
 
 
-	for (int i=0; i<smoothingKernel_;i++) 
-	{	
-		nS_=(1.-a1a2Relaxed)*nS_+a1a2Relaxed*fvc::average(fvc::interpolate(a1a2Relaxed*nS_,"smoothScheme"));	
+	for (int i=0; i<smoothingKernel_;i++)
+	{
+		nS_=(1.-a1a2Relaxed)*nS_+a1a2Relaxed*fvc::average(fvc::interpolate(a1a2Relaxed*nS_,"smoothScheme"));
 		nS_.correctBoundaryConditions();
-		nS_=(1.-a1a2Relaxed)*nS_+a1a2Relaxed*fvc::average(fvc::interpolate(nS_));	
+		nS_=(1.-a1a2Relaxed)*nS_+a1a2Relaxed*fvc::average(fvc::interpolate(nS_));
 		nS_.correctBoundaryConditions();
 
 		nHatfv = fvc::interpolate(nS_,"smoothScheme");
@@ -173,7 +173,7 @@ void Foam::interfaceProps::calcCurvatureFSF
 
 	nHatfv = fvc::interpolate(nS_);  // the scheme is different from above
 	nHatf_ = nHatfv & Sf;
-	forAll(nHatf_,i)   if (nHatf_[i]*snGradAlpha[i] < 0) nHatf_[i]*=-0.1; 
+	forAll(nHatf_,i)   if (nHatf_[i]*snGradAlpha[i] < 0) nHatf_[i]*=-0.1;
 
 
 
@@ -194,16 +194,15 @@ void Foam::interfaceProps::calcCurvatureFSF
 			 K_.correctBoundaryConditions();
 		}
 
-		stf=(sigma_)*((fvc::interpolate(K_*a1xa2,"smoothSchemeK"))/fvc::interpolate(a1xa2,"smoothSchemeK"))  *delS*msh.magSf(); 
+		stf=(sigma_)*((fvc::interpolate(K_*a1xa2,"smoothSchemeK"))/fvc::interpolate(a1xa2,"smoothSchemeK"))  *delS*msh.magSf();
 
 	}
 	else
-	{	
-		stf=sigma_*(fvc::interpolate(K_))*delS*msh.magSf(); 
-		Info<<"SK:"<<0<<endl;	
+	{
+		stf=sigma_*(fvc::interpolate(K_))*delS*msh.magSf();
+		Info<<"SK:"<<0<<endl;
 	}
 
 
 
 }
-

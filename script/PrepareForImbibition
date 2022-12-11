@@ -59,7 +59,7 @@ echo " 12  direction    :  $direction    "
 
 
 scriptName=`basename "${BASH_SOURCE[0]}"`
-echo $scriptName $@  
+echo $scriptName $@
 echo "$(date +%F):"  >>log.runCommands
 echo $scriptName $@  >>log.runCommands
 echo "" >>log.runCommands
@@ -87,7 +87,7 @@ if ! [ -d $imbCase ]; then
 		#~ cp -r $pathToOrigCase/../run.pbs $imbCase/
 		#~ setValues "CASENAME" "$case" $imbCase/run.pbs
 
-		processorDirs="$(cd $pathToOrigCase/ && ls -d processo*[0-9])"	
+		processorDirs="$(cd $pathToOrigCase/ && ls -d processo*[0-9])"
 		arr=($processorDirs)
 		IFS=$'\n'
         nProc=$(( $(echo "${arr[*]}" | sed 's/processor//g' | sort -nr | head -n1)+1 ))
@@ -214,7 +214,6 @@ if ! [ -d $imbCase ]; then
 	else
 		echo  "???????? No processor directory found in $pathToOrigCase directory   ????????"
 		echo  "???????? This script works only with parallel runs ! not doing anything    ????????"
-		echo  "contact Ali Raeini <a.q.raeini@imperial.ac.uk> for further information "
 	fi
 else
 		echo  "????????   $imbCase exists     ! not doing anything   ????????"
@@ -223,5 +222,3 @@ fi
 
 	echo "\_________________________${pathToOrigCase}_________________________/ "
 #done
-
-

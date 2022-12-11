@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -50,12 +50,12 @@ slowTwoPhaseFluxFvPatchVectorField::slowTwoPhaseFluxFvPatchVectorField
     flowRate0_(0.),
     flowRate1_(0.),
     gradientFactor0_(0.),
-    gradientFactor1_(0.),    
+    gradientFactor1_(0.),
     pdFactor_(1.),
     pcFactor_(0.),
     curTimeIndex_(-1)
     //relaxationFactor_(0.1)
-    
+
 {
     //refValue() = *this;
     //refGrad() = vector::zero;
@@ -74,7 +74,7 @@ slowTwoPhaseFluxFvPatchVectorField::slowTwoPhaseFluxFvPatchVectorField
     flowRate0_(ptf.flowRate0_),
     flowRate1_(ptf.flowRate1_),
     gradientFactor0_(ptf.gradientFactor0_),
-    gradientFactor1_(ptf.gradientFactor1_),    
+    gradientFactor1_(ptf.gradientFactor1_),
     pdFactor_(ptf.pdFactor_),
     pcFactor_(ptf.pcFactor_),
     curTimeIndex_(-1)
@@ -99,7 +99,7 @@ slowTwoPhaseFluxFvPatchVectorField::slowTwoPhaseFluxFvPatchVectorField
     pdFactor_(pTraits<scalar>(dict.lookupOrDefault("pdUniformization",0.9))),
     pcFactor_(pTraits<scalar>(dict.lookupOrDefault("pcUniformization",0.1))),
     curTimeIndex_(-1)
-    //,    relaxationFactor_(0.1)    
+    //,    relaxationFactor_(0.1)
     //phiName_(dict.lookupOrDefault<word>("phi", "phi")),
     //rhoName_(dict.lookupOrDefault<word>("rho", "rho"))
 {
@@ -117,7 +117,7 @@ slowTwoPhaseFluxFvPatchVectorField::slowTwoPhaseFluxFvPatchVectorField
     {
         fvPatchField<vector>::operator==(vector(0,0,0));
     }
-    
+
 	//if (dict.found("pdUniformization"))
 	//{
 		//pdFactor_=(pTraits<scalar>(dict.lookup("pdUniformization")));
@@ -180,12 +180,12 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 {
 	if (updated())   {  return; }
 
-	if (curTimeIndex_ == this->db().time().timeIndex()) return; 
+	if (curTimeIndex_ == this->db().time().timeIndex()) return;
 	curTimeIndex_ = this->db().time().timeIndex();
 
 	#define  curtailBADOFSET(a,b) ( min( max(a,b), (1.-(b)) ) )
 
- 
+
    const Field<scalar>& magS = patch().magSf();
 	primitivePatchInterpolation pinterpolator(patch().patch());
 
@@ -211,7 +211,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		scalarField  phipn0=upif/(flowRate0_/sumMagSa);
 
 		phipn0=phipn0*alphapSharp;
-		
+
 
 		phipn0=max(phipn0,1e-24);
 
@@ -221,8 +221,8 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		const fvPatchField<scalar>&   pcp = patch().patchField<volScalarField, scalar>(db().lookupObject<volScalarField>("pc"));
 
 
-		Info<<" "<<patch().name()<<"0: alfa:"<<int(sumMagSa/gSum(magS)*100.)/100.<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";	 
-		Info<<" :P["<< gMax(pdp.patchInternalField())<< "  " <<gMin(pdp.patchInternalField()) 
+		Info<<" "<<patch().name()<<"0: alfa:"<<int(sumMagSa/gSum(magS)*100.)/100.<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";
+		Info<<" :P["<< gMax(pdp.patchInternalField())<< "  " <<gMin(pdp.patchInternalField())
 		  <<"]  logU["<<int(gMin( _logPatchValues )*10.)/10.<<" "<<int(gMax(_logPatchValues)*10.)/10.<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
 
 		scalarField  pdpif = 0.9*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
@@ -240,13 +240,13 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		Info<<"Pcor u="<<	 uAvg <<"; ";
 
 
-		if (log(uAvg)>0.1)	 	   _logPatchValues += (0. - 0.5*(log(uAvg)) )            -0.09;	
-		else if (log(uAvg)< -0.1)  _logPatchValues += (0. - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active	
-		else					   _logPatchValues += (0. - 0.9*(log(uAvg)) );	 
+		if (log(uAvg)>0.1)	 	   _logPatchValues += (0. - 0.5*(log(uAvg)) )            -0.09;
+		else if (log(uAvg)< -0.1)  _logPatchValues += (0. - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active
+		else					   _logPatchValues += (0. - 0.9*(log(uAvg)) );
 
 		uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa;
 		Info<<"Qcor u="<<	 uAvg <<"; ";
-		
+
 		_logPatchValues = min(log(10.)+min(log(uAvg+1e-1),0.) , _logPatchValues);
 
 		Info<<"cut u="<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<"\n";
@@ -269,7 +269,7 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		scalarField  phipn0=upif/(flowRate1_/sumMagSa);
 
 		phipn0=phipn0*alphapSharp;
-		
+
 
 		phipn0=max(phipn0,1e-24);
 
@@ -280,8 +280,8 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 
 
 
-		Info<<" "<<patch().name()<<"1: alfa:"<<int(sumMagSa/gSum(magS)*100.)/100.<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";	 
-		Info<<" :P["<< gMax(pdp.patchInternalField())<< "  " <<gMin(pdp.patchInternalField()) 
+		Info<<" "<<patch().name()<<"1: alfa:"<<int(sumMagSa/gSum(magS)*100.)/100.<<"  u["<<gMin( phipn0 )<<" "<<gMax( phipn0 )<<"], ";
+		Info<<" :P["<< gMax(pdp.patchInternalField())<< "  " <<gMin(pdp.patchInternalField())
 		  <<"]  logU["<<int(gMin( _logPatchValues )*10.)/10.<<" "<<int(gMax(_logPatchValues)*10.)/10.<<"] ~ un:"<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<":  ";
 
 		scalarField  pdpif = 0.9*(pdFactor_*pdp.patchInternalField() + pcFactor_*pcp.patchInternalField());
@@ -299,13 +299,13 @@ void slowTwoPhaseFluxFvPatchVectorField::updateCoeffs()
 		Info<<"Pcor u="<<	 uAvg <<"; ";
 
 
-		if (log(uAvg)>0.1)	 	   _logPatchValues += (0. - 0.5*(log(uAvg)) )            -0.09;	
-		else if (log(uAvg)< -0.1)  _logPatchValues += (0. - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active	
-		else					   _logPatchValues += (0. - 0.9*(log(uAvg)) );	 
+		if (log(uAvg)>0.1)	 	   _logPatchValues += (0. - 0.5*(log(uAvg)) )            -0.09;
+		else if (log(uAvg)< -0.1)  _logPatchValues += (0. - 0.25*(log(uAvg)*(1.5-pdpif)) )+0.09;	/// mostly active
+		else					   _logPatchValues += (0. - 0.9*(log(uAvg)) );
 
 		uAvg=gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa ;
 		Info<<"Qcor u="<<	 uAvg <<"; ";
-		
+
 		_logPatchValues = min(log(10.)+min(log(uAvg+1e-1),0.) , _logPatchValues);
 
 		Info<<"cut u="<<gSum(alphapSharp*exp(_logPatchValues)*magS)/sumMagSa<<"\n";
@@ -340,10 +340,10 @@ write(Ostream& os) const
     os.writeKeyword("gradientFactor1")
         << gradientFactor1_ << token::END_STATEMENT << nl;
     os.writeKeyword("pdUniformization")
-        << pdFactor_ << token::END_STATEMENT << nl;        
+        << pdFactor_ << token::END_STATEMENT << nl;
     os.writeKeyword("pcUniformization")
-        << pcFactor_ << token::END_STATEMENT << nl;        
-    writeEntry("value", os); 
+        << pcFactor_ << token::END_STATEMENT << nl;
+    writeEntry("value", os);
 }
 
 

@@ -2,12 +2,12 @@
 
 
 
-if [ -n "$1" ]; then 
+if [ -n "$1" ]; then
 	dataFiles=$@
 else
 	dataFiles="$(ls -d Berea*[0-9])"
 fi
-	
+
 : ${ImgSufix:=".tif"}
 
 #mkdir BereaSmallForCX1
@@ -42,8 +42,7 @@ if [ -d ${case}_res ]; then
 		cp -rf ${case}_res/$processorDir/constant  $case/$processorDir/constant
 	done
  fi
-else 
+else
 	echo "${case}_res does not exists"
 fi
 done
-

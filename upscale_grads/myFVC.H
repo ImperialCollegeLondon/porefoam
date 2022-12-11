@@ -1,4 +1,4 @@
-    
+
  template<class Type>
  tmp<GeometricField<Type, fvsPatchField, surfaceMesh> >
  fvcDelta
@@ -7,7 +7,7 @@
  )
  {
      const fvMesh& mesh = vf.mesh();
- 
+
      tmp<GeometricField<Type, fvsPatchField, surfaceMesh> > tssf
      (
          new GeometricField<Type, fvsPatchField, surfaceMesh>
@@ -25,27 +25,27 @@
          )
      );
      GeometricField<Type, fvsPatchField, surfaceMesh>& ssf = tssf.ref();
- 
+
 
      const labelList& owner = mesh.owner();
      const labelList& neighbour = mesh.neighbour();
- 
- 
+
+
      forAll(owner, faceI)
      {
          ssf[faceI] =
              (vf[neighbour[faceI]] - vf[owner[faceI]]);
      }
- 
+
      forAll(vf.boundaryField(), bI)
      {
-         ssf.boundaryFieldRef()[bI] = 
+         ssf.boundaryFieldRef()[bI] =
               vf.boundaryField()[bI] - vf.boundaryField()[bI].patchInternalField();
      }
- 
+
      return tssf;
- }     
- 
+ }
+
 
 
 scalar volIntegrate(const volScalarField & vf)
@@ -67,5 +67,3 @@ scalar surfAverage(const surfaceScalarField & sf,const surfaceScalarField & delt
 {
 	return (sum(sf*deltaMagSf)/sum(deltaMagSf)).value();
 }
-
-

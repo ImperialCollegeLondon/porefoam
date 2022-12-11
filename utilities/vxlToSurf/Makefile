@@ -1,4 +1,4 @@
-# wmake  
+# wmake
 
 all: msApp
 
@@ -10,7 +10,7 @@ USE_OMP=1
 
 msSrc ?= $(abspath ../../..)
 
-msCFLAGS := ${msCFLAGS}   -O3   -DGCC_COMPILER 
+msCFLAGS := ${msCFLAGS}   -O3   -DGCC_COMPILER
 
 
 
@@ -23,4 +23,3 @@ USE_ZLIB=1
 USE_TIFF=1
 USE_msMAKE=1
 include  ${msSrc}/script/Makefile.in
-

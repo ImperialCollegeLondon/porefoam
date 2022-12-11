@@ -6,7 +6,7 @@ usage()
 	printf "$scriptName interFaceFoam PathToCaseFolder\n\n "
 	printf "$scriptName calc_grads PathToCaseFolder\n\n "
 	echo "Arguments (all optional):"
-	echo "  arg1: name of solver/app" 
+	echo "  arg1: name of solver/app"
 	echo "  arg2: name of openfoam case (folder) to continue its simulation, default is current directory"
 }
 if [ "$1" == "-h" ]; then usage; exit; fi
@@ -25,14 +25,14 @@ myCurrentDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
 
 
 
-if [ -f $caseName/system/controlDict ]; then 
+if [ -f $caseName/system/controlDict ]; then
 	echo ".................. ......................."
 	echo "running $application on  $(dirname $caseName/) in parallel"
 
 	sleep 1
 
 
-	processorDirs="$(cd $caseName/ && ls -d processo*[0-9])"	
+	processorDirs="$(cd $caseName/ && ls -d processo*[0-9])"
 	arr=($processorDirs)
 	IFS=$'\n'
 	nProc=$(( $(echo "${arr[*]}" | sed 's/processor//g' | sort -nr | head -1)+1 ))

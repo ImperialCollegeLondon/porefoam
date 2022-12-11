@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,10 +16,10 @@
 \*-------------------------------------------------------------------------*/
 
 //! Description:
-//!   post-processing code Calculates energy losses for control 
-//!   volumes given in postprossingDict file in $case/system directory. 
-//!   
-//!   Note: Parallel case post-processing is added to the code, no need to 
+//!   post-processing code Calculates energy losses for control
+//!   volumes given in postprossingDict file in $case/system directory.
+//!
+//!   Note: Parallel case post-processing is added to the code, no need to
 //!   reconstract parallel cases anymore.
 
 
@@ -28,8 +28,8 @@
 #include <assert.h>
 #include <vector>
 #include "fvCFD.H"
- 
- 
+
+
 #include "argList.H"
 #include "timeSelector.H"
 #include "graph.H"
@@ -39,6 +39,7 @@
 #include "interpolationCellPoint.H"
 #include "primitivePatchInterpolation.H"
  #include "voxelImage.h"
+ #include "voxelImageI.h"
  #include "AverageData.h"
  #include "myFVC.H"
  #define _USE_MPI_
@@ -61,7 +62,7 @@ int main(int argc, char *argv[])
 #   include "createTime.H"
     instantList timeDirs = timeSelector::select0(runTime, args);
 #   include "createNamedMesh.H"
- 
+
 	runTime.setTime(timeDirs[0], 0);
 
 
@@ -86,7 +87,7 @@ int main(int argc, char *argv[])
 	forAll(timeDirs, timeI)
 	{
 		runTime.setTime(timeDirs[timeI], timeI);
-		Info<< endl<<timeI<< "    Time = " << runTime.timeName() << "''''''VVVVVVVV'''' ";		
+		Info<< endl<<timeI<< "    Time = " << runTime.timeName() << "''''''VVVVVVVV'''' ";
 			volScalarField pc
 			(
 				IOobject
@@ -98,8 +99,8 @@ int main(int argc, char *argv[])
 				),
 				mesh
 			);
- 
-			pd==volScalarField 
+
+			pd==volScalarField
 			(
 				IOobject
 				(
@@ -111,7 +112,7 @@ int main(int argc, char *argv[])
 				mesh
 			);
 
-			alpha1== volScalarField 
+			alpha1== volScalarField
 			(
 				IOobject
 				(
@@ -134,7 +135,7 @@ int main(int argc, char *argv[])
 				  IOobject::READ_IF_PRESENT
 				),
 				  fvc::reconstruct
-				  (surfaceScalarField 
+				  (surfaceScalarField
 					(///. to delete, chnage back to must_read
 					  IOobject
 					  (
@@ -148,7 +149,7 @@ int main(int argc, char *argv[])
 				  )
 			);
 
-				phi ==  surfaceScalarField 
+				phi ==  surfaceScalarField
 				  (
 					  IOobject
 					  (
@@ -171,9 +172,9 @@ int main(int argc, char *argv[])
 						IOobject::READ_IF_PRESENT
 					),
 					0.*fvc::grad(pc)
-				);	
+				);
 
-		  	  //surfaceScalarField sgPc   
+		  	  //surfaceScalarField sgPc
 			  //(
 				  //IOobject
 				  //(
@@ -210,6 +211,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-

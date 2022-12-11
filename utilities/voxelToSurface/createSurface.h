@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ void writeSTLBINARY( const voxelImage & vxlImg, std::string outputSurface)
 
 	Info<<"writeSTLBINARY: "<<endl;
 	int3 n=vxlImg.size3();n[0]-=2;n[1]-=2;n[2]-=2;
-	dbl3 X0=vxlImg.X0(); 
+	dbl3 X0=vxlImg.X0();
 	dbl3 dx=vxlImg.dx();
 	X0+=dx;
 
@@ -44,8 +44,8 @@ void writeSTLBINARY( const voxelImage & vxlImg, std::string outputSurface)
 	const int nVVs=2;
 	const int
 
-	Internal     = 0, 
-	Grainwalls   = 1, 
+	Internal     = 0,
+	Grainwalls   = 1,
 	Left  =nVVs+0,
 	Right =nVVs+1,
 	Bottom=nVVs+2,
@@ -76,7 +76,7 @@ void writeSTLBINARY( const voxelImage & vxlImg, std::string outputSurface)
 			{
 				//nCells++;
 
-				unsigned char 
+				unsigned char
 				neiv=vxlImg(ix-1,iy,iz);
 				if (ix!=1)
 				{
@@ -119,11 +119,11 @@ void writeSTLBINARY( const voxelImage & vxlImg, std::string outputSurface)
 	for(int ib=0;ib<255;++ib)  if(nFaces[ib])  cout<< " Faces_"<<ib<<" "<<nFaces[ib]<<endl;
 
 
-	nBoundaries+=	( 1 && nFaces[Left])+ 
+	nBoundaries+=	( 1 && nFaces[Left])+
 						( 1 && nFaces[Right])+
-						( 1 && nFaces[Bottom])+ 
+						( 1 && nFaces[Bottom])+
 						( 1 && nFaces[Top])+
-						( 1 && nFaces[Back])+ 
+						( 1 && nFaces[Back])+
 						( 1 && nFaces[Front]);
 
 
@@ -131,7 +131,7 @@ void writeSTLBINARY( const voxelImage & vxlImg, std::string outputSurface)
 
 
 	cout<<"creating faces"<<endl;
- 
+
 
 	std::array<faceList,255> faces_bs;
 	size_t sumnFaces=0;
@@ -150,7 +150,7 @@ voxelField<int> point_mapper(n[0]+1,n[1]+1,n[2]+1,-1);
 
 	cout<<"collecting faces"<<endl;
 	int iPoints=-1;
-	auto point_mapper_insert = [&point_mapper, &points,  &dx,  &X0, &iPoints](int iix, int iiy, int iiz) -> 
+	auto point_mapper_insert = [&point_mapper, &points,  &dx,  &X0, &iPoints](int iix, int iiy, int iiz) ->
 	 int {
 		if (point_mapper(iix,iiy,iiz)<0)
 		{
@@ -161,7 +161,7 @@ voxelField<int> point_mapper(n[0]+1,n[1]+1,n[2]+1,-1);
 		return point_mapper(iix,iiy,iiz);
 	 };
 
-    
+
 #define recordF_m( l10,l11,l20,l21,l30,l31, ii,jj,kk,type )					  \
   {																				  \
 		   ++iFaces[type] ;														\
@@ -197,7 +197,7 @@ voxelField<int> point_mapper(n[0]+1,n[1]+1,n[2]+1,-1);
 
 				iCells++;
 
-				unsigned char 
+				unsigned char
 				neiv=vxlImg(ix-1,iy,iz);
 				if (ix!=1)
 				{
@@ -220,8 +220,8 @@ voxelField<int> point_mapper(n[0]+1,n[1]+1,n[2]+1,-1);
 				neiv=vxlImg(ix,iy+1,iz);
 				if (iy!=n[1])
 				{
-				  if (neiv)    {juclockwiserecordF( neiv)} 
-				}else if (neiv) {juclockwiserecordF( neiv)} 
+				  if (neiv)    {juclockwiserecordF( neiv)}
+				}else if (neiv) {juclockwiserecordF( neiv)}
 
 
 				neiv=vxlImg(ix,iy,iz-1);
@@ -232,7 +232,7 @@ voxelField<int> point_mapper(n[0]+1,n[1]+1,n[2]+1,-1);
 
 				neiv=vxlImg(ix,iy,iz+1);
 				if (iz!=n[2])
-				{ 
+				{
 				  if (neiv)    {kuclockwiserecordF( neiv)}
 				}else if (neiv) {kuclockwiserecordF( neiv)}
 
@@ -271,5 +271,3 @@ point_mapper.reset(0,0,0,0);
 	}
 
 }
-
- 

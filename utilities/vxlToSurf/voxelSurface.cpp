@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------*\
  This is part of surfLib, a library for working with surface files and data
 
- Copyright (C) 2018-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2018-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -141,14 +141,14 @@ void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManif
 				 for_(group1, gfI)  nClctd += collectManifoldFaces(pI, group1[gfI] ,group1,handlNonManiflEdges, faces, points, pPoints, pFaces);
 				 nClctdTotal+=nClctd;
 			} while (nClctd>0);}
-			for_(group1, gfI)  
+			for_(group1, gfI)
 			nClctdTotal+= collectManifoldFaces(pI, group1[gfI] ,group1,handlNonManiflEdges, faces, points, pPoints, pFaces);
 
 			if(nClctdTotal<myFaces.size())  {
 				  bool PreviouslyModified=false;
 				  for_(group1,gfI)   if (changedFaces.find(group1[gfI])!=changedFaces.end())	PreviouslyModified=true;
 
-				
+
 				if( (nClctdTotal<myFaces.size()-2) &&  (nClctdTotal>2) && !PreviouslyModified)  {	++nProblemPoints;
 
 					addedPoints.append(points[pI]); ++iLastPoint;  ///. clone the point, the clone will go to the end
@@ -175,7 +175,7 @@ void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManif
 
 
 	}
-	
+
 	if(nSkipped)  Info<<"  "<<nSkipped<<" points skipped, as this will cause singly connected edges"<<endl;
 
 
@@ -192,7 +192,7 @@ void correct( facePiece & faces, DynamicList<point> & points, bool handlNonManif
 
 
 
-	size_t nEdges=0; 
+	size_t nEdges=0;
 	for_(pPoints,pI) for(auto pJ:pPoints[pI]) if(pJ>int(pI)) ++nEdges;
 	Info<<"nEdges: \t"<<nEdges <<"\t;  nPoints: \t"<<len(pPoints) <<"\t;  nFaces: \t"<<len(faces)<<"\t;  Euler_characteristic: \t"<<len(faces)-int(nEdges-len(pPoints))<< "\n\n"; // used for Euler number computation
 
@@ -278,7 +278,7 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 				int keptP,delP;
 				if(*nextCircIter(f, fItr) < *prevCircIter(f, fItr))  {keptP=*nextCircIter(f, fItr);  delP=*prevCircIter(f, fItr);}
 				else{delP=*nextCircIter(f, fItr);  keptP=*prevCircIter(f, fItr);}
-				
+
 				if (pointPointmap[delP]==-1 && pointPointmap[keptP]==-1)  {
 					pointPointmap[delP]=keptP;
 					deletedFaceIs.insert(delFI);
@@ -325,8 +325,8 @@ void correctbioti( facePiece & faces, labelList& fMarks, dbl3s& points, int stag
 			}
 		}
 		//faces.resize(iLastFace+1);
-		//fMarks.resize(iLastFace+1); 
-		int Errr_Fixme;
+		//fMarks.resize(iLastFace+1);
+		// TODO int Errr_Fixme;
 	}
    Info<<faces.size()<<" faces "<<endl;
 
@@ -386,10 +386,10 @@ surfMsh createSurface(InputFile& inp, const voxelImage & vxlImg, const int nVVs,
 
 	(cout<<"creating faces, ").flush();
 
-	{ 	size_t nAll=0; 
-		for(int ib=0;ib<256;++ib)  nAll+=nFaces[ib]; 
-		srfmsh.faces.resize(nAll); 
-		nAll=0; 
+	{ 	size_t nAll=0;
+		for(int ib=0;ib<256;++ib)  nAll+=nFaces[ib];
+		srfmsh.faces.resize(nAll);
+		nAll=0;
 		for(int ib=0;ib<256;++ib)  { faces_bs[ib].reset(facePiece(&srfmsh.faces[nAll], nFaces[ib]));  nAll+=nFaces[ib]; }
 	}
 
@@ -438,8 +438,8 @@ surfMsh createSurface(InputFile& inp, const voxelImage & vxlImg, const int nVVs,
 
 	for (int iz=1;iz<=n[2];iz++)  { 					if(iz%20==9) { (cout<<(iz%100 ? '.' : '\n')).flush(); }
 	  for (int iy=1;iy<=n[1];iy++)
-		for (int ix=1;ix<=n[0];ix++)  //if (!vxlImg(ix,iy,iz)) // 
-		{
+			for (int ix=1; ix<=n[0]; ix++) {
+				//if (!vxlImg(ix,iy,iz))
 			unsigned char vv=vxlImg(ix,iy,iz);
 
 			unsigned char
@@ -491,7 +491,3 @@ surfMsh createSurface(InputFile& inp, const voxelImage & vxlImg, const int nVVs,
 	return srfmsh;
 
 }
-
-
-
-

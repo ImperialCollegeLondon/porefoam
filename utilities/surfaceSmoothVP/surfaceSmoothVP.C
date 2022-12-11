@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
 \*-------------------------------------------------------------------------*/
 
 //! Description:
-//!   volume-preserving surface smoothing, retired due to incompatibility 
+//!   volume-preserving surface smoothing, retired due to incompatibility
 //!   with some OpenFOAm versions
 
 #include "MeshedSurfaces.H"
@@ -61,11 +61,11 @@ int main(int argc, char *argv[])
 			IOobject::MUST_READ, IOobject::NO_WRITE
 	)	);
 	dictionary smoothingDict(meshingDict.subDict("surfaceSmoothing"));
-	
+
 	word surfFileName(smoothingDict.lookup("inputSurface"));
 
 
- 
+
 	scalar relax(readScalar(smoothingDict.lookup("relaxationFactor")));
 	if ((relax < 0) || (relax > 1))
 	{

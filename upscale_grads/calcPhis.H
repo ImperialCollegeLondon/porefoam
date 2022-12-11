@@ -5,18 +5,18 @@
     //surfaceScalarField phic = mag(phi/mesh.magSf());
     //phic = min(interface.cAlpha()*phic+0.25*max(phic), max(phic));
     //surfaceScalarField phir = phic*interface.nHatf()*(1.-mag(deltaSs)/(mag(deltaSs)+deltaN));
-    
+
    scalar cAlpha( readScalar ( mesh.solutionDict().subDict("PIMPLE").lookup("cAlpha") ) );
 
-    
+
     surfaceScalarField phic =   mag(fvc::interpolate(U));
     phic = min(cAlpha*phic, max(phic));
     surfaceScalarField phir = phic*interface.nHatf();
 
-    
-    
-    
-    
+
+
+
+
 //#define curtail(a,b) (min (max((a),(b)),(1.-b)))
 
     for (int aCorr=0; aCorr<nAlphaCorr; aCorr++)
@@ -51,7 +51,7 @@
 
         rhoPhi = phiAlpha*(rho1 - rho2) + phi*rho2;
 		rho == alpha1*rho1 + (scalar(1) - alpha1)*rho2;
-        
+
     }
 
     //if( runTime.timeIndex()%10== 0 )
@@ -63,16 +63,3 @@
             //<< endl;
     //}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -6,8 +6,8 @@ msSrc ?= $(abspath ../../..)
 
 USE_MINIFOAMX3=1
 OFCs=$(shell find | grep -F .C | sed s:./::)
-OFincs =  finiteVolume 
-OFlibs =  finiteVolume 
+OFincs =  finiteVolume
+OFlibs =  finiteVolume
 msCFLAGS += -DNoRepository
 
 USE_ZLIB=1

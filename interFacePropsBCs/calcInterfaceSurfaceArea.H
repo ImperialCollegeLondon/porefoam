@@ -3,7 +3,7 @@
  Compute interface face areas
 
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 \*-------------------------------------------------------------------------*/
 
 //! This file is part of calcCurvatureForce.C
- 
+
 
 
 
@@ -157,5 +157,3 @@ forAll(magDelS,fI)
 
 	//interfaceSf=(interfaceSf&curvatureNSf)*curvatureNSf;
 	//interfaceSf=msh.magSf()/(curvatureNSf&msh.Sf()+1e-36)*msh.Sf();
-
-

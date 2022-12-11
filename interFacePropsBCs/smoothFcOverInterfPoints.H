@@ -3,7 +3,7 @@
  Curvature force smoothing over interface points
 
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@
 					forAll(ff, ip)
 					{
 						label pI = ff[ip];
-						pointForce[pI]+=(0.5/ff.size())*pMagDelS[pfI]*pCurvatureForcef[pfI];		
+						pointForce[pI]+=(0.5/ff.size())*pMagDelS[pfI]*pCurvatureForcef[pfI];
 						interfPointArea[pI]+=0.5*pMagDelS[pfI]*pInterfaceSf[pfI];
 					}
 				}
@@ -129,4 +129,3 @@
 
 
 }
-

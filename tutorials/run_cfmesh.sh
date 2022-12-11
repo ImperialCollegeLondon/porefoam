@@ -7,13 +7,13 @@ which AllRunImageTwoPhaseCFMesh || ! echo -e 'Please first `source .../src/scrip
 
 # download the input image
 if ! [ -e ketton.raw ]; then echo "Downloading ketton image"
- wget -O ketton.raw https://www.digitalrocksportal.org/projects/125/images/101255/download/ 
+ wget -O ketton.raw https://www.digitalrocksportal.org/projects/125/images/101255/download/
 fi
 
 
 
 #keep the unit as micrometers otherwise the AllRunImagePar needs to be edited
-# Create ketton.mhd header 
+# Create ketton.mhd header
 cat  <<MHD > ketton.mhd
 ObjectType =  Image
 NDims =       3
@@ -23,7 +23,7 @@ ElementNumberOfChannels = 1
 CompressedData = False
 HeaderSize = 0
 DimSize     = 365  255  225
-ElementSize = 1e-6 1e-6 1e-6 
+ElementSize = 1e-6 1e-6 1e-6
 Offset      = 0    0    0
 ElementDataFile  = ketton.raw
 
@@ -56,9 +56,9 @@ export RefineLevel=2 # test 1.5...
 rm -rf ketton$meshTag*/ AllRunImageTwoPhaseCFMesh
 
 # AllRunImageTwoPhaseCFMesh copies itself to the current directory for edit and run
-AllRunImageTwoPhaseCFMesh 
+AllRunImageTwoPhaseCFMesh
 
-# generate mesh, using cfMesh 
+# generate mesh, using cfMesh
 ./AllRunImageTwoPhaseCFMesh
 
 

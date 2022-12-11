@@ -3,7 +3,7 @@
  Interface force computation
 
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ Foam::surfaceScalarField Foam::interfaceProps::calcCurvatureFConservative
 	const scalar CONTRAST_FACTOR = 1e-4*deltaN_.value();
 	const fvMesh& msh = mesh();
 	const fvBoundaryMesh& boundary = msh.boundary();
-	const fvBoundaryMesh& patches = msh.boundary(); 
+	const fvBoundaryMesh& patches = msh.boundary();
 
 	const faceList& faces = msh.faces();
 	const pointField& points = msh.points();
@@ -120,7 +120,7 @@ Foam::surfaceScalarField Foam::interfaceProps::calcCurvatureFConservative
 
 	pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, msh.points(),interfPoints);
 	//pointVectorField gradAlphaP = pointGardLeastSquare (fvc::interpolate(alpha1S_), alpha1P, msh.points(),interfPoints);
-	//pointVectorField gradAlphaP = pointInterpolate(gradAlpha,pMesh_); 
+	//pointVectorField gradAlphaP = pointInterpolate(gradAlpha,pMesh_);
 	////////pointVectorField gradAlphaP = pointSnGrad(alpha1S_,U_, interfPoints, pMesh_);
 	//vectorField eGradAlpha = edgeGrad(gradAlphaP,nSHatfv,alpha1S_,alpha1P,magDelS, CONTRAST_FACTOR);
 	correctForContactAngle(alpha1_,U_,nw_,gradAlphaP,interfPoints);

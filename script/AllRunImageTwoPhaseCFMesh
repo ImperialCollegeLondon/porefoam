@@ -25,18 +25,18 @@
 # give up to two numbers one <1 and the other >1, negatives will be skiped
 : ${oilFilldFracs:=" 0.05"} #  1.05 # set to =-1 to initialize alph from alpha1.mhd
 
-# In case you want to refine the mesh increase this, or vise-versa. 
+# In case you want to refine the mesh increase this, or vise-versa.
 : ${RefineLevel:=1}
 
 # number of processors used for flow simulation
 : ${nProc:=24}
 
 
-# tag mesh or decomposed/simulation case 
+# tag mesh or decomposed/simulation case
 : ${meshTag:=""}
 : ${caseTag:=""}
 
-# cfmesh tag, in base/system/meshdict.cfMesh 
+# cfmesh tag, in base/system/meshdict.cfMesh
 : ${cfMshTg:="cfMesh"}
 : ${smoothMeshNIter:=0}
 : ${smoothMeshBoundary:=yes}
@@ -91,9 +91,9 @@ echo "______________________________________________________________________"
 
 
 # Check porefoam installation
-if ! [ -n "$msSrc" ]; then 
+if ! [ -n "$msSrc" ]; then
 	guessPsDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
-	if [ -f $guessPsDIR/script/bashrc ]; then 
+	if [ -f $guessPsDIR/script/bashrc ]; then
 		echo " msSrc is not not set, set it by running (or add to your ~/.bashrc file):"
 		echo "source $guessPsDIR/script/bashrc"; echo
 		source $guessPsDIR/script/bashrc
@@ -186,7 +186,7 @@ echo "_________________________ $dataFile  ____________________________"
 		echo " ---- create surface ----  "
 		setValues BASENAME "$mshDir" $mshDir/system/meshingDict
 		#(cd $mshDir && runApp voxelToSurface  )
-		printf "\n extractBoxBoundary true\n\n" >> $mshDir/${dataFile}_input.mhd  
+		printf "\n extractBoxBoundary true\n\n" >> $mshDir/${dataFile}_input.mhd
 		(cd $mshDir && runApp vxlToSurf  ${dataFile}_input.mhd  ${dataFile}.obj  )
 		(cd $mshDir && runApp surfaceAutoPatch ${dataFile}0.obj solidwalls.stl   100 )
 		#(cd $mshDir && runApp surfaceSmoothVP )
@@ -214,7 +214,7 @@ echo "_________________________ $dataFile  ____________________________"
 			echo Mesh smoothing iteraton $ii, not usefull in anisotropic meshes
 			if [ "$smoothMeshBoundary" == yes ]; then
 				(cd $mshDir && runApp -l log.smoothMesh-$ii.0 smoothMesh $smoothMeshRelax 10 1 27 && checkM $ii.0); fi
-			if [ "$smoothMeshInternal" == yes ]; then 
+			if [ "$smoothMeshInternal" == yes ]; then
 				(cd $mshDir && runApp -l log.smoothMesh-$ii.1 smoothMesh $smoothMeshRelax 10 4 27 && checkM $ii.1); fi
 		done
 
@@ -313,7 +313,7 @@ echo "_________________________ $dataFile  ____________________________"
 
 			setKeywordValues maxS1   "$maxS1"  ./$runDir/system/controlDict
 			setKeywordValues minS1   "$minS1"  ./$runDir/system/controlDict
-			
+
 			setKeywordValues writeFormat ascii ./$runDir/system/controlDict
 
 			setKeywordValues cAlpha $cAlpha ./$runDir/system/fvSolution
@@ -351,7 +351,7 @@ echo "_________________________ $dataFile  ____________________________"
 			setBoundaryCondition $outlet theta0 $thetaOut ./$runDir/0/alpha1
 
 
-			if (( $(echo "$oilFilldFrac < 0." | bc ) )); then 
+			if (( $(echo "$oilFilldFrac < 0." | bc ) )); then
 			 if [ "$VSElml" == "alpha1.mhd" ] ; then
 				cp -r alpha1.* $runDir/
 				(cd $runDir && runApp  voxelAlphaFieldToFoam alpha1.mhd -nGrowAlpha 0)   #-invertAlpha
@@ -399,7 +399,7 @@ echo "_________________________ $dataFile  ____________________________"
 		 fi
 		else
 # RUN SIMULATION   ========================================================================
-		
+
 			application=interFaceFoam
 
 			echo " ###########  Running simulation on $runDir  ########## "

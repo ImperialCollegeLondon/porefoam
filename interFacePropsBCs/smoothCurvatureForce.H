@@ -3,7 +3,7 @@
  Curvature smoothing over interface faces
 
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 		cellWeight[owners[fI]]+=100.*min(1., cellWeight[owners[fI]]);
 		cellWeight[nybors[fI]]+=100.*min(1., cellWeight[nybors[fI]]);
 	}
-	
+
 	for(int i=0;i<2;++i)
 	{
 
@@ -67,7 +67,7 @@
 				forAll(pMagDelS, pfI) if (pMagDelS[pfI] > CONTRAST_FACTOR)
 				{
 					label ownr = owners[pStart + pfI];
-					cellForce[ownr]+=0.5*cellWeight[ownr]*pMagDelS[pfI]*pCurvatureForcef[pfI];		
+					cellForce[ownr]+=0.5*cellWeight[ownr]*pMagDelS[pfI]*pCurvatureForcef[pfI];
 					interfCellArea[ownr]+=cellWeight[ownr]*pMagDelS[pfI]*pMagInterfaceSf[pfI];
 				}
 			 }
@@ -124,6 +124,3 @@
 
 
 }
-
-
-

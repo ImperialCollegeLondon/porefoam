@@ -2,15 +2,15 @@
 vector viscF(0.,0.,0.);
 vector viscF1(0.,0.,0.);
 vector gPd(0.,0.,0.);
-vector gPd1(0.,0.,0.);    
+vector gPd1(0.,0.,0.);
 vector GPc(0.,0.,0.);
-vector GPc1(0.,0.,0.);    
+vector GPc1(0.,0.,0.);
 vector rhoPhiU(0.,0.,0.);
 vector rhoPhiU1(0.,0.,0.);
 vector viscInterf_1(0.,0.,0.);
 
 
-    
+
 {
 //scalar viscE(0.);
 //scalar viscE_1(0.);
@@ -28,11 +28,11 @@ vector viscInterf_1(0.,0.,0.);
 
 	surfaceScalarField BSurafce=fvcDelta(clip);
 	surfaceScalarField AlphaInsidBoundary=fvcDelta(clipAlpha);
-	
+
 	auto& Ubf = U.boundaryField();
 
     forAll(boundary, bi) if (isA<fixedValueFvPatchVectorField>(Ubf[bi]))
-    {		
+    {
 
 
 			scalarField muEffbp= muEff.boundaryField()[bi];
@@ -84,8 +84,8 @@ vector viscInterf_1(0.,0.,0.);
 	viscInterf_1=-gSum( (AlphaInsidBoundary*muEff*gIBC
 	*mesh.magSf())->internalField() );
 
-	gPd+=gSum( (BSurafce*fvc::interpolate(pd)*mesh.Sf())->internalField() );	
-	gPd1+=gSum( (AlphaInsidBoundary*fvc::interpolate(pd)*mesh.Sf())->internalField() );	
+	gPd+=gSum( (BSurafce*fvc::interpolate(pd)*mesh.Sf())->internalField() );
+	gPd1+=gSum( (AlphaInsidBoundary*fvc::interpolate(pd)*mesh.Sf())->internalField() );
 
 	rhoPhiU +=gSum( (BSurafce*phi*fvc::interpolate(rho*U))->internalField() );
 
@@ -94,4 +94,3 @@ vector viscInterf_1(0.,0.,0.);
 
 
 }
-

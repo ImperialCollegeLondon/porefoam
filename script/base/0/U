@@ -31,7 +31,7 @@ boundaryField
 	{
 		type           		slowTwoPhaseFlux;
 		flowRate0       		0;
-		flowRate1       		1e-9; 
+		flowRate1       		1e-9;
 		gradientFactor0 		0;
 		gradientFactor1 		0;
 		pdUniformization		0.9;
@@ -40,8 +40,8 @@ boundaryField
 	}
 	Right
 	{
-         type            inletOutlet;        
-         value           $internalField;       
+         type            inletOutlet;
+         value           $internalField;
          inletValue      uniform (0 0 0);
 	}
 	Bottom

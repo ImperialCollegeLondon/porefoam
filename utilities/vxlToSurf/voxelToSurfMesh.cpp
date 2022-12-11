@@ -3,7 +3,7 @@
  Surface generator from 3D images
  This is part of surfLib, a library for working with surface files and data
 
- Copyright (C) 2018-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2018-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 \*-------------------------------------------------------------------------*/
 
 #include "voxelImage.h"
-//#include "voxelImageML.h" //zeroGrad
+#include "voxelImageI.h"
 
 
 #include "InputFile.h"
@@ -53,7 +53,8 @@ int main(int argc, char *argv[])  {
 		inp.echoKeywords(cout);
 
 	if(fnam.size()<4) return usage();
-	std::string outputSurface = (argc>2)  ? string(argv[2]) : inp.getOr("outputSurface", baseName(fnam)+".obj");
+	std::string outputSurface = (argc>2) ? string(argv[2]) :
+				inp.getOr("outputSurface", basePath(fnam)+".obj");
 
 
 
@@ -71,7 +72,7 @@ int main(int argc, char *argv[])  {
 
 
 	//! solid phase should have the highest vv TODO: add multilabel
-	int nVVs=0;  
+	int nVVs=0;
 	forAllvv_seq(vimage) if(vv<240) nVVs =max(nVVs,int(vv));
 	cout<<" maxVxlvalue:"<<nVVs<<endl;
 	forAllvp_(vimage) if(*vp>nVVs) *vp=nVVs; //! set isolateds to last vv, CtrlF:isolated=254
@@ -133,23 +134,9 @@ int main(int argc, char *argv[])  {
 	}
 	catch (std::exception& e)	{  std::cerr << "Error in surfMsh " << e.what()<<endl;  }
 	catch (...)	{  std::cerr << "Error in surfMsh "<<endl;   }
-	
+
 
 	cout<< "end }" << endl;
 
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

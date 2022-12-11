@@ -96,7 +96,7 @@ fixedRelaxedMeanValueFvPatchField<Type>::fixedRelaxedMeanValueFvPatchField
     {
         fixedValueFvPatchField<Type>::operator==(0.5*meanValue1_+0.5*meanValue2_);
     }
-    
+
     if (dict.found("relax"))
     {
 		relaxationFactor_=readScalar(dict.lookup("relax"));
@@ -114,7 +114,7 @@ fixedRelaxedMeanValueFvPatchField<Type>::fixedRelaxedMeanValueFvPatchField
 		Info<<" P BC relaxationFactor used is  "<< relaxationFactor_<<endl ;
 
 	}
-	
+
 		Info<<" P BC mean values: "<< meanValue1_ <<"  "<<meanValue2_<<endl ;
 		Info<<" P BC thicknessFactor: "<< thicknessFactor_ <<endl ;
 
@@ -175,12 +175,12 @@ void fixedRelaxedMeanValueFvPatchField<Type>::updateCoeffs()
 	Field<Type>& patchField = *this;
 	const Field<scalar> pMagPhi = mag(this->patch().template lookupPatchField<surfaceScalarField, scalar>("phi"))+1e-24;
 
-	const Field<scalar> alphap = curtailBADOFSET((1./thicknessFactor_)* (this->patch().template lookupPatchField<volScalarField, scalar>("alpha1")) -(0.5/thicknessFactor_-0.5),0.); 
+	const Field<scalar> alphap = curtailBADOFSET((1./thicknessFactor_)* (this->patch().template lookupPatchField<volScalarField, scalar>("alpha1")) -(0.5/thicknessFactor_-0.5),0.);
 
 	//primitivePatchInterpolation pinterpolator(patch().patch());
 	//alphap = 1.4*pinterpolator.pointToFaceInterpolate(pinterpolator.faceToPointInterpolate(alphap) )-0.4*alphap;
 
-//     if (curTimeIndex_ != this->db().time().timeIndex())  
+//     if (curTimeIndex_ != this->db().time().timeIndex())
     {
         Field<Type> pif = this->patchInternalField();
 
@@ -206,10 +206,10 @@ void fixedRelaxedMeanValueFvPatchField<Type>::write(Ostream& os) const
     os.writeKeyword("meanValue2")
         << meanValue2_ << token::END_STATEMENT << nl;
     os.writeKeyword("relaxationFactor")
-        << relaxationFactor_ << token::END_STATEMENT << nl;        
+        << relaxationFactor_ << token::END_STATEMENT << nl;
     os.writeKeyword("thicknessFactor")
-        << thicknessFactor_ << token::END_STATEMENT << nl;        
-    this->writeEntry("value", os); 
+        << thicknessFactor_ << token::END_STATEMENT << nl;
+    this->writeEntry("value", os);
 }
 
 

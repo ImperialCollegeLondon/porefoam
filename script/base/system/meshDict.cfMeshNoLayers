@@ -36,7 +36,7 @@ localRefinement
     //"orifice01.*"
     //{
         //cellSize 0.1;
-    //} 
+    //}
 
 
 }
@@ -113,11 +113,11 @@ lastStep        start;
 
 skipSteps  0 (  );
 
-// skipSteps   9 ( start templateGeneration surfaceTopology surfaceProjection 
-//               patchAssignment edgeExtraction boundaryLayerGeneration 
+// skipSteps   9 ( start templateGeneration surfaceTopology surfaceProjection
+//               patchAssignment edgeExtraction boundaryLayerGeneration
 //               meshOptimisation boundaryLayerRefinement );
 
 restartFromLatestStep yes;
 }
-     
+
 // ************************************************************************* //

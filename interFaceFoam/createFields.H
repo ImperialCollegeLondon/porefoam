@@ -2,7 +2,7 @@
 	Info<< "Reading field pd\n" << endl;
 	volScalarField pd(
 		IOobject( "pd", runTime.timeName(), mesh,
-			       IOobject::MUST_READ, IOobject::AUTO_WRITE ), 
+			       IOobject::MUST_READ, IOobject::AUTO_WRITE ),
 		mesh );
 
 
@@ -32,7 +32,7 @@
 
 	const dimensionedScalar& mu1Avg = rho1*average(twoPhaseProperties.nuModel1().nu());
 	const dimensionedScalar& mu2Avg = rho2*average(twoPhaseProperties.nuModel2().nu());
-	
+
 	Info<< "Laminar viscosities: " <<mu1Avg.value()<<" "<<mu2Avg.value()<< endl;
 
 	// Need to store rho for ddt(rho, U)
@@ -57,7 +57,7 @@
 	// Construct interface from alpha1 distribution
 	interfaceProps interface(alpha1, U, twoPhaseProperties);
 
- 
+
 	// Construct incompressible turbulence model
 	//autoPtr<incompressible::turbulenceModel> turbulence
 	//(
@@ -84,7 +84,7 @@
 
 
 	volVectorField UFilter	(
-		IOobject( "UFilter",  runTime.timeName(),  mesh	),	
+		IOobject( "UFilter",  runTime.timeName(),  mesh	),
 		2.*(fvc::average(fvc::interpolate(U))),
 		"zeroGradient"	);
 
@@ -95,7 +95,7 @@
 
 	volScalarField pFilter
 	(
-		IOobject( "pFilter",  runTime.timeName(),  mesh	),	
+		IOobject( "pFilter",  runTime.timeName(),  mesh	),
 		2.*(fvc::average(fvc::interpolate(pd))),	"zeroGradient"
 	);
 
@@ -138,7 +138,7 @@
 
 
 
-	volVectorField gradP=	fvc::grad(pd); 
+	volVectorField gradP=	fvc::grad(pd);
 
 
 
@@ -150,7 +150,7 @@
 
 	IOdictionary meshingDict(
 		IOobject( "meshingDict",  runTime.system(),  runTime,
-		          IOobject::MUST_READ,  IOobject::NO_WRITE ) );	
+		          IOobject::MUST_READ,  IOobject::NO_WRITE ) );
 
 
 
@@ -160,8 +160,3 @@
 		"muEff",
 		twoPhaseProperties.muf()
 	);
-
-
-
-
-

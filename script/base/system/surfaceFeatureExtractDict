@@ -7,7 +7,7 @@ FoamFile
 	object  	surfaceFeatureExtractDict;
 }
 //----------------------------------------------------------------------
-solidwalls.vtk 
+solidwalls.vtk
 {
 	// How to obtain raw features (extractFromFile || extractFromSurface)
 	extractionMethod extractFromSurface;
@@ -18,7 +18,7 @@ solidwalls.vtk
 		// - 0 : selects no edges
 		// - 180: selects all edges
 		includedAngle 80;
-		
+
         // Do not mark region edges
         geometricTestOnly       yes;
 	}

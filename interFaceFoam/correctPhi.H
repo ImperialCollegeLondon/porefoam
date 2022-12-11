@@ -1,6 +1,6 @@
 {
     #include "continuityErrs.H"
-    
+
     int nNonOrthCorr =
         mesh.solutionDict().subDict("PIMPLE").lookupOrDefault<int>("nNonOrthogonalCorrectors", 0);
 

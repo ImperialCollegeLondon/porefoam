@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------*\
  This is part of surfLib, a library for working with surface files and data
 
- Copyright (C) 2018-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2018-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -24,14 +24,13 @@ using namespace std;
 #include "surfUtils.h"
 
 
-//#include "yocto_utils.h"
 dbl3s mapFacesGetPoints(std::vector<std::vector<face> >& facess, const piece<point> pointsAll)  {
 	ints pValidIs(pointsAll.size(),-1); int pInd=-1;
 	for(auto&faces:facess) for(auto&fac:faces) for(auto& pi:fac) if(pValidIs[pi]==-1) pValidIs[pi]=++pInd;
 	dbl3s points(pInd+1);
 	for(auto&faces:facess) for(auto&fac:faces) for(auto& pi:fac) pi=pValidIs[pi];
 	for_i(pValidIs) if(pValidIs[i]!=-1) { points[pValidIs[i]]=pointsAll[i]; }
-	return std::move(points);
+	return points;
 }
 
 std::vector<std::vector<face> > getbsoleteOrderedFaces(const facePieceList& facezsz, int vv)  {
@@ -40,26 +39,26 @@ std::vector<std::vector<face> > getbsoleteOrderedFaces(const facePieceList& face
 		ints nFacs(256,0);
 		const facePiece& facezs=facezsz[vv];
 		for(const auto&fac:facezs) { ensure(0<=fac.zone && fac.zone<255);  ++nFacs[fac.zone];}
-		for(int i=0;i<256;++i) if(nFacs[i]) { facess[i].resize(nFacs[i], face({-1,-1,-1,-1})); nFacs[i]=-1; }
+		for(int i=0; i<256; ++i) if(nFacs[i]) { facess[i].resize(nFacs[i], face({-1,-1,-1,-1})); nFacs[i]=-1; }
 		for(const auto&fac:facezs) { facess[fac.zone][++nFacs[fac.zone]]=fac; ensure(facess[fac.zone][nFacs[fac.zone]][0]>=0);}
 	}
 
 
 	auto invertFace = [](const face& f) { return face({f[3],f[2],f[1],f[0]}); };
-	for(int v2=0;v2<vv;++v2) if(facezsz[v2].size()) // when searching for faces only faces toward higher labels are extracted, here we also add those toward lower voxel-labels
+	for(int v2=0; v2<vv; ++v2) if(facezsz[v2].size()) // when searching for faces only faces toward higher labels are extracted, here we also add those toward lower voxel-labels
 	{	/// beak each voxel value surfacce manifold into zones
 		ints nFacs(256,0);
 		const facePiece& facezs=facezsz[v2];
 		for(const auto&fac:facezs) { if(fac.zone==vv)  ++nFacs[v2];}
-		for(int iz=0;iz<vv;++iz) if(nFacs[iz]) { facess[iz].resize(nFacs[iz], face({-1,-1,-1,-1})); nFacs[iz]=-1; }
+		for(int iz=0; iz<vv; ++iz) if(nFacs[iz]) { facess[iz].resize(nFacs[iz], face({-1,-1,-1,-1})); nFacs[iz]=-1; }
 		for(const auto&fac:facezs)  if(fac.zone==vv) { facess[v2][++nFacs[v2]]=invertFace(fac);  ensure(facess[v2][nFacs[v2]][0]>=0);} // wrong zone
 	}
-	return std::move(facess);
+	return facess;
 }
 
 void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAll, const std::string& fileNames)  {
 
- for(size_t vv=0;vv<facezsz.size();++vv) if(facezsz[vv].size())  {
+ for(size_t vv=0; vv<facezsz.size(); ++vv) if(facezsz[vv].size())  {
 	string ext = fileNames.substr(fileNames.size()-4);
 	string basNam = fileNames.substr(0,fileNames.size()-4)+_s(vv);
 
@@ -117,7 +116,7 @@ void writeSurfaceFiles(const facePieceList& facezsz, const piece<point> pointsAl
 		}
 		fil << endl;
 	}
-	else 
+	else
 	{	if(ext!=".vtk") 		cerr << "outputSurface format "<<fileNames<<"not supported switching to vtk";
 
 		ofstream fil(basNam+".vtk");
@@ -185,13 +184,13 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 
 	std::vector<std::vector<face> > facess(256*256);
 
-	for(size_t vv=0;vv<facezsz.size();++vv) if(facezsz[vv].size())  {
+	for(size_t vv=0; vv<facezsz.size(); ++vv) if(facezsz[vv].size())  {
 		(cout<<" "<<vv).flush();
 		/// beak  each voxel value surfacce manifold into zones
 		const facePiece& facezs=facezsz[vv];
 		ints nFacs(256,0);
 		for(const auto&fac:facezs) { ensure(0<=fac.zone && fac.zone<255);  ++nFacs[fac.zone];}
-		for(int iz=0;iz<256;++iz) if(nFacs[iz]) { facess[iz+vv*256].resize(nFacs[iz], face({-1,-1,-1,-1})); nFacs[iz]=-1; }
+		for(int iz=0; iz<256; ++iz) if(nFacs[iz]) { facess[iz+vv*256].resize(nFacs[iz], face({-1,-1,-1,-1})); nFacs[iz]=-1; }
 		for(const auto&fac:facezs) { facess[fac.zone+vv*256][++nFacs[fac.zone]]=fac;  ensure(facess[fac.zone+vv*256][nFacs[fac.zone]][0]>=0);}
 		(cout<<".").flush();
 	}
@@ -242,7 +241,7 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 		}
 		fil << endl;
 	}
-	else 
+	else
 	{	if(ext!=".vtk") 		cerr << "outputSurface format "<<ext<<" not supported switching to .vtk";
 
 		ofstream fil(basNam+".vtk");
@@ -290,6 +289,3 @@ void writeMergeSurfaceFile(const facePieceList& facezsz, const piece<point> poin
 
 
 }
-
-
-

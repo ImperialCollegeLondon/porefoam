@@ -3,7 +3,7 @@
  Smoothing normal vectors over interface points
 
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2017-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2017-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -21,16 +21,16 @@
 
 void Foam::interfaceProps::smoothOverInterfPointsNotUsed
 (
-	surfaceVectorField& curvatureForcefDiff, 
-	const surfaceScalarField& magDelS, 
-	const surfaceScalarField& magInterfaceSf, 
+	surfaceVectorField& curvatureForcefDiff,
+	const surfaceScalarField& magDelS,
+	const surfaceScalarField& magInterfaceSf,
 	label smoothingKernel, scalar smoothingRelaxFactor
 )
 {
-	
+
 	const scalar CONTRAST_FACTOR = 1e-14*deltaN_.value();
 	const fvMesh& msh = alpha1_.mesh();
-		const fvBoundaryMesh& patches = msh.boundary(); 
+		const fvBoundaryMesh& patches = msh.boundary();
 
 	const faceList& faces = msh.faces();
 
@@ -41,7 +41,7 @@ void Foam::interfaceProps::smoothOverInterfPointsNotUsed
 
 			//Info<<" * "<< sum( mag(curvatureForcefDiff) ).value()<<" * ";
 
-	
+
 	const dictionary pimple = msh.solutionDict().subDict("PIMPLE");
 
 	pointVectorField pointForce
@@ -86,7 +86,7 @@ void Foam::interfaceProps::smoothOverInterfPointsNotUsed
 					forAll(ff, ip)
 					{
 						label pI = ff[ip];
-						pointForce[pI]+=(0.5/ff.size())*pCurvatureForcef[pfI];		
+						pointForce[pI]+=(0.5/ff.size())*pCurvatureForcef[pfI];
 						interfPointArea[pI]+=0.5*pInterfaceSf[pfI];
 					}
 				}
@@ -153,17 +153,17 @@ void Foam::interfaceProps::smoothOverInterfPointsNotUsed
 
 void Foam::interfaceProps::smoothNSOverInterfPoints
 (
-	pointVectorField& nHatSp, 
-	const surfaceScalarField& magDelS, 
-	const surfaceScalarField& magInterfaceSf, 
+	pointVectorField& nHatSp,
+	const surfaceScalarField& magDelS,
+	const surfaceScalarField& magInterfaceSf,
 	label smoothingKernel, scalar smoothingRelaxFactor,
 	const labelList& interfPoints
 )
 {
-	
+
 	const scalar CONTRAST_FACTOR = 1e-4*deltaN_.value();
 	const fvMesh& msh = mesh();
-	//const fvBoundaryMesh& patches = msh.boundary(); 
+	//const fvBoundaryMesh& patches = msh.boundary();
 	const fvBoundaryMesh& boundary = msh.boundary();
 
 	const faceList& faces = msh.faces();
@@ -178,7 +178,7 @@ void Foam::interfaceProps::smoothNSOverInterfPoints
 
 			//Info<<" * "<< sum( mag(nHatSf) ).value()<<" * ";
 
-	
+
 	//const dictionary pimple =msh.solutionDict().subDict("PIMPLE");
 
 
@@ -212,14 +212,14 @@ void Foam::interfaceProps::smoothNSOverInterfPoints
 					point point1 = points[ip1];// + distPointInterface_[ip1];
 
 					point point2 = points[ip2];// + distPointInterface_[ip2];
-					
+
 					label bp1(edgemarks_[fes[(-1+pI+ff.size())%ff.size()]]);
 					label bp2(edgemarks_[fes[(pI+1)%ff.size()]]);
 
 					vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.+2.*bp2) + nHatSp[ip1]*(1.+2.*bp1));
 
 					nHatpEdge /= mag(nHatpEdge) + 1e-35;
-					
+
 					scalar area =  weightDelS/mag( point2 - point1 );//*mag(( point2 - point1 ) ^ (Cf[fI]-point1)) ;
 					//interfFaceArea[ip1] +=  area ;
 					//interfFaceArea[ip2] +=  area ;
@@ -232,7 +232,7 @@ void Foam::interfaceProps::smoothNSOverInterfPoints
     {
 
 		if (boundary[bI].coupled())
-		{       
+		{
 			const scalarField& pMagDelS = magDelS.boundaryField()[bI];
         //vectorField& pCurvatureNSf = curvatureNSf.boundaryField()[bI];
         const vectorField& pCf = Cf.boundaryField()[bI];
@@ -261,7 +261,7 @@ void Foam::interfaceProps::smoothNSOverInterfPoints
 						vector nHatpEdge = 0.5 * (nHatSp[ip2]*(1.+2.*bp2) + nHatSp[ip1]*(1.+2.*bp1));
 
 						nHatpEdge /= mag(nHatpEdge)+1e-35;
-					
+
 						scalar area =  weightDelS*0.5/mag( point2 - point1 );//*mag(( point2 - point1 ) ^ (pCf[pfI]-point1)) ;
 						//interfFaceArea[ip1] +=  area ;
 						//interfFaceArea[ip2] +=  area ;
@@ -282,7 +282,7 @@ void Foam::interfaceProps::smoothNSOverInterfPoints
 
 
 	nHatSp = (1.-smoothingRelaxFactor)*nHatSp + smoothingRelaxFactor*interfFaceNSpS/ (mag(interfFaceNSpS) + dimensionedScalar(1e-18));
-	
+
 	nHatSp/=mag(nHatSp)+dimensionedScalar(1e-14);
 	correctForContactAngle(alpha1_,U_,nw_,nHatSp,interfPoints);
 
@@ -293,4 +293,3 @@ void Foam::interfaceProps::smoothNSOverInterfPoints
 
 
 }
-

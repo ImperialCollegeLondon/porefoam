@@ -2,7 +2,7 @@
 
 {
 
-	gradP=	fvc::grad(pd); 
+	gradP=	fvc::grad(pd);
 
     auto& Ubf = U.boundaryField();
 
@@ -10,7 +10,7 @@
     forAll(bndrys, bi)
     {
         if (isA<fixedValueFvPatchVectorField>(Ubf[bi]))
-        { 
+        {
 //				Info<<bndrys[bi].name()<<" "<<gAverage(muEff.boundaryField()[bi])<<  " - ";
 
 			 //muEff.boundaryField()[bi]+=cBC*mag(Ubf[bi].patchInternalField())*mag(bndrys[bi].delta());
@@ -25,19 +25,19 @@
 			 muEff.boundaryFieldRef()[bi]*=1./bndrys[bi].deltaCoeffs()/
 						(1./bndrys[bi].deltaCoeffs()+lambda);//(1.-cSlip*4.*(apS*(1-apS)));
 
-						
+
 		}
 
 
 		//alpha1.correctBoundaryConditions();
 		const volScalarField::Boundary& abf = alpha1.boundaryField();
-        
+
         if (isA<fixedValueFvPatchVectorField>(Ubf[bi]) && isA<alphaContactAngleFvPatchScalarField>(abf[bi]))
-        { 
+        {
 
 			primitivePatchInterpolation pinterpolator(mesh.boundaryMesh()[bi]);
 
-			scalarField apS=(1./(1-2.*0.49))*(min (max(abf[bi].patchInternalField(),0.49),(1.-0.49))-0.49) ; 
+			scalarField apS=(1./(1-2.*0.49))*(min (max(abf[bi].patchInternalField(),0.49),(1.-0.49))-0.49) ;
 			scalarField a12S=apS;
 			int intNSlip=nSlip+1e-12;
 			for (int ii=0;ii<intNSlip;ii++)
@@ -65,8 +65,8 @@
 			muEff.boundaryFieldRef()[bi]*=(1./bndrys[bi].deltaCoeffs())/
 						(1./bndrys[bi].deltaCoeffs()+lambdaS*4.*a12S);//(1.-cSlip*4.*(apS*(1-apS)));
 		}
-		
-		
+
+
 
 	}
 }

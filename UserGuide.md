@@ -1,11 +1,11 @@
-# Capillary dominated two-phase flow simulation using porefoam. 
+# Capillary dominated two-phase flow simulation using porefoam.
 
 Ali Q Raeini, Mosayeb Shams, Branko Bijeljic and Martin J. Blunt
 
-Prepared by   
-- Ali Q Raeini, Department of Earth Science and 
-  Engineering, Imperial College London, UK, SW7 2AZ, 
-  email: a.q.raeini@imperial.ac.uk
+Prepared by
+- Ali Q Raeini, Department of Earth Science and
+  Engineering, Imperial College London, UK, SW7 2AZ,
+  email: a.q.raeini@gmail.com
 
 # Summary
 
@@ -20,8 +20,8 @@ Although knowing such details is not necessary for using the script;
 they can be useful to make modifications to the script for changing the
 simulation set-up not foreseen in the script.
 
-**Note: This document assumes the codes are saved in a folder named 
-`~/porefoam` which should be replaced with the path where the codes are 
+**Note: This document assumes the codes are saved in a folder named
+`~/porefoam` which should be replaced with the path where the codes are
 downloaded.**
 
 # Installation
@@ -29,17 +29,17 @@ downloaded.**
 ## Prerequisites
 
 
-Except standard Linux compilers and libraries (g++, cmake and an mpi 
-library),  Other prerequisites are provided in a folder named 
+Except standard Linux compilers and libraries (g++, cmake and an mpi
+library),  Other prerequisites are provided in a folder named
 pkgs. The pkgs includes zlib, libtiff and a minified
-openfoam, called foamx4m.  
+openfoam, called foamx4m.
 
-foamx4m requires a working `mpi` and `libscotch` to be installed on the 
-system. Once it is compiled, foamx4m can reside side-by-side with other 
-openfoam installations without any conflict. This means you can install 
-and use other openfoam versions alongside the porefoam codes, but if 
-you do so,it is recommended to delete the executables in 
-`~/porefoam/pkgs/foamx4m/applications` so that you don't have 
+foamx4m requires a working `mpi` and `libscotch` to be installed on the
+system. Once it is compiled, foamx4m can reside side-by-side with other
+openfoam installations without any conflict. This means you can install
+and use other openfoam versions alongside the porefoam codes, but if
+you do so,it is recommended to delete the executables in
+`~/porefoam/pkgs/foamx4m/applications` so that you don't have
 multiple copies of the same application.
 
  
@@ -70,9 +70,9 @@ commands to clean the temporary files:
 (cd ~/porefoam && make clean)
 ```
 
-When running `make distclean` instead of `make clean`, the 
-`~/porefoam/lib/`, `~/porefoam/bin/, `~/porefoam/include/` and 
-`~/porefoam/shared/` folders will be deleted, so *be extra carefull* 
+When running `make distclean` instead of `make clean`, the
+`~/porefoam/lib/`, `~/porefoam/bin/, `~/porefoam/include/` and
+`~/porefoam/shared/` folders will be deleted, so *be extra carefull*
 when using this option.
 
 ## Installation
@@ -81,8 +81,8 @@ To install the code in a terminal you open, run:
 ```{.bash language="bash"}
 source ~/porefoam/src/script/bashrc
 ```
-Alternatively you can edit your `~/.bashrc` (hidden) file and add the above command in the end. 
-This makes the porefoam scripts accessible in any new terminal you open.  
+Alternatively you can edit your `~/.bashrc` (hidden) file and add the above command in the end.
+This makes the porefoam scripts accessible in any new terminal you open.
 
 ## Input file structure
 
@@ -105,8 +105,8 @@ important of which are given below:
 
 ```{.bash}
 #!/bin/bash
-# AllRunImageTwoPhase: 1) prepare two-phase flow mesh (first run) and inputs, 
-#                       2) decompose mesh and 3) launch simulation, 
+# AllRunImageTwoPhase: 1) prepare two-phase flow mesh (first run) and inputs,
+#                       2) decompose mesh and 3) launch simulation,
 # usage: `AllRunImageTwoPhase  Image.mhd`
 
 ######################### MAIN INPUT PARAMETERS #############################
@@ -127,7 +127,7 @@ important of which are given below:
 # give up to two numbers one <<1 and the other >1
 : ${oilFilldFracs:=" 0.1"} #  1.05
 
-# In case you want to refine the mesh increase this, or vise-versa. 
+# In case you want to refine the mesh increase this, or vise-versa.
 : ${RefineLevel:=1}
 
 # number of processors used for flow simulation
@@ -138,13 +138,13 @@ important of which are given below:
 
 See section [Simulation Parameters](#Simulation-parameters) for further information.
 
-## Running two-phase drainage simulation 
+## Running two-phase drainage simulation
 
 Copy the sample input data file in a directory where you have enough
 disk space and in the same directory run the `AllRunImageTwoPhase` script:
 
 ```{.bash}
-# in case you haven't put these in your  /.bashrc file: 
+# in case you haven't put these in your  /.bashrc file:
 source ~/porefoam/src/script/bashrc
 
 cd PATH_TO\_.raw\_.mhd_FILES
@@ -152,14 +152,14 @@ cd PATH_TO\_.raw\_.mhd_FILES
 AllRunImageTwoPhase  # prepare the input script/files, note: no './'
 ```
 
-The above command prepares a base folder and a local 
-`./AllRunImageTwoPhase` script for you if they don't already exist. You 
-can change the input parameters as you wish in the local script and the 
-base folder: see section [Simulation Parameters](#Simulation-parameters) 
-for more details. Then you can set 
-up and run the simulations by running the local `./AllRunImageTwoPhase` 
-script three times (or more if you want to continue the simulations for 
-longer period), i.e in a terminal type (replace `Image.mhd` with the 
+The above command prepares a base folder and a local
+`./AllRunImageTwoPhase` script for you if they don't already exist. You
+can change the input parameters as you wish in the local script and the
+base folder: see section [Simulation Parameters](#Simulation-parameters)
+for more details. Then you can set
+up and run the simulations by running the local `./AllRunImageTwoPhase`
+script three times (or more if you want to continue the simulations for
+longer period), i.e in a terminal type (replace `Image.mhd` with the
 name of your image):
 
 ```{.bash}
@@ -173,17 +173,17 @@ name of your image):
 **Important:** You have to visualize the generated mesh and the
 decomposed mesh, by paraview before running the flow simulations
 
-## Running secondary imbibition simulation 
+## Running secondary imbibition simulation
 
 
-After finishing with the drainage simulations, the boundary and initial 
-conditions should be changed to make the case ready for an imbibition 
-simulation. The script `PrepareForImbibition` and 
-`PrepareForReverseImbibition`, placed in 
-`~/porefoam/src/porefoam2f/script` folder, are written to make the 
-necessary adjustments. `PrepareForReverseImbibition` does the same job as 
-the `PrepareForImbibition` script, except that it prepares the 
-imbibition simulation so that the water is injected from the opposite 
+After finishing with the drainage simulations, the boundary and initial
+conditions should be changed to make the case ready for an imbibition
+simulation. The script `PrepareForImbibition` and
+`PrepareForReverseImbibition`, placed in
+`~/porefoam/src/porefoam2f/script` folder, are written to make the
+necessary adjustments. `PrepareForReverseImbibition` does the same job as
+the `PrepareForImbibition` script, except that it prepares the
+imbibition simulation so that the water is injected from the opposite
 direction.
 
 To use these script to prepare drainage simulation results files to a
@@ -214,15 +214,15 @@ Example:
 ```{.bash}
 export PATH=$PATH:~/porefoam/src/porefoam2f/script #in case
 
-PrepareForImbibition 0.1 0.001 135 0.1 Berea8_0.007 BereaImb 
+PrepareForImbibition 0.1 0.001 135 0.1 Berea8_0.007 BereaImb
 
 # or to reverse the flow direction:
-PrepareForReverseImbibition 0.1 0.001 135 0.1 Berea8_0.007 BImbRev 
+PrepareForReverseImbibition 0.1 0.001 135 0.1 Berea8_0.007 BImbRev
 ```
 
-After preparing the case for imbibition, open the case in a terminal 
-and run the `interFaceFoam` two-phase flow solver manually (Note: you 
-can do this to run a drainage simulation as well, instead of the third 
+After preparing the case for imbibition, open the case in a terminal
+and run the `interFaceFoam` two-phase flow solver manually (Note: you
+can do this to run a drainage simulation as well, instead of the third
 `./AllRunImageTwoPhase` run discussed in the previous section):
 
 ```{.bash}
@@ -236,15 +236,15 @@ mpirun -np 8 interFaceFoam -parallel
 # decomposed into ( = number of BereaImb*/*/processor* subfolders)
 ```
 
-# Troubleshooting 
+# Troubleshooting
 
-The `AllRunImageTwoPhase` script runs a series of applications and 
-redirects their output to a file named log.application in the directory 
-where the application is being run.  If an error occurs (the returns a 
-non-zero code), the location of the log file is printed in the 
-terminal. To know what has gone wrong and fix the problem, the log 
-files can be opened in a text editor, starting from the log of first 
-crashed application. It may also help checking the log file of those 
+The `AllRunImageTwoPhase` script runs a series of applications and
+redirects their output to a file named log.application in the directory
+where the application is being run.  If an error occurs (the returns a
+non-zero code), the location of the log file is printed in the
+terminal. To know what has gone wrong and fix the problem, the log
+files can be opened in a text editor, starting from the log of first
+crashed application. It may also help checking the log file of those
 applications run before and after the crashed application.
 
 # Simulation parameters
@@ -256,18 +256,18 @@ following the parameters which you may need to change to get more
 accurate or more stable results are discussed briefly, along with some
 general guidelines.
 
-After editing the local `./AllRunImageTwoPhase`, you should run it 
-three times to generate a mesh, decompose it for parallel run and 
-launch the simulation. The first `./AllRunImageTwoPhase Image.mhd` run 
-will copy the data from the base folder, the second run copies the data 
-from the Berea folder and the third run launches the flow simulator 
-without making any changes to the input files. **Note** that for 
-the first and second runs of the `./AllRunImageTwoPhase Image.mhd` 
-which does the mesh generation and decomposition, respectively, the 
-values assigned in the `./AllRunImageTwoPhase` take precedence and 
-overwrite the values in the `base or `Image/` folder, respectively. 
+After editing the local `./AllRunImageTwoPhase`, you should run it
+three times to generate a mesh, decompose it for parallel run and
+launch the simulation. The first `./AllRunImageTwoPhase Image.mhd` run
+will copy the data from the base folder, the second run copies the data
+from the Berea folder and the third run launches the flow simulator
+without making any changes to the input files. **Note** that for
+the first and second runs of the `./AllRunImageTwoPhase Image.mhd`
+which does the mesh generation and decomposition, respectively, the
+values assigned in the `./AllRunImageTwoPhase` take precedence and
+overwrite the values in the `base or `Image/` folder, respectively.
 
-## Parameters adjustable from `AllRunImageTwoPhase` script: 
+## Parameters adjustable from `AllRunImageTwoPhase` script:
 
 -   `cPc=0.2`: Capillary pressure compression coefficient, you don't
     need to change this. But in case you do, your value should be
@@ -339,7 +339,7 @@ overwrite the values in the `base or `Image/` folder, respectively.
     if you choose higher values. Lower values will lead to higher
     accuracy of time discretization but also higher simulation time.
 
-## system/fvSolution file: 
+## system/fvSolution file:
 
 -   `cAlpha 1;`  alpha compression factor.
 
@@ -384,7 +384,7 @@ overwrite the values in the `base or `Image/` folder, respectively.
     than this factor is penalised to this factor multiplied by the
     average of adjacent cell velocities.
 
-## constant/transportProperties file: 
+## constant/transportProperties file:
 
 The above keywords should be assigned to each phase separately, `phase0`
 is water and `phase1` is oil.
@@ -396,18 +396,18 @@ sigma sigma \[ 1 0 -2 0 0 0 0 \] 0.03; //surface tension (SI units)
 # Post-processing output data
 
 
-Some basic post-processing tasks can be performed by visualizing the 
-simulation results using Paraview.  Just open the `.foam` or 
-`system/controlDict` located in the simulation results and Paraview 
+Some basic post-processing tasks can be performed by visualizing the
+simulation results using Paraview.  Just open the `.foam` or
+`system/controlDict` located in the simulation results and Paraview
 will load the openfoam case for visualization.
 
-Advanced post-processing of the simulation results can be performed 
-using `upscale_grads` utility, which is also run during the simulations 
-( `interFaceFoam` run). During interFaceFoam run, the average of 
-various flow parameters is computed every 10 time steps and written in 
-a file named `data_out_for_plot`. A header file is also written to help 
-extract the relevant parameter in Excel or in Matlab, named 
-`data_out_for_plot_header`, which look like (all entries in a single 
+Advanced post-processing of the simulation results can be performed
+using `upscale_grads` utility, which is also run during the simulations
+( `interFaceFoam` run). During interFaceFoam run, the average of
+various flow parameters is computed every 10 time steps and written in
+a file named `data_out_for_plot`. A header file is also written to help
+extract the relevant parameter in Excel or in Matlab, named
+`data_out_for_plot_header`, which look like (all entries in a single
 line):
 
 ```{.bash}
@@ -420,10 +420,10 @@ S1-phiE S1-phiE_1 S1-ZERO S1-Pc S1-xDropAvg S1-xDrop1 S1-xDrop2 S1-x1
 S1-x2 ...
 ```
 
-The above data can be generated by running `upscale_grads` after the 
-simulations are finished.  The post-processing are controlled from a 
-file named `system/postProcessDict`. This file can also provided as 
-postProcessDict_Image, where Image is the name of the input .mhd header 
+The above data can be generated by running `upscale_grads` after the
+simulations are finished.  The post-processing are controlled from a
+file named `system/postProcessDict`. This file can also provided as
+postProcessDict_Image, where Image is the name of the input .mhd header
 file without its suffix.
 
 Here is a more detailed description of the parameters written by upscale_grads:
@@ -560,7 +560,7 @@ based on their order in the system/postProcessDict):
 
 -   `S1-x2`: largest x covered by the control volume (right side)
 
-The above data are processed by a python script named `groupGrads.py` 
+The above data are processed by a python script named `groupGrads.py`
 which averages the data to produce relative permeability curves.
 
 
@@ -632,7 +632,7 @@ which averages the data to produce relative permeability curves.
     pressure-velocity-surface-tension coupling algorithm and several new
     boundary conditions,
 
-# References 
+# References
 
 For more technical detail on the direct single and two-phase flow
 solvers, please refer to the following papers.
@@ -658,9 +658,6 @@ using finite-volume simulation of two-phase flow directly on micro-CT
 images", Advances in Water Resources, 83, 102-110 (2015)
 <http://dx.doi.org/10.1016/j.advwatres.2015.05.008>
 
-For more information and recent publications, please refer to our
-website:
+For more information and recent publications, please visit:
 
 <https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling>
-
-

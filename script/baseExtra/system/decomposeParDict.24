@@ -22,13 +22,13 @@ multiLevelCoeffs
     {
         numberOfSubdomains  2;
         method  scotch;
-    }   
+    }
 
     level1
     {
         numberOfSubdomains  12;
 		method  multiLevel;
-        		
+
 		multiLevelCoeffs
 		{
 			level0
@@ -40,7 +40,7 @@ multiLevelCoeffs
 			{
 				method  scotch;
 				numberOfSubdomains  3;
-							
+
 			}
 		}
 	}

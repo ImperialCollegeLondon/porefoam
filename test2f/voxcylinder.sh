@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source $(dirname "${BASH_SOURCE[0]}")/../../script/bashrc
 
 printf "DimSize = 22 32 32 \n\
 	Offset =      0    0    0 \n\
@@ -24,9 +25,9 @@ export smoothMeshRelax=0.1
 
 rm -rf voxcyl32c2f*/ AllRunImageTwoPhase
 AllRunImageTwoPhase voxcyl32c2f.mhd  # this just copies AllRunImageTwoPhase
-AllRunImageTwoPhase voxcyl32c2f.mhd 
-AllRunImageTwoPhase voxcyl32c2f.mhd 
-AllRunImageTwoPhase voxcyl32c2f.mhd 
+AllRunImageTwoPhase voxcyl32c2f.mhd
+AllRunImageTwoPhase voxcyl32c2f.mhd
+AllRunImageTwoPhase voxcyl32c2f.mhd
 
 
 

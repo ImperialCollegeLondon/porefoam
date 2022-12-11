@@ -2,7 +2,7 @@
  Light weight surface utility functions, alternatives to openfoam
  This is part of surfLib, a library for working with surface files and data
 
- Copyright (C) 2018-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2018-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -19,18 +19,18 @@
 \*-------------------------------------------------------------------------*/
 
 
-
 #include <vector>
 #include "typses.h"
 #include "InputFile.h"
+
 using label=int;
 using scalar=double;
 //using face = std::array<label,4>;
 using word = std::string;
 
-class face: public std::array<label,4> 
+class face: public std::array<label,4>
 {
-public:
+ public:
     int zone;
     face() : zone(0) { }
     face(const std::array<label,4>& pointIs) : std::array<label,4> (pointIs) { }
@@ -47,9 +47,9 @@ typedef dbl3 point    ;
 typedef dbl3s vectorField    ;
 //typedef vars<point> pointField    ;
 struct surfMsh {
-	std::vector<face> faces; 
-	facePieceList faces_bs; 
-DynamicField<point> points;
+	std::vector<face> faces;
+	facePieceList faces_bs;
+	DynamicField<point> points;
 };
 #define append  push_back
 #define setSize resize
@@ -71,13 +71,6 @@ inline int appendUnique(DynamicList<label>& dynList, label value)
 	return 1;
 }
 
-//int getMinPos(const vector<scalar>& array)
-//{
-    //scalar min=array[0];
-    //int minPos=0;
-    //for (int i=1; i<array.size(); i++)   if(min>array[i])  { min=array[i];  minPos=i; }
-    //return minPos;
-//}
 template<typename T, template<typename ...> class C >
  int findPosi(const C<T>& list, const T& val)  {  return distance(list.begin(), find(list.begin(), list.end(),val));  }
 template<typename T, template<typename ...> class C>
@@ -106,7 +99,7 @@ inline labelListList getPointPoints(size_t nPoints, const facePiece& faces)
     {
         pntPoints[i]=pntPntsTmp[i];
     }
-    return std::move(pntPoints);
+    return pntPoints;
 }
 
 
@@ -128,7 +121,7 @@ inline labelListList getPointPoints(size_t nPoints, const std::vector<facePiece>
     {
         pntPoints[i]=pntPntsTmp[i];
     }
-    return std::move(pntPoints);
+    return pntPoints;
 }
 
 inline labelListList pointFaces(size_t nPoints, const facePiece& faces) {
@@ -144,7 +137,7 @@ inline labelListList pointFaces(size_t nPoints, const facePiece& faces) {
     {
         pFaces[i]=pointFacesTmp[i];
     }
-    return std::move(pFaces);
+    return pFaces;
 }
 inline labelListList edgeFaces(const ints& myPPoints, const facePiece& faces, const ints& myPFaces) {
     labelDynamicListList edgFacsTmp(myPPoints.size());
@@ -164,20 +157,20 @@ inline labelListList edgeFaces(const ints& myPPoints, const facePiece& faces, co
     {
         edgFacs[i]=edgFacsTmp[i];
     }
-    return std::move(edgFacs);
+    return edgFacs;
 }
 inline dbl3 areax2(const face& f, const piece<point>& points) {
-	dbl3 diag = points[f[2]]- points[f[0]];	return ((points[f[1]]- points[f[0]])^diag) + (diag^(points[f[3]]- points[f[0]]));
+	dbl3 diag = points[f[2]]- points[f[0]];	return ((points[f[1]]-points[f[0]])^diag) + (diag^(points[f[3]]-points[f[0]]));
 }
 inline dbl3 normal(const face& f, const piece<point>& points) {	dbl3 aa = areax2(f,points);	return aa/mag(aa); }
 inline dbl3 centre(const face& f, const piece<point>& points) {	return 0.25*(points[f[0]] + points[f[1]] + points[f[2]] + points[f[3]]); }
 inline dbl3s faceCentres(const facePiece& facez, const piece<point>& points) {
 	dbl3s res(facez.size());
-	for(size_t fi=0;fi<facez.size();++fi) res[fi]=centre(facez[fi],points);
-	return std::move(res);
+	for(size_t fi=0; fi<facez.size(); ++fi) res[fi]=centre(facez[fi],points);
+	return res;
 }
 inline vars<dbl3s> faceCentres(const std::vector<facePiece>& facezs, const piece<point>& points){
 	vars<dbl3s> res(facezs.size());
 	for(size_t iz=0;iz<facezs.size();++iz) res[iz]=faceCentres(facezs[iz],points);
-	return std::move(res);
+	return res;
 }

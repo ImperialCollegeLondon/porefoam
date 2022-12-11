@@ -1,9 +1,9 @@
 #!/bin/bash
-
+# fix snaopyHexMesh generated mesh boundaries
 
 names[0]="Left"; Normal[0]="(-1 0 0)"
 names[1]="Right"; Normal[1]="(1 0 0)"
-names[2]="Front"; Normal[2]="(0 0 1)" 
+names[2]="Front"; Normal[2]="(0 0 1)"
 names[3]="Back"; Normal[3]="(0 0 -1)"
 names[4]="Bottom"; Normal[4]="(0 -1 0)"
 names[5]="Top"; Normal[5]="(0 1 0)"
@@ -36,7 +36,7 @@ do
 	setKeywordValues normal "${Normal[$index]}" ./$caseName/system/faceSetDict
 	(cd $caseName && runApp  faceSet )
 	(cd $caseName && mv log.faceSet log.faceSet.${names[$index]}2 )
-	
+
 done
 
 
@@ -46,7 +46,7 @@ setKeywordValues action new ./$caseName/system/faceSetDict
 	setKeywordValues name "Grainwalls" ./$caseName/system/faceSetDict
 	(cd $caseName && runApp  faceSet )
 	(cd $caseName && mv log.faceSet log.faceSet.Grainwalls )
-	
+
 	# remove for debugging:
 	(cd $caseName && rm log.faceSet.*)
 
@@ -55,4 +55,3 @@ setKeywordValues constructFrom set ./$caseName/system/createPatchDict
 setKeywordValues set Grainwalls ./$caseName/system/createPatchDict
 (cd $caseName && rm log.createPatch )
 (cd $caseName && runApp createPatch -overwrite)
-

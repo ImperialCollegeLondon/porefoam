@@ -51,8 +51,8 @@ boundaryField
 	{
         type            hysteresisContactAngle;
         limit           gradient;
-        thetaA          180;
-        thetaR          180;
+        thetaA          150;
+        thetaR          150;
         value           uniform 0;
 	}
 }

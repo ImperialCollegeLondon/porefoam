@@ -37,4 +37,3 @@
 	U += rAU*fvc::reconstruct((phi - phiHbyA)/rAUf);
 	//U = fvc::reconstruct(phi);
 	U.correctBoundaryConditions();
-

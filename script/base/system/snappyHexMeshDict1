@@ -108,7 +108,7 @@ castellatedMeshControls
     (
         //{
             //file "solidwalls.eMesh";
-            //levels ((3 1)(4 0)); 
+            //levels ((3 1)(4 0));
         //}
     );
 
@@ -652,6 +652,6 @@ meshQualityControls
 // Note: the write tolerance needs to be higher than this.
 mergeTolerance 1e-5;
 
-debug   1; 
+debug   1;
 
 //---------------------------------------------------------------------'

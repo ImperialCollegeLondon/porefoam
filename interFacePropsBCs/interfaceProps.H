@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------*\
  Copyright (C) 2014-2020  Mosayeb Shams
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -52,8 +52,8 @@ class interfaceProps
 
 	volScalarField pc_;
 	surfaceScalarField deltaS_;
-	volScalarField alphaSh_; 
-	//volScalarField K_; 
+	volScalarField alphaSh_;
+	//volScalarField K_;
 
 	surfaceScalarField nHatf_;
 
@@ -145,18 +145,18 @@ class interfaceProps
 	);
 	void smoothOverInterfPointsNotUsed
 	(
-		surfaceVectorField& curvatureForcefDiff, 
-		const surfaceScalarField& magDelS, 
-		const surfaceScalarField& magInterfaceSf, 
-		label smoothingKernel, 
+		surfaceVectorField& curvatureForcefDiff,
+		const surfaceScalarField& magDelS,
+		const surfaceScalarField& magInterfaceSf,
+		label smoothingKernel,
 		scalar smoothingRelaxFactor
 	);
 	void smoothNSOverInterfPoints
 	(
-		pointVectorField& nHatSp, 
-		const surfaceScalarField& magDelS, 
-		const surfaceScalarField& magSf, 
-		label smoothingKernel, 
+		pointVectorField& nHatSp,
+		const surfaceScalarField& magDelS,
+		const surfaceScalarField& magSf,
+		label smoothingKernel,
 		scalar smoothingRelaxFactor,
 		const labelList& interfPoints
 	);

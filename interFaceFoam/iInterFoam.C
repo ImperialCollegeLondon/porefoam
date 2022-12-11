@@ -2,7 +2,7 @@
  Direct two-phase flow solver
 
  Copyright (C) 2014-2017  Mosayeb Shams
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@
 #define _POSTPROCESS_
 #ifdef _POSTPROCESS_
  #include "voxelImage.h"
+ #include "voxelImageI.h"
  #include "AverageData.h"
  #include "myFVC.H"
 
@@ -39,7 +40,7 @@
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-#define ifMonitor  if( runTime.timeIndex()%10== 0 ) 
+#define ifMonitor  if( runTime.timeIndex()%10== 0 )
 #define curtailBADOFSET(a,b) (min (max((a),(b)),(1.-(b))))
 
 
@@ -184,9 +185,9 @@ int main(int argc, char *argv[])
 			Info<< "ExecutionTime = " << runTime.elapsedCpuTime() << " s"
 				<< "  ClockTime = " << runTime.elapsedClockTime() << " s"
 				<< "  average(alpha) = " << aAvg << "  "
-				<< "  maxExecutionTime ("<<maxSimTime<<"s) reached,   " 
-				<< "  or maxS1 ("<<maxS1<<") reached,   " 
-				<< "  or minS1 ("<<minS1<<") reached, ending simulation. " 
+				<< "  maxExecutionTime ("<<maxSimTime<<"s) reached,   "
+				<< "  or maxS1 ("<<maxS1<<") reached,   "
+				<< "  or minS1 ("<<minS1<<") reached, ending simulation. "
 				<< "  or S1 < " << minS1 << "  or " << maxS1 << "<  S1"
 				<< endl;
 

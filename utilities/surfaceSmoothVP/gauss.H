@@ -59,7 +59,7 @@
 			newPoints[vertI] = (1-relax)*newPointsTmp[vertI] + relax*avgPos;
 		}
 	}
-    
+
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //===========================================================================
@@ -96,7 +96,7 @@ Info<< "VP, avgDisp: "; cout.flush();
         }
 		Info<< " -> "<<max(mag(displacements)); cout.flush();
     }
-    
+
     newPoints -= 1.0625*displacements;
 
 	Info<< " -> "<<max(mag((newPoints-points)))<< "  "; cout.flush();
@@ -109,9 +109,9 @@ Info<< "VP, avgDisp: "; cout.flush();
 
   if(iter==iters-1  +1000 )
   {
-	
+
 	 vectorField Disp2 = newPoints-points;
-	 
+
 	std::ofstream  offnorms("norms.txt");
 	offnorms<<"\nPOINT_DATA "<<pointPoints.size()<<std::endl;
 	offnorms<<"FIELD attributes 3"<<std::endl;
@@ -120,14 +120,14 @@ Info<< "VP, avgDisp: "; cout.flush();
 	forAll(pointPoints, vertI)
 	{
 		if ((vertI+1)%20==0)	offnorms<<"\n";
-		offnorms<<pNorms[vertI][0]<<" "<<pNorms[vertI][1]<<" "<<pNorms[vertI][2]<<"   ";    
+		offnorms<<pNorms[vertI][0]<<" "<<pNorms[vertI][1]<<" "<<pNorms[vertI][2]<<"   ";
 	}
-	
+
 	offnorms<<"\n\n dispVP 3 "<<pointPoints.size()<<" float"<<std::endl<<std::endl;
 	forAll(pointPoints, vertI)
 	{
 		if ((vertI+1)%20==0)	offnorms<<"\n";
-		offnorms<<displacements[vertI][0]<<" "<<displacements[vertI][1]<<" "<<displacements[vertI][2]<<"   ";    
+		offnorms<<displacements[vertI][0]<<" "<<displacements[vertI][1]<<" "<<displacements[vertI][2]<<"   ";
 	}
 
 
@@ -135,14 +135,13 @@ Info<< "VP, avgDisp: "; cout.flush();
 	forAll(pointPoints, vertI)
 	{
 		if ((vertI+1)%20==0)	offnorms<<"\n";
-		offnorms<<Disp2[vertI][0]<<" "<<Disp2[vertI][1]<<" "<<Disp2[vertI][2]<<"   ";    
+		offnorms<<Disp2[vertI][0]<<" "<<Disp2[vertI][1]<<" "<<Disp2[vertI][2]<<"   ";
 	}
 
 	offnorms.close();
-	
-	
+
+
   }
 
 	//surf1.clearGeom();
 	//surf1.movePoints(newPoints);
-

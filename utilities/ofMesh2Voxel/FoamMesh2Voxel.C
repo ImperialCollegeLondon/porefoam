@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -35,7 +35,8 @@
 #include "OFstream.H"
 
 #include "voxelImage.h"
- 
+#include "voxelImageI.h"
+
 using namespace Foam;
 
 
@@ -152,9 +153,9 @@ int main(int argc, char *argv[])
 		rock.dxCh()[0]=dxAvg;  rock.dxCh()[1]=dxAvg;  rock.dxCh()[2]=dxAvg;
 		Info<<"->dx:   "<<rock.dx()[0]<<"  "<<rock.dx()[1]<<"  "<<rock.dx()[2]<<endl;
 
-		//rock.X0Ch()*=1e6; 
-		//rock.dxCh()*=1e6; 
-	}   
+		//rock.X0Ch()*=1e6;
+		//rock.dxCh()*=1e6;
+	}
 	else
     {
 		Info <<"mesh size read from header"<<endl;
@@ -176,8 +177,8 @@ int main(int argc, char *argv[])
 
 
 	xmin=rock.X0(); dx=rock.dx();
-	//dx*=1e-6; 
-	//xmin*=1e-6; 
+	//dx*=1e-6;
+	//xmin*=1e-6;
 
 	Info<<"xmin: "<<xmin[0]<<" "<<xmin[1]<<" "<<xmin[2]<<endl;
 	Info<<"dx:   "<<dx[0]<<" "<<dx[1]<<" "<<dx[2]<<endl;
@@ -208,7 +209,7 @@ int main(int argc, char *argv[])
 		if (i>=0 && j>=0 && k>=0 && i<nnn[0] && j<nnn[1] && k<nnn[2])	rock(i,j,k)=0;
 		else							Info<<"Error: ijk: "<<i<<" "<<j<<" "<<k<<endl;
 	}
-	
+
 	//if (headerName.empty())
 	{
 		forAll(C,c)
@@ -292,7 +293,7 @@ int main(int argc, char *argv[])
 	rock.FaceMedian06(1,5);
 	rock.FaceMedian06(1,5);
 
-/*		const fvBoundaryMesh& patches = mesh.boundary(); 
+/*		const fvBoundaryMesh& patches = mesh.boundary();
 		forAll(patches, patchI)
 		{
 			Info<<patches[patchI].name()<< mesh.Cf().boundaryField()[patchI].size()<<endl;
@@ -307,17 +308,17 @@ int main(int argc, char *argv[])
 				int i=(Cfp[c][0]-xmin[0]+dx[0]*0.1)/dx[0];
 				int j=(Cfp[c][1]-xmin[1]+dx[1]*0.1)/dx[1];
 				int k=(Cfp[c][2]-xmin[2]+dx[2]*0.1)/dx[2];
-			
+
 			  //if( i<nnn[0] && j<nnn[1] && k<nnn[2] )
 			  {
 					vector nf=(Sfp[c]/mag(Sfp[c]));
 				if      (mag(nf[0])>0.95  &&  i<nnn[0] && j<nnn[1] && k<nnn[2])
-					rock(i,j,k)=0;     
+					rock(i,j,k)=0;
 				else if (mag(nf[1])>0.95  &&  i<nnn[0] && j<nnn[1] && k<nnn[2])
-					rock(i,j,k)=0;     
+					rock(i,j,k)=0;
 				else if (mag(nf[2])>0.95  &&  i<nnn[0] && j<nnn[1] && k<nnn[2])
-					rock(i,j,k)=0;     
-				else 
+					rock(i,j,k)=0;
+				else
 					Info<<c<<"  face not in x nor y nor z direction, or not on boundaries, nf = "<<nf<<"   i"<<i<<" j"<<j<<" k"<<k<<" v"<<rock(i,j,k)<<endl;
 			  }
 
@@ -344,12 +345,10 @@ int main(int argc, char *argv[])
 	{
 		 rock.write(runTime.path()+"/vxlImage.dat");
     }
-     
+
 
 
     Info<< "\nend" << endl;
 
     return 0;
 }
-
-

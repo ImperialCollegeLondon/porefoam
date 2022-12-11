@@ -12,7 +12,7 @@ FoamFile
 
 numberOfSubdomains 12;
 
-  method  multiLevel; 
+  method  multiLevel;
 
 
 
@@ -21,13 +21,13 @@ multiLevelCoeffs
     level0
     {
         numberOfSubdomains  3;
-        method  scotch; 
-    }    
+        method  scotch;
+    }
 
     level1
     {
         numberOfSubdomains  4;
-		method  scotch; 
+		method  scotch;
     }
 
 

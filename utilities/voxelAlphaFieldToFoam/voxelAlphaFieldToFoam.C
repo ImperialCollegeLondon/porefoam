@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -33,8 +33,9 @@
 #include "mathematicalConstants.H"
 
 #include "OFstream.H"
- 
+
 #include "voxelImage.h"
+#include "voxelImageI.h"
 
 
 using namespace Foam;
@@ -48,7 +49,7 @@ using namespace Foam;
 
 int main(int argc, char *argv[])
 {
-	
+
     argList::validArgs.append("alpha1Header");
     argList::validOptions.insert("invertAlpha","");
     argList::validOptions.insert("nGrowAlpha", "label");
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
     //);
 
 
-	
+
 #   include "setRootCase.H"
 #   include "createTime.H"
     instantList timeDirs = timeSelector::select0(runTime, args);
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
 
 
 
-    
+
     word alpha1Header(args.argRead<word>(1));
    Info<<endl<<"alpha1Header:    "<<alpha1Header<<endl;
 
@@ -91,16 +92,16 @@ int main(int argc, char *argv[])
 	runTime.setTime(timeDirs[timeDirs.size()-1], 0);
 
 
-	 
 
 
-	
+
+
 
 
 	const fvBoundaryMesh& boundary = mesh.boundary();
 
 
-	
+
 	volScalarField alpha1
 	(
 		IOobject
@@ -112,8 +113,8 @@ int main(int argc, char *argv[])
 			IOobject::AUTO_WRITE
 		),
 		mesh
-	);	
-		
+	);
+
 
 		const vectorField & C =	mesh.C().internalField();
 		double sumAlpha=0., sumWalpha=1e-64;
@@ -131,56 +132,56 @@ int main(int argc, char *argv[])
 		}
 		Info<<" AvgAlpha: "<<sumAlpha/sumWalpha<<endl;
 
-		forAll(boundary, bi)
-			alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+		#define _makeAlphaZeroGrad \
+		forAll(boundary, bi) \
+			alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField()
 
+		_makeAlphaZeroGrad;
 
 		if (args.optionFound("nGrowAlpha"))
 		{
 			label nGrowAlpha(0);
 			args.optionLookup("nGrowAlpha")() >> nGrowAlpha ;
 			Info<<" nGrowAlpha  "<<nGrowAlpha<<endl;
-			alpha1.correctBoundaryConditions();
 			alpha1=fvc::average(linearInterpolate(alpha1));
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-90.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-150.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-60.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-180.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-30.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-210.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-120.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-120.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 			alpha1=min(max(fvc::average(linearInterpolate(alpha1))*(241.)-120.,0.),1.);
-					forAll(boundary, bi)	alpha1.boundaryFieldRef()[bi]==alpha1.boundaryField()[bi].patchInternalField();
+			_makeAlphaZeroGrad;;
 
 			if(nGrowAlpha<0)
 			{
-			
+
 				for (label itr=0;itr<-nGrowAlpha;++itr)
 				{
-					alpha1.correctBoundaryConditions();
-					alpha1=1.-min(fvc::average(linearInterpolate(1.-alpha1))*(241.),1.);				
+					_makeAlphaZeroGrad;;
+					alpha1=1.-min(fvc::average(linearInterpolate(1.-alpha1))*(241.),1.);
 				}
 			}
 			else if(nGrowAlpha>0)
-			{				
+			{
 				for (label itr=0;itr<nGrowAlpha;++itr)
 				{
-					alpha1.correctBoundaryConditions();
-					alpha1=min(fvc::average(linearInterpolate(alpha1))*(241.),1.);				
+					_makeAlphaZeroGrad;;
+					alpha1=min(fvc::average(linearInterpolate(alpha1))*(241.),1.);
 				}
 			}
 
-			alpha1.correctBoundaryConditions();
+			_makeAlphaZeroGrad;;
 		}
 		else
 			Info<<"Warning use -nGrowAlpha 0 to apply some smoothing"<<endl;

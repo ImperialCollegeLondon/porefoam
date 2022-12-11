@@ -59,7 +59,7 @@ class fixedRelaxedMeanValueFvPatchField
 
         //- Current time index
         label curTimeIndex_;
-        
+
         //- Relaxation factor 0 -> fixedValue
         scalar relaxationFactor_;
         scalar thicknessFactor_;

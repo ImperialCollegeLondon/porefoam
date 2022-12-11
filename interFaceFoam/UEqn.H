@@ -19,7 +19,7 @@
 	else
 	{
 		UEqn.relax();
-		pd.relax();   
+		pd.relax();
 	}
 
 	if(filterPd)
@@ -55,9 +55,9 @@
 						)
         );
 		Info<< "ExeTime solve U = " << runTime.elapsedCpuTime()-tOld << " s"	<< endl;
-		
 
-		
+
+
     }
     else
 	{
@@ -67,7 +67,7 @@
 								(
 									ghf*fvc::snGrad(rho)
 								    + fvc::snGrad( pd-beta*fvc::div(phi) )
-								    
+
 								) * mesh.magSf()
 								- sgPc
 							);

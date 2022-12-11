@@ -135,17 +135,17 @@ PIMPLE
 
 	surfaceForceModel  CCF;
 
-	pcThicknessFactor  .1; 
-	fcCorrectTangent   .05; 
+	pcThicknessFactor  .1;
+	fcCorrectTangent   .05;
 	fcCorrectTangentRelax 1.;
-	smoothingKernel   2; 
+	smoothingKernel   2;
 	smoothingRelaxFactor   0.7; // high vaqlue leads to alpha leakage
 
-	wallSmoothingKernel  2; 
-	fcdFilter   0.01; 
+	wallSmoothingKernel  2;
+	fcdFilter   0.01;
 
-	cAlpha  1; 
-    alphafModel   interpolate; 
+	cAlpha  1;
+    alphafModel   interpolate;
 
 	cBC   250;//250;//500;
 
@@ -160,7 +160,7 @@ PIMPLE
 	beta              beta [ 1 -1 -1 0 0 0 0 ] 0.001;
 
 	momentumPredictor no;
-	nCorrectors    1; 
+	nCorrectors    1;
 	npcCorrectors     1;
 	nOuterCorrectors    1;
 	nNonOrthogonalCorrectors 1;

@@ -20,8 +20,8 @@
     pcRefCellOrig_= readLabel( pimple.lookup("pcRefCell") );
     pcRefValueOrig_= readScalar( pimple.lookup("pcRefValue") );
 
-	volVectorField gradAlpha = fvc::grad(alpha1f_); 
-	volScalarField magGradAlpha = (mag(gradAlpha) + 0.0001*deltaN_); 
+	volVectorField gradAlpha = fvc::grad(alpha1f_);
+	volScalarField magGradAlpha = (mag(gradAlpha) + 0.0001*deltaN_);
 	volVectorField nS = gradAlpha/magGradAlpha;
 	surfaceVectorField nHatfv = fvc::interpolate(gradAlpha)/fvc::interpolate(magGradAlpha); nHatfv/=mag(nHatfv)+1e-15;
 	//correctContactAngle(nHatfv.boundaryFieldRef(),gradAlpha.boundaryFieldRef(),nS.boundaryFieldRef(),alpha1S_.boundaryFieldRef(), a1a2.boundaryFieldRef());
@@ -51,7 +51,7 @@
 
 
         if (nonOrth == nPcNonOrthCorr_)
-        { 
+        {
             sgPc_-=pcEqn.flux();
         }
 		pc_.correctBoundaryConditions();
@@ -75,13 +75,13 @@
 		std::terminate();
 	}
 	//ensure(std::isfinite(average(pc_)),"",2);
-    
+
 	surfaceScalarField stfTypicalLow=mag((sigma_*0.1)*deltaS_*deltaS_*msh.magSf()); // Note: this filtering is only applied to the interface region, but not away from interface
 	surfaceScalarField stfThreshold=((0.5*fcdFilter_)*( mag(stf)+ stfTypicalLow)); // Note: this filtering is only applied to the interface region, but not away from interface
 	//sgPcErrn_ = (min (max(sgPc_, -stfThreshold),stfThreshold));
-	//sgPc_-=sgPcErrn_;  
-    
-        
+	//sgPc_-=sgPcErrn_;
+
+
     gPc_= fvc::reconstruct((sgPc_));
     gPc_.correctBoundaryConditions();
 
@@ -92,14 +92,14 @@
 	surfaceVectorField gPcllInterface=fvc::interpolate(vgPcllInterface,"smoothSchemegPc");    //surfaceVectorField gPcf=fvc::interpolate(gPc_,"smoothSchemegPc");
 	gPcllInterface=(gPcllInterface)-((gPcllInterface)&(nHatfv))*(nHatfv);    //surfaceVectorField gPcf=fvc::interpolate(gPc_,"smoothSchemegPc");
 	gPcllInterface*=(1.-mag(nHatf_)/msh.magSf());
-	sgPcErr_=dInterf*(min(2.*(1.4-mag(nHatf_)/msh.magSf()), 1.)*(sgPcErr_+fcCorrectTangent_*(gPcllInterface& msh.Sf())) );//  *( 1.-(mag(nHatf_)/msh.magSf()) )   ); /*aSolid_cPcCorrRelax_* */ 
+	sgPcErr_=dInterf*(min(2.*(1.4-mag(nHatf_)/msh.magSf()), 1.)*(sgPcErr_+fcCorrectTangent_*(gPcllInterface& msh.Sf())) );//  *( 1.-(mag(nHatf_)/msh.magSf()) )   ); /*aSolid_cPcCorrRelax_* */
 
 
 	//label sgPcErr_checkErrs=0;
 	forAll(sgPcErr_,i)
 	{
 		if (sgPc_[i]*sgPcErr_[i] < -1e-6*stfTypicalLow[i])  sgPcErr_[i]  *= 0.99;
-		if( mag(sgPc_[i])<0.5*mag(sgPcErr_[i]) ) {   sgPcErr_[i] = 0.5*sgPc_[i]; } //++sgPcErr_checkErrs;    Info<<"bEC:"<<sgPcErr_[i]<<" "<<sgPc_[i]<<endl; 
+		if( mag(sgPc_[i])<0.5*mag(sgPcErr_[i]) ) {   sgPcErr_[i] = 0.5*sgPc_[i]; } //++sgPcErr_checkErrs;    Info<<"bEC:"<<sgPcErr_[i]<<" "<<sgPc_[i]<<endl;
 	}
 	forAll(boundary, bI)
 	{
@@ -125,7 +125,7 @@
 	//stfThreshold=0.5*(stfThreshold+(1.*fcdFilter_)*mag(stf));
 	stfThreshold=((1.*fcdFilter_)*( mag(stf)+ mag((sigma_*0.1)*deltaS_*deltaS_*msh.magSf()) ));
 	sgPcErrn_ = (min (max(sgPc_, -stfThreshold),stfThreshold) );
-	sgPc_-=sgPcErrn_;  
+	sgPc_-=sgPcErrn_;
 
 	gPc_= fvc::reconstruct((sgPc_));
 	gPc_.correctBoundaryConditions();
@@ -154,7 +154,7 @@
                 //pcEqn.setReference(pcRefCell_, pcRefValue_);
                 //pcEqn.solve();
                 //if (nonOrth == nPcNonOrthCorr_)
-                //{ 
+                //{
                     //sgPc_-=pcEqn.flux();
                 //}
             //}
@@ -165,4 +165,3 @@
 	Info<< "~~~Pc computation time = " << alpha1_.time( ).elapsedCpuTime()-stime << " s"	<< endl;
 
 }
-

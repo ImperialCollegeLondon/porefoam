@@ -43,7 +43,7 @@ template<>
 const char* Foam::NamedEnum < Foam::alphaContactAngleFvPatchScalarField::limitControls, 4>::names[] = {
 		"none",  "gradient", "zeroGradient", "alpha" };
 
-const Foam::NamedEnum< Foam::alphaContactAngleFvPatchScalarField::limitControls, 4 > 
+const Foam::NamedEnum< Foam::alphaContactAngleFvPatchScalarField::limitControls, 4 >
 	Foam::alphaContactAngleFvPatchScalarField::limitControlNames_;
 
 
@@ -144,7 +144,7 @@ void Foam::alphaContactAngleFvPatchScalarField::evaluate
         //gradient() = -gradient();
         //return;
     //}
-    
+
 	if (reset)
     {
         gradient() = 0.;
@@ -159,8 +159,8 @@ void Foam::alphaContactAngleFvPatchScalarField::evaluate
                (1./transitionFactor_)*(*this + gradient()/patch().deltaCoeffs())-(0.5/transitionFactor_-0.5),
                scalar(1)), scalar(0)
            ) - *this
-       );		
-		//scalarField alphapintern=this->patchInternalField(); 
+       );
+		//scalarField alphapintern=this->patchInternalField();
         //gradient() =
         //patch().deltaCoeffs()
        //*(
@@ -175,9 +175,9 @@ void Foam::alphaContactAngleFvPatchScalarField::evaluate
     {
         gradient() = 0.;
     }
-    
 
-    
+
+
     fixedGradientFvPatchScalarField::evaluate();
 
     if (limit_ == lcAlpha || limit_ == lcGradient)

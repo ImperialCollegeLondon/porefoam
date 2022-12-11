@@ -1,6 +1,8 @@
 #!/bin/bash
 
 
+source $(dirname "${BASH_SOURCE[0]}")/../../script/bashrc
+
 printf "DimSize = 22 32 32 \n\
 	Offset =      0    0    0 \n\
 	replaceRange 0 255 1 \n\
@@ -18,9 +20,9 @@ export nProc=4
 export oilFilldFracs=0.5
 rm -rf voxcyl32cfm*/ AllRunImageTwoPhaseCFMesh
 AllRunImageTwoPhaseCFMesh voxcyl32cfm.mhd  # this just copies AllRunImageTwoPhase
-AllRunImageTwoPhaseCFMesh voxcyl32cfm.mhd 
-AllRunImageTwoPhaseCFMesh voxcyl32cfm.mhd 
-AllRunImageTwoPhaseCFMesh voxcyl32cfm.mhd 
+AllRunImageTwoPhaseCFMesh voxcyl32cfm.mhd
+AllRunImageTwoPhaseCFMesh voxcyl32cfm.mhd
+AllRunImageTwoPhaseCFMesh voxcyl32cfm.mhd
 
 
 

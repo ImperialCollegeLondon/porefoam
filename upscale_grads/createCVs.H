@@ -2,7 +2,7 @@
 	volScalarField VC
 	(	IOobject("VC",  runTime.timeName(),  mesh)
 		,  mesh,  dimensionedScalar("VC",dimVolume,0.),  "fixedValue"
-	);	
+	);
 	VC.ref()=mesh.V();
 
 
@@ -26,7 +26,7 @@
 
 
 
-	IOdictionary postProcDict 
+	IOdictionary postProcDict
 	(	IOobject
 		(	"postProcessDict",	"system",	mesh,
 			IOobject::READ_IF_PRESENT
@@ -43,7 +43,7 @@
 
 
 
-	
+
 	volScalarField Cx=mesh.C().component(0);
 
 
@@ -168,9 +168,9 @@
 			{
 				forAll(CVxlVals,iSam)
 				{
-					if ( (skipImage || CV_ind == CVxlVals[iSam]) && 
-						(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
-						 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
+					if ( (skipImage || CV_ind == CVxlVals[iSam]) &&
+						(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] &&
+						 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] &&
 						 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] )
 					   )
 					 {
@@ -179,7 +179,7 @@
 						++(nCVxlVals[iSam]);
 				     }
 					 else
-					 {  //Info<<CV_ind<<"  "; 
+					 {  //Info<<CV_ind<<"  ";
 					    ++nRejecteds;
 					 }
 				}
@@ -189,7 +189,7 @@
 		}
 		else Info<<" Error ";
 
-		
+
 	}
 	Info<<" \n\nPostProcessing cells: nCollected cells: "<<nCVxlVals<<endl<<",  nRejecteds :"<<nRejecteds<<endl<<endl;
 	PPRegionsScalar.write();
@@ -219,11 +219,11 @@
 
 		label iSam=0;
 		clip==dimensionedScalar(0.);
-		forAll(C,c) 
+		forAll(C,c)
 		{
-				if (PPRegions[c]==CVxlVals[iSam]&& 
-					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] && 
-					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] && 
+				if (PPRegions[c]==CVxlVals[iSam]&&
+					(C[c][0]>=CVBounds1[iSam] && C[c][0]<=CVBounds2[iSam] &&
+					 C[c][1]>=CVyBounds1[iSam] && C[c][1]<=CVyBounds2[iSam] &&
 					 C[c][2]>=CVzBounds1[iSam] && C[c][2]<=CVzBounds2[iSam] ))
 					clip[c]=1.;
 		}

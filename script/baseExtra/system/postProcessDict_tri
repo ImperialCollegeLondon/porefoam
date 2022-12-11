@@ -13,7 +13,7 @@ FoamFile
 
 CVxBounds1 (0 0 0   0 0 0);
 CVxBounds2 (1 1 1   1 1 1);
- 
+
 CVyBounds1 (0 0 0   0 0 0);
 CVyBounds2 (1 1 1   1 1 1);
 
@@ -29,4 +29,3 @@ relativeBounds true ; //default is true
 //nGrowCVs 1;
 CVoxelValues (121 122 123  151 152 153);
 labelImage "vxlImage_VSubElems0.mhd";
-

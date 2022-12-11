@@ -1,5 +1,5 @@
 /*-------------------------------------------------------------------------*\
- Copyright (C) 2010-2020  Ali Qaseminejad Raeini 
+ Copyright (C) 2010-2020  Ali Qaseminejad Raeini
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class slowTwoPhaseFluxFvPatchVectorField
 
 	  //- Relaxation factor 0 -> fixedValue
 	  //scalar relaxationFactor_;
-	  
+
 public:
 
     //- Runtime type information

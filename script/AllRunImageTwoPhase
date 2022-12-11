@@ -25,14 +25,14 @@
 # give up to two numbers one <1 and the other >1, negatives will be skiped
 : ${oilFilldFracs:=" 0.05"} #  1.05 # set to =-1 to initialize alph from alpha1.mhd
 
-# In case you want to refine the mesh increase this, or vise-versa. 
+# In case you want to refine the mesh increase this, or vise-versa.
 : ${RefineLevel:=1}
 
 # number of processors used for flow simulation
 : ${nProc:=24}
 
 
-# tag mesh or decomposed/simulation case 
+# tag mesh or decomposed/simulation case
 : ${meshTag:=""}
 : ${caseTag:=""}
 
@@ -89,9 +89,9 @@ echo "______________________________________________________________________"
 
 
 # Check porefoam installation
-if ! [ -n "$msSrc" ]; then 
+if ! [ -n "$msSrc" ]; then
 	guessPsDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )/../.." && pwd )
-	if [ -f $guessPsDIR/script/bashrc ]; then 
+	if [ -f $guessPsDIR/script/bashrc ]; then
 		echo " msSrc is not not set, set it by running (or add to your ~/.bashrc file):"
 		echo "source $guessPsDIR/script/bashrc"; echo
 		source $guessPsDIR/script/bashrc
@@ -127,7 +127,7 @@ basedirExtra=$msSrc/porefoam2f/script/baseExtra
 # nProcSHM=8
 
 # Skip meshing near the boundaries of the image to facilitate mesh
-# generation. The value for this keyword is the distance (in 
+# generation. The value for this keyword is the distance (in
 # voxels) to the image boundaries which will be skipped
  nSkip=0
 
@@ -181,14 +181,14 @@ echo "_________________________ $dataFile  ____________________________"
 		setValues BASENAME "$mshDir" $mshDir/system/meshingDict
 
 		#echo " ---- create surface ----  "
-		#(cd $mshDir && RunUpdateBlockMeshDict ${mshDir}.mhd  2  $RefineLevel $nSkip )	
+		#(cd $mshDir && RunUpdateBlockMeshDict ${mshDir}.mhd  2  $RefineLevel $nSkip )
 		#(cd $mshDir && runApp voxelToSurface  )
 		#(cd $mshDir && runApp surfaceSmoothVP )
 		#echo "$mshDir/constant/triSurface : ";	(cd $mshDir && ls *.obj )
 		#(cd $mshDir/constant/triSurface && mv ../../solidwalls.obj solidwalls.obj )
 		#ls $mshDir/constant/triSurface
 		echo " ------------------------  "
- 
+
 
 		# echo snappyHexMesh deactivated
 		#(cd $mshDir/system && cp snappyHexMeshDict$SHMSuffix snappyHexMeshDict )
@@ -213,7 +213,7 @@ echo "_________________________ $dataFile  ____________________________"
 			echo $ii
 			if [ "$smoothMeshBoundary" == yes ]; then
 				(cd $mshDir && runApp -l log.smoothMesh-$ii.0 smoothMesh $smoothMeshRelax 10 0 1 && checkM $ii.0); fi
-			if [ "$smoothMeshInternal" == yes ]; then 
+			if [ "$smoothMeshInternal" == yes ]; then
 				(cd $mshDir && runApp -l log.smoothMesh-$ii.1 smoothMesh $smoothMeshRelax 10 4 1 && checkM $ii.1); fi
 		done
 
@@ -245,15 +245,7 @@ echo "_________________________ $dataFile  ____________________________"
 		setKeywordValues fcdFilter $fcdFilter ./$mshDir/system/fvSolution
 		setKeywordValues maxDeltaT $maxDeltaT ./$mshDir/system/controlDict
 		setKeywordValues endTime $endTime ./$mshDir/system/controlDict
- 
- 
-		#(cd $mshDir && runApp ofMesh2Voxel)
 
-		#printf "\ntitle $mshDir;\n" >> $mshDir/vxlImage.mhd
-		#echo "write_subElements true;" >> $mshDir/vxlImage.mhd
-		#echo "write_elements true;" >> $mshDir/vxlImage.mhd
-		#echo "write_cnm true; " >> $mshDir/vxlImage.mhd
-		#(cd $mshDir && runApp gnextract vxlImage.mhd)
 
 	else
 		echo "Error: mesh folder exists but mesh is not there, remove $PWD/$mshDir and rerun to regenerate"
@@ -271,7 +263,7 @@ echo "_________________________ $dataFile  ____________________________"
 	thetaR=$theta0
 	echo "theta0 $theta0"
 
-	for oilFilldFrac in $oilFilldFracs ; do 
+	for oilFilldFrac in $oilFilldFracs ; do
 		echo "oilFilldFrac:  $oilFilldFrac"
 		runDir=${mshDir}${caseTag}_Uo${UD1}w${UD0}CAw${theta0} #_l$VSElml
 		maxS1=0.999
@@ -312,7 +304,7 @@ echo "_________________________ $dataFile  ____________________________"
 
 			setKeywordValues maxS1   "$maxS1"  ./$runDir/system/controlDict
 			setKeywordValues minS1   "$minS1"  ./$runDir/system/controlDict
-			
+
 			setKeywordValues writeFormat ascii ./$runDir/system/controlDict
 
 			setKeywordValues cAlpha $cAlpha ./$runDir/system/fvSolution
@@ -350,17 +342,17 @@ echo "_________________________ $dataFile  ____________________________"
 			setBoundaryCondition $outlet theta0 $thetaOut ./$runDir/0/alpha1
 
 
-			if (( $(echo "$oilFilldFrac < 0." | bc ) )); then 
+			if (( $(echo "$oilFilldFrac < 0." | bc ) )); then
 			 if [ "$VSElml" == "alpha1.mhd" ] ; then
 				cp -r alpha1.* $runDir/
 				(cd $runDir && runApp  voxelAlphaFieldToFoam alpha1.mhd -nGrowAlpha 0)   #-invertAlpha
-			 else 
+			 else
 				echo '"$VSElml" != "alpha1.mhd" requires (closed-source) gnextract outputs'
 				vxlSElems=${mshDir}_VSubElems
-				cp -r $mshDir/$vxlSElems$VSElml.$ImgSufix $runDir/
+				cp -r $mshDir/$vxlSElems$VSElml.* $runDir/
 				cp -r $mshDir/${vxlSElems}0.mhd  $runDir/${vxlSElems}$VSElml.mhd
 				replaceValues "_VSubElems0" "_VSubElems$VSElml"   $runDir/${vxlSElems}$VSElml.mhd
-				echo  "threshold 120 200"  >> $runDir/${vxlSElems}$VSElml.mhd
+				echo  "threshold 120 2000"  >> $runDir/${vxlSElems}$VSElml.mhd
 				(cd $runDir && runApp  voxelImageProcess ${vxlSElems}$VSElml.mhd alpha1.mhd UChar)
 				(cd $runDir && runApp  voxelAlphaFieldToFoam alpha1.mhd -nGrowAlpha 0)   #-invertAlpha
 			 fi
@@ -393,12 +385,12 @@ echo "_________________________ $dataFile  ____________________________"
 
 
 			setKeywordValues writeFormat binary ./$runDir/system/controlDict
-		 else 
+		 else
 			echo "Error: $runDir/constant/polyMesh/points missing, mesh is not available or not decomposed properly"
 		 fi
 		else
 # RUN SIMULATION   ========================================================================
-		
+
 			application=interFaceFoam
 
 			echo " ###########  Running simulation on $runDir  ########## "
