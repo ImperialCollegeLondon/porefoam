@@ -46,7 +46,7 @@ In summary, you need to download a segmented micro-CT image (with a `image.mhd` 
 
 ### Contact and References
 
-To report any problems, contact Ali Q. Raeini, email: a.q.raeini@imperial.ac.uk
+To report any problems, contact Sajjad Foroughi, email: s.foroughi@imperial.ac.uk
 
 For more contacts and references please visit:  
 https://www.imperial.ac.uk/earth-science/research/research-groups/pore-scale-modelling  
